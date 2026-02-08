@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { useDatabase } from '@/context/DatabaseContext';
 import { Joke, JOKES_TABLE } from '@/models/Joke';
 import { RawJoke } from '@/lib/types';
-import { jokeToPlain } from './transformers';
+import { jokeToPlain, fetchRecordingCounts } from './transformers';
 import { hooksLogger, logVerbose } from '@/lib/loggers';
 
 export function useJokesQuery(searchQuery?: string): {
@@ -35,7 +35,9 @@ export function useJokesQuery(searchQuery?: string): {
         logVerbose(hooksLogger, `[useJokesQuery] Record ${i}: id=${r.id}, updated_at=${r.updated_at?.getTime?.() || r.updated_at}`);
       });
 
-      const plainJokes = await Promise.all(records.map(jokeToPlain));
+      const jokeIds = records.map(r => r.id);
+      const recordingCounts = await fetchRecordingCounts(database, jokeIds);
+      const plainJokes = records.map(joke => jokeToPlain(joke, recordingCounts.get(joke.id) || 0));
       setJokes(plainJokes);
       setIsLoading(false);
       setError(null);
@@ -65,7 +67,9 @@ export function useJokesQuery(searchQuery?: string): {
         records.forEach((r, i) => {
           logVerbose(hooksLogger, `[useJokesQuery] Record ${i}: id=${r.id}, updated_at=${r.updated_at?.getTime?.() || r.updated_at}`);
         });
-        const plainJokes = await Promise.all(records.map(jokeToPlain));
+        const jokeIds = records.map(r => r.id);
+        const recordingCounts = await fetchRecordingCounts(database, jokeIds);
+        const plainJokes = records.map(joke => jokeToPlain(joke, recordingCounts.get(joke.id) || 0));
         setJokes(plainJokes);
         setIsLoading(false);
         setError(null);

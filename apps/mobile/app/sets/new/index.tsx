@@ -1,6 +1,8 @@
 import { SortableJokeList } from '@/components/sets';
 import { useSetEditing } from '@/context/SetEditingContext';
-import { useAddJokeSetItem, useCreateJokeSet } from '@/hooks/sets';
+import { useDatabase } from '@/context/DatabaseContext';
+import { useCreateJokeSet } from '@/hooks/sets';
+import { JokeSetItem, JOKE_SET_ITEMS_TABLE } from '@/models/JokeSetItem';
 import { useSetItemsHandlers } from '@/hooks/useSetItemsHandlers';
 import { uiLogger } from '@/lib/loggers';
 import { SetJokeItem } from '@/lib/mockData';
@@ -20,8 +22,8 @@ const generateTempId = () => `${TEMP_ID_PREFIX}${Date.now()}_${Math.random().toS
 export default function NewSetScreen() {
   const router = useRouter();
   const navigation = useNavigation();
+  const { database } = useDatabase();
   const { createJokeSet, isLoading: isCreatingSet } = useCreateJokeSet();
-  const { addJokeSetItem } = useAddJokeSetItem();
   const {
     hasStarted,
     items,
@@ -105,24 +107,25 @@ export default function NewSetScreen() {
     }
 
     uiLogger.debug('[NewSetScreen] handleSave adding items, count:', items.length);
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      uiLogger.debug(`[NewSetScreen] handleSave adding item ${i}:`, item.type, item.title || item.id);
-      if (item.type === 'joke') {
-        await addJokeSetItem({
-          setId: newSet.id,
-          itemType: 'joke',
-          jokeId: item.jokeId || '',
-          position: i,
-        });
-      } else {
-        await addJokeSetItem({
-          setId: newSet.id,
-          itemType: 'note',
-          content: item.content,
-          position: i,
-        });
-      }
+    try {
+      await database.write(async () => {
+        const now = new Date();
+        const records = items.map((item, i) =>
+          database.get<JokeSetItem>(JOKE_SET_ITEMS_TABLE).prepareCreate((record) => {
+            record.setId = newSet.id;
+            record.itemType = item.type === 'joke' ? 'joke' : 'note';
+            record.jokeId = item.type === 'joke' ? (item.jokeId || '') : '';
+            record.content = item.type === 'note' ? (item.content || '') : '';
+            record.position = i;
+            record.created_at = now;
+            record.updated_at = now;
+          })
+        );
+        await database.batch(...records);
+      });
+    } catch (err) {
+      uiLogger.error('[NewSetScreen] Failed to batch-add items:', err);
+      return;
     }
 
     uiLogger.debug('[NewSetScreen] handleSave resetting new set');
@@ -130,7 +133,7 @@ export default function NewSetScreen() {
     uiLogger.debug('[NewSetScreen] handleSave navigating to set:', newSet.id);
     router.replace(`/sets/${newSet.id}` as const);
     uiLogger.debug('[NewSetScreen] handleSave COMPLETE');
-  }, [items, setDetails, createJokeSet, addJokeSetItem, resetNewSet, router]);
+  }, [items, setDetails, createJokeSet, database, resetNewSet, router]);
 
   useLayoutEffect(() => {
     navigation.getParent()?.setOptions({

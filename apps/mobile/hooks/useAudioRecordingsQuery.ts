@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Q } from '@nozbe/watermelondb';
 import { useDatabase } from '@/context/DatabaseContext';
 import { AudioRecording, AUDIO_RECORDINGS_TABLE } from '@/models/AudioRecording';
 import { createNamespacedLogger } from '@/lib/logger';
@@ -29,8 +30,7 @@ export function useAudioRecordingsQuery(jokeId: string | null | undefined): UseA
 
     try {
       const collection = database.get<AudioRecording>(AUDIO_RECORDINGS_TABLE);
-      const allRecordings = await collection.query().fetch();
-      const jokeRecordings = allRecordings.filter((r) => r.jokeId === jokeId);
+      const jokeRecordings = await collection.query(Q.where('joke_id', jokeId)).fetch();
       hooksLogger.debug(`[useAudioRecordings] Manual fetch got ${jokeRecordings.length} recordings for joke_id=${jokeId}`);
       setRecordings(jokeRecordings);
       setError(null);
@@ -55,11 +55,10 @@ export function useAudioRecordingsQuery(jokeId: string | null | undefined): UseA
 
     const collection = database.get<AudioRecording>(AUDIO_RECORDINGS_TABLE);
     const subscription = collection
-      .query()
+      .query(Q.where('joke_id', jokeId))
       .observe()
       .subscribe({
-        next: (allRecordings: AudioRecording[]) => {
-          const jokeRecordings = allRecordings.filter((r) => r.jokeId === jokeId);
+        next: (jokeRecordings: AudioRecording[]) => {
           hooksLogger.info(`[useAudioRecordings] Loaded ${jokeRecordings.length} recordings for joke_id=${jokeId}`);
           setRecordings(jokeRecordings);
           setIsLoading(false);

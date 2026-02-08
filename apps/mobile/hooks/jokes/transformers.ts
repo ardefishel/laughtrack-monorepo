@@ -1,14 +1,9 @@
-import { Joke, JOKES_TABLE } from '@/models/Joke';
+import { Database, Q } from '@nozbe/watermelondb';
+import { Joke } from '@/models/Joke';
+import { AudioRecording, AUDIO_RECORDINGS_TABLE } from '@/models/AudioRecording';
 import { RawJoke } from '@/lib/types';
 
-/**
- * Transforms a WatermelonDB Joke model to a plain RawJoke object
- * @param joke - WatermelonDB Joke model instance
- * @returns Plain RawJoke object with numeric timestamps
- */
-export async function jokeToPlain(joke: Joke): Promise<RawJoke> {
-  const recordingsCount = await joke.audioRecordings.fetchCount();
-
+export function jokeToPlain(joke: Joke, recordingsCount: number = 0): RawJoke {
   return {
     id: joke.id,
     content_html: joke.content_html,
@@ -18,4 +13,20 @@ export async function jokeToPlain(joke: Joke): Promise<RawJoke> {
     tags: Array.isArray(joke.tags) ? joke.tags : [],
     recordings_count: recordingsCount,
   };
+}
+
+export async function fetchRecordingCounts(database: Database, jokeIds: string[]): Promise<Map<string, number>> {
+  if (jokeIds.length === 0) return new Map();
+
+  const recordings = await database
+    .get<AudioRecording>(AUDIO_RECORDINGS_TABLE)
+    .query(Q.where('joke_id', Q.oneOf(jokeIds)))
+    .fetch();
+
+  const counts = new Map<string, number>();
+  for (const recording of recordings) {
+    const current = counts.get(recording.jokeId) || 0;
+    counts.set(recording.jokeId, current + 1);
+  }
+  return counts;
 }

@@ -8,7 +8,7 @@ import { RawJoke, RawJokeSetItem } from '@/lib/types';
 import { Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { withUniwind } from 'uniwind';
 
@@ -35,13 +35,20 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
   const { addJokeSetItem } = useAddJokeSetItem();
   const { pendingAddPosition, setPendingAddPosition, items: contextItems, setItems, setHasStarted } = useSetEditing();
 
-  const existingJokeIds = mode === 'edit' && rawItems
-    ? rawItems
-      .filter((item: RawJokeSetItem) => item.item_type === 'joke' && item.joke_id)
-      .map((item: RawJokeSetItem) => item.joke_id)
-    : contextItems
-      .filter((item) => item.type === 'joke')
-      .map((item) => item.id.replace(/^temp_/, ''));
+  const existingJokeIds = useMemo(() => {
+    if (mode === 'edit' && rawItems) {
+      return new Set(
+        rawItems
+          .filter((item: RawJokeSetItem) => item.item_type === 'joke' && item.joke_id)
+          .map((item: RawJokeSetItem) => item.joke_id!)
+      );
+    }
+    return new Set(
+      contextItems
+        .filter((item) => item.type === 'joke')
+        .map((item) => item.id.replace(/^temp_/, ''))
+    );
+  }, [mode, rawItems, contextItems]);
 
   const toggleJoke = useCallback((joke: RawJoke) => {
     setSelectedJokes((prev) => {
@@ -134,7 +141,7 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
     const { title, description } = extractTitleAndDescription(item.content_html);
     const isSelected = selectedJokes.has(item.id);
     const isInSet = mode === 'edit'
-      ? existingJokeIds.includes(item.id)
+      ? existingJokeIds.has(item.id)
       : contextItems.some((i) => i.type === 'joke' && i.title === title);
 
     return (
@@ -215,6 +222,7 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
           data={jokes}
           renderItem={renderJokeItem}
           keyExtractor={(item) => item.id}
+          estimatedItemSize={80}
           contentContainerStyle={{ paddingVertical: 12, paddingBottom: 100 }}
           ListEmptyComponent={
             <View className="flex-1 justify-center items-center py-20">

@@ -42,7 +42,7 @@ export function useCreateJoke(): {
         });
 
         hooksLogger.info('[useCreateJoke] Joke created with ID:', joke.id);
-        return await jokeToPlain(joke);
+        return jokeToPlain(joke);
       } catch (err) {
         hooksLogger.error('[useCreateJoke] Error creating joke:', err);
         setError(err instanceof Error ? err : new Error('Unknown error'));

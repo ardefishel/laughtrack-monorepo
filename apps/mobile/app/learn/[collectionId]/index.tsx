@@ -5,7 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { Card } from 'heroui-native';
 import { useCallback, useLayoutEffect } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
+import { Pressable, Text, View } from 'react-native';
 import { withUniwind } from 'uniwind';
 
 const StyledIonicons = withUniwind(Ionicons);
@@ -50,10 +51,11 @@ export default function LearnArticleListScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <FlatList
+      <FlashList
         data={articles}
         renderItem={renderArticleCard}
         keyExtractor={(item) => item.id}
+        estimatedItemSize={120}
         contentContainerStyle={{ paddingVertical: 12 }}
         ListHeaderComponent={
           <View className="px-4 pb-4">
@@ -106,3 +108,4 @@ export default function LearnArticleListScreen() {
     </View>
   );
 }
+

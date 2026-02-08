@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { useDatabase } from '@/context/DatabaseContext';
 import { Joke, JOKES_TABLE } from '@/models/Joke';
 import { RawJoke } from '@/lib/types';
-import { jokeToPlain } from './transformers';
+import { jokeToPlain, fetchRecordingCounts } from './transformers';
 import { hooksLogger } from '@/lib/loggers';
 
 export function useJoke(id: string): {
@@ -30,7 +30,11 @@ export function useJoke(id: string): {
     const subscription = observable.subscribe({
       next: async (record: Joke | null) => {
         hooksLogger.debug('[useJoke] Observable emitted for:', id, record ? 'found' : 'not found');
-        const plainRecord = record ? await jokeToPlain(record) : null;
+        let plainRecord: RawJoke | null = null;
+        if (record) {
+          const counts = await fetchRecordingCounts(database, [record.id]);
+          plainRecord = jokeToPlain(record, counts.get(record.id) || 0);
+        }
         setJoke(plainRecord);
         setIsLoading(false);
         setError(null);
