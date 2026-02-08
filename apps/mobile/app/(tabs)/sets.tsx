@@ -25,15 +25,11 @@ export default function SetsScreen() {
   const { deleteJokeSet } = useDeleteJokeSet();
   const listRef = useRef<any>(null);
   const prevSetCountRef = useRef(jokeSets.length);
-  const renderCount = useRef(0);
-  const focusCount = useRef(0);
-  renderCount.current++;
-  logVerbose(uiLogger, `[SetsScreen] RENDER #${renderCount.current}, jokeSets count: ${jokeSets.length}, isLoading: ${isLoading}`);
+  logVerbose(uiLogger, '[SetsScreen] RENDER, jokeSets count:', jokeSets.length, ', isLoading:', isLoading);
 
   useFocusEffect(
     useCallback(() => {
-      focusCount.current++;
-      logVerbose(uiLogger, `[SetsScreen] FOCUS EFFECT #${focusCount.current} - calling refetch`);
+      logVerbose(uiLogger, '[SetsScreen] FOCUS EFFECT - calling refetch');
       refetch();
 
       const currentCount = jokeSets.length;
@@ -48,7 +44,7 @@ export default function SetsScreen() {
       prevSetCountRef.current = currentCount;
 
       return () => {
-        logVerbose(uiLogger, `[SetsScreen] FOCUS EFFECT #${focusCount.current} - cleanup (unfocused)`);
+        logVerbose(uiLogger, '[SetsScreen] FOCUS EFFECT - cleanup (unfocused)');
       };
     }, [refetch, jokeSets.length])
   );
