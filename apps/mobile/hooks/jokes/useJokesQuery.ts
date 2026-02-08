@@ -31,9 +31,6 @@ export function useJokesQuery(searchQuery?: string): {
 
       const records = await query.fetch();
       logVerbose(hooksLogger, `[useJokesQuery] MANUAL FETCH got ${records.length} records`);
-      records.forEach((r, i) => {
-        logVerbose(hooksLogger, `[useJokesQuery] Record ${i}: id=${r.id}, updated_at=${r.updated_at?.getTime?.() || r.updated_at}`);
-      });
 
       const jokeIds = records.map(r => r.id);
       const recordingCounts = await fetchRecordingCounts(database, jokeIds);
@@ -64,9 +61,6 @@ export function useJokesQuery(searchQuery?: string): {
     const subscription = observable.subscribe({
       next: async (records: Joke[]) => {
         logVerbose(hooksLogger, `[useJokesQuery] OBSERVABLE EMITTED, count: ${records.length}`);
-        records.forEach((r, i) => {
-          logVerbose(hooksLogger, `[useJokesQuery] Record ${i}: id=${r.id}, updated_at=${r.updated_at?.getTime?.() || r.updated_at}`);
-        });
         const jokeIds = records.map(r => r.id);
         const recordingCounts = await fetchRecordingCounts(database, jokeIds);
         const plainJokes = records.map(joke => jokeToPlain(joke, recordingCounts.get(joke.id) || 0));

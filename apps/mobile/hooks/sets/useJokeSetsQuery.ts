@@ -6,7 +6,6 @@ import { JokeSet, JOKE_SETS_TABLE } from '@/models/JokeSet';
 import type { RawJokeSet } from '@/lib/types';
 import { jokeSetToPlain } from './transformers';
 import { hooksLogger, logVerbose } from '@/lib/loggers';
-import { useRef } from 'react';
 
 export function useJokeSetsQuery(searchQuery?: string): {
   jokeSets: RawJokeSet[];
@@ -18,9 +17,7 @@ export function useJokeSetsQuery(searchQuery?: string): {
   const [jokeSets, setJokeSets] = useState<RawJokeSet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const renderCount = useRef(0);
-  renderCount.current++;
-  logVerbose(hooksLogger, `[useJokeSetsQuery] HOOK RENDER #${renderCount.current}, searchQuery:`, searchQuery);
+  logVerbose(hooksLogger, '[useJokeSetsQuery] HOOK RENDER, searchQuery:', searchQuery);
 
   const fetchJokeSets = useCallback(async () => {
     logVerbose(hooksLogger, '[useJokeSetsQuery] MANUAL FETCH triggered');
