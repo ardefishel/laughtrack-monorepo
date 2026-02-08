@@ -1,0 +1,74 @@
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
+import { Text, View } from "react-native";
+import { useCSSVariable, useResolveClassNames, withUniwind } from "uniwind";
+
+const StyledView = withUniwind(View);
+
+function HeaderTitle() {
+  return (
+    <StyledView className="flex-row items-center h-full">
+      <Text className="text-foreground text-xl italic font-black">Laugh</Text>
+      <Text className="text-foreground text-xl font-bold">Track</Text>
+    </StyledView>
+  );
+}
+
+export default function TabsLayout() {
+  const headerStyle = useResolveClassNames('bg-background h-30');
+  const tabBarStyle = useResolveClassNames('bg-background border-t border-default pt-2');
+
+  const [accentColor, foregroundColor, mutedColor] = useCSSVariable(['--accent', '--foreground', '--muted']);
+
+  return (
+    <Tabs
+      screenOptions={{
+        headerShown: true,
+        headerTitle: HeaderTitle,
+        headerStyle,
+        headerTintColor: foregroundColor as string,
+        headerTitleAlign: 'left',
+        tabBarStyle,
+        tabBarActiveTintColor: accentColor as string,
+        tabBarInactiveTintColor: mutedColor as string,
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Jokes",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubble-ellipses-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="sets"
+        options={{
+          title: "Sets",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="library-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="learn"
+        options={{
+          title: "Learn",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="school-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="account"
+        options={{
+          title: "Account",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-outline" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
+  );
+}

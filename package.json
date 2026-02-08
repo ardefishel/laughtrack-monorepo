@@ -1,0 +1,18 @@
+{
+  "name": "laughtrack-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "start": "bun run --cwd apps/mobile start",
+    "android": "bun run --cwd apps/mobile android",
+    "ios": "bun run --cwd apps/mobile ios",
+    "lint": "bun run --cwd apps/mobile lint",
+    "mobile:start": "bun run --cwd apps/mobile start",
+    "mobile:android": "bun run --cwd apps/mobile android",
+    "mobile:ios": "bun run --cwd apps/mobile ios",
+    "mobile:lint": "bun run --cwd apps/mobile lint",
+    "mobile:clean": "rm -rf node_modules/ bun.lock ios/ apps/mobile/node_modules/ apps/mobile/.expo/ apps/mobile/ios/ apps/mobile/android/ apps/mobile/dist"
+  }
+}
