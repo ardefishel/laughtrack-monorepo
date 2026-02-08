@@ -1,10 +1,11 @@
-import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useRef } from 'react';
+import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import { withUniwind } from 'uniwind';
 import { SetCard } from '@/components/sets';
+import { AnimatedSearchBar } from '@/components/jokes/AnimatedSearchBar';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { SwipeableRow } from '@/components/ui/SwipeableRow';
@@ -17,7 +18,9 @@ const StyledIonicons = withUniwind(Ionicons);
 
 export default function SetsScreen() {
   const router = useRouter();
-  const { jokeSets, isLoading, error, refetch } = useJokeSetsQuery();
+  const navigation = useNavigation();
+  const [searchQuery, setSearchQuery] = useState('');
+  const { jokeSets, isLoading, error, refetch } = useJokeSetsQuery(searchQuery);
   const { deleteJokeSet } = useDeleteJokeSet();
   const listRef = useRef<any>(null);
   const prevSetCountRef = useRef(jokeSets.length);
@@ -48,6 +51,21 @@ export default function SetsScreen() {
       };
     }, [refetch, jokeSets.length])
   );
+
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <AnimatedSearchBar
+          searchQuery={searchQuery}
+          onChangeText={handleSearch}
+        />
+      ),
+    });
+  }, [navigation, searchQuery, handleSearch]);
 
   const handleSetPress = (jokeSet: RawJokeSet) => {
     router.push({ pathname: '/sets/[id]', params: { id: jokeSet.id } });
@@ -138,8 +156,12 @@ export default function SetsScreen() {
                     return null;
                   })()}
                 <StyledIonicons name="albums-outline" size={48} className="text-muted mb-4" />
-                <Text className="text-foreground text-lg font-medium">No sets yet</Text>
-                <Text className="text-muted text-sm mt-1">Create your first set to get started</Text>
+                <Text className="text-foreground text-lg font-medium">
+                  {searchQuery ? 'No sets found' : 'No sets yet'}
+                </Text>
+                <Text className="text-muted text-sm mt-1">
+                  {searchQuery ? 'Try a different search' : 'Create your first set to get started'}
+                </Text>
               </>
             )}
           </View>
