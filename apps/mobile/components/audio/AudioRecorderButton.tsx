@@ -1,18 +1,16 @@
-import { createNamespacedLogger } from '@/lib/logger';
+import { logVerbose, uiLogger } from '@/lib/loggers';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Button } from 'heroui-native';
 import React from 'react';
 import { withUniwind } from 'uniwind';
 
-const uiLogger = createNamespacedLogger('ui');
-
 const StyledIonicons = withUniwind(Ionicons);
 
 export function AudioRecorderButton() {
   const router = useRouter();
 
-  uiLogger.debug('[AudioRecorderButton] RENDER');
+  logVerbose(uiLogger, '[AudioRecorderButton] RENDER');
 
   const handleOpenSheet = () => {
     uiLogger.debug('[AudioRecorderButton] Opening recording bottom sheet');

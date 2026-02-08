@@ -1,4 +1,5 @@
 import { formatDuration } from '@/lib/audioStorage';
+import { logVerbose, uiLogger } from '@/lib/loggers';
 import { AudioRecording } from '@/models/AudioRecording';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
@@ -15,7 +16,7 @@ interface RecordingListItemProp {
 }
 
 const RecordingListItem = ({ recording, isPlaying, isLoading, onPlay }: RecordingListItemProp) => {
-    console.log(`[RecordingListItem] ${recording.id}: isPlaying=${isPlaying}, isLoading=${isLoading}`)
+    logVerbose(uiLogger, `[RecordingListItem] ${recording.id}: isPlaying=${isPlaying}, isLoading=${isLoading}`);
     return (
         <View collapsable={false} className="flex-row items-center justify-between py-3 border-b border-default">
             <Pressable

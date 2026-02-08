@@ -1,9 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAudioPlayer as useExpoAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { AudioRecording } from '@/models/AudioRecording';
-import { createNamespacedLogger } from '@/lib/logger';
-
-const hooksLogger = createNamespacedLogger('hooks');
+import { hooksLogger, logVerbose } from '@/lib/loggers';
 
 interface UseRecordingPlayerReturn {
     isPlaying: boolean;
@@ -18,7 +16,7 @@ export function useRecordingPlayer(): UseRecordingPlayerReturn {
     const player = useExpoAudioPlayer(null);
     const playerStatus = useAudioPlayerStatus(player);
 
-    hooksLogger.debug(`[useRecordingPlayer] Status: isLoaded=${playerStatus?.isLoaded}, playing=${playerStatus?.playing}`);
+    logVerbose(hooksLogger, `[useRecordingPlayer] Status: isLoaded=${playerStatus?.isLoaded}, playing=${playerStatus?.playing}`);
 
     const [activeRecordingId, setActiveRecordingId] = useState<string | null>(null);
     const [pendingPlay, setPendingPlay] = useState(false);
