@@ -1,7 +1,7 @@
 import { AudioRecorderButton } from '@/components/audio/AudioRecorderButton';
+import { Ionicons } from '@expo/vector-icons';
 import { Input, TextField } from 'heroui-native';
 import { Pressable, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { withUniwind } from 'uniwind';
 
 const StyledIonicons = withUniwind(Ionicons);
@@ -50,7 +50,7 @@ function JokeInputBarComponent({
       <Pressable
         onPress={onSubmit}
         disabled={!newJokeText.trim() || isCreating}
-        className={`p-2.5 mb-0.5 rounded-lg ${newJokeText.trim() && !isCreating ? 'bg-primary' : 'opacity-40'}`}
+        className={`p-2.5 mb-0.5 rounded-lg ${newJokeText.trim() && !isCreating ? 'bg-accent' : 'opacity-40'}`}
       >
         {isCreating ? (
           <StyledIonicons name="refresh-outline" size={18} className="text-accent animate-spin" />

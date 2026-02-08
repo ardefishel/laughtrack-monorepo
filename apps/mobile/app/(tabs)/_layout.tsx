@@ -8,8 +8,8 @@ const StyledView = withUniwind(View);
 function HeaderTitle() {
   return (
     <StyledView className="flex-row items-center h-full">
-      <Text className="text-foreground text-xl italic font-black">Laugh</Text>
-      <Text className="text-foreground text-xl font-bold">Track</Text>
+      <Text className="text-accent text-xl italic font-black">Laugh</Text>
+      <Text className="text-foreground text-xl ">Track</Text>
     </StyledView>
   );
 }

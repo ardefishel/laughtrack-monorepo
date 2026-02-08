@@ -3,5 +3,15 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "**/.ruby-lsp": true,
+    "**/.vscode": true,
+    "**/.agent": true,
+    "**/.agents": true,
+    "**/.opencode/skills": true
   }
 }

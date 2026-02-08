@@ -44,7 +44,7 @@ export default function EditSetDetailScreen() {
           onPress={handleSave}
           className="px-3 py-1.5"
         >
-          <Text className="text-primary text-base font-medium">Done</Text>
+          <Text className="text-accent text-base font-medium">Done</Text>
         </Pressable>
       ),
     });

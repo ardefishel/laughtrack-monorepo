@@ -61,7 +61,7 @@ const RecordingListBottomSheet = () => {
                         hitSlop={8}
                         accessibilityLabel="Add recording"
                     >
-                        <StyledIonicons name="add" size={24} className="text-primary" />
+                        <StyledIonicons name="add" size={24} className="text-accent" />
                     </Pressable>
                     <Pressable
                         onPress={() => {

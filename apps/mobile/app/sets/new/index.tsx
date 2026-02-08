@@ -150,23 +150,21 @@ export default function NewSetScreen() {
         </Pressable>
       ),
       headerRight: () => (
-        <Pressable
+        <Button
           onPress={handleSave}
-          disabled={isSaveDisabled}
+          variant='ghost'
+          isDisabled={isSaveDisabled}
           accessibilityRole="button"
           accessibilityLabel="Save set"
-          className={`px-3 py-1.5 rounded-full border ${isSaveDisabled ? 'border-default/60' : 'border-primary/40 bg-primary/10'}`}
         >
           {isCreatingSet ? (
             <View className="text-muted">
               <StyledIonicons name="sync-outline" size={18} className="animate-spin text-muted" />
             </View>
           ) : (
-            <Text className={`text-base font-medium ${isSaveDisabled ? 'text-muted' : 'text-primary'}`}>
-              Save
-            </Text>
+            <Button.Label>Save</Button.Label>
           )}
-        </Pressable>
+        </Button>
       ),
     });
   }, [navigation, handleNavigateToEditDetail, handleSave, isCreatingSet, isSaveDisabled, setDetails.title]);

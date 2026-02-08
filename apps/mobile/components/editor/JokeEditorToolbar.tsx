@@ -1,6 +1,6 @@
-import { Pressable, View, Text, KeyboardAvoidingView, Platform } from 'react-native';
-import { withUniwind } from 'uniwind';
 import { Ionicons } from '@expo/vector-icons';
+import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
+import { withUniwind } from 'uniwind';
 
 const StyledPressable = withUniwind(Pressable);
 const StyledIonicons = withUniwind(Ionicons);
@@ -45,14 +45,12 @@ export function JokeEditorToolbar({
       <View className="flex-row items-center gap-2 p-3 border-t border-default bg-surface">
         <StyledPressable
           onPress={onH1}
-          className={`px-3 py-1.5 rounded-md ${
-            activeStyles.h1 ? 'bg-primary' : 'bg-field-background'
-          }`}
+          className={`px-3 py-1.5 rounded-md ${activeStyles.h1 ? 'bg-accent' : 'bg-field-background'
+            }`}
         >
           <Text
-            className={`text-sm font-bold ${
-              activeStyles.h1 ? 'text-primary-foreground' : 'text-foreground'
-            }`}
+            className={`text-sm font-bold ${activeStyles.h1 ? 'text-accent-foreground' : 'text-foreground'
+              }`}
           >
             H1
           </Text>
@@ -60,14 +58,12 @@ export function JokeEditorToolbar({
 
         <StyledPressable
           onPress={onH2}
-          className={`px-3 py-1.5 rounded-md ${
-            activeStyles.h2 ? 'bg-primary' : 'bg-field-background'
-          }`}
+          className={`px-3 py-1.5 rounded-md ${activeStyles.h2 ? 'bg-accent' : 'bg-field-background'
+            }`}
         >
           <Text
-            className={`text-sm font-bold ${
-              activeStyles.h2 ? 'text-primary-foreground' : 'text-foreground'
-            }`}
+            className={`text-sm font-bold ${activeStyles.h2 ? 'text-accent-foreground' : 'text-foreground'
+              }`}
           >
             H2
           </Text>
@@ -75,14 +71,12 @@ export function JokeEditorToolbar({
 
         <StyledPressable
           onPress={onParagraph}
-          className={`px-3 py-1.5 rounded-md ${
-            isParagraph ? 'bg-primary' : 'bg-field-background'
-          }`}
+          className={`px-3 py-1.5 rounded-md ${isParagraph ? 'bg-accent' : 'bg-field-background'
+            }`}
         >
           <Text
-            className={`text-sm ${
-              isParagraph ? 'text-primary-foreground' : 'text-foreground'
-            }`}
+            className={`text-sm ${isParagraph ? 'text-accent-foreground' : 'text-foreground'
+              }`}
           >
             P
           </Text>
@@ -92,14 +86,12 @@ export function JokeEditorToolbar({
 
         <StyledPressable
           onPress={onBold}
-          className={`px-3 py-1.5 rounded-md ${
-            activeStyles.bold ? 'bg-primary' : 'bg-field-background'
-          }`}
+          className={`px-3 py-1.5 rounded-md ${activeStyles.bold ? 'bg-accent' : 'bg-field-background'
+            }`}
         >
           <Text
-            className={`text-sm font-bold ${
-              activeStyles.bold ? 'text-primary-foreground' : 'text-foreground'
-            }`}
+            className={`text-sm font-bold ${activeStyles.bold ? 'text-accent-foreground' : 'text-foreground'
+              }`}
           >
             B
           </Text>
@@ -107,14 +99,12 @@ export function JokeEditorToolbar({
 
         <StyledPressable
           onPress={onItalic}
-          className={`px-3 py-1.5 rounded-md ${
-            activeStyles.italic ? 'bg-primary' : 'bg-field-background'
-          }`}
+          className={`px-3 py-1.5 rounded-md ${activeStyles.italic ? 'bg-accent' : 'bg-field-background'
+            }`}
         >
           <Text
-            className={`text-sm italic ${
-              activeStyles.italic ? 'text-primary-foreground' : 'text-foreground'
-            }`}
+            className={`text-sm italic ${activeStyles.italic ? 'text-accent-foreground' : 'text-foreground'
+              }`}
           >
             I
           </Text>
@@ -122,14 +112,12 @@ export function JokeEditorToolbar({
 
         <StyledPressable
           onPress={onUnderline}
-          className={`px-3 py-1.5 rounded-md ${
-            activeStyles.underline ? 'bg-primary' : 'bg-field-background'
-          }`}
+          className={`px-3 py-1.5 rounded-md ${activeStyles.underline ? 'bg-accent' : 'bg-field-background'
+            }`}
         >
           <Text
-            className={`text-sm underline ${
-              activeStyles.underline ? 'text-primary-foreground' : 'text-foreground'
-            }`}
+            className={`text-sm underline ${activeStyles.underline ? 'text-accent-foreground' : 'text-foreground'
+              }`}
           >
             U
           </Text>
@@ -140,9 +128,8 @@ export function JokeEditorToolbar({
             <View className="w-px h-6 bg-default mx-2" />
             <StyledPressable
               onPress={onOpenAudioList}
-              className={`px-3 py-1.5 rounded-md flex-row items-center gap-1 ${
-                audioCount > 0 ? 'bg-warning/20' : 'bg-field-background'
-              }`}
+              className={`px-3 py-1.5 rounded-md flex-row items-center gap-1 ${audioCount > 0 ? 'bg-warning/20' : 'bg-field-background'
+                }`}
             >
               <StyledIonicons
                 name="mic"

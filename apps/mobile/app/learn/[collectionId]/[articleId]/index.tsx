@@ -151,8 +151,8 @@ export default function LearnArticleDetailScreen() {
             {freeSections.map((section, index) => (
               <Card key={section.id} className="p-4">
                 <View className="flex-row items-center gap-2 mb-3">
-                  <View className="w-8 h-8 rounded-full bg-primary/10 items-center justify-center">
-                    <Text className="text-primary font-bold">{index + 1}</Text>
+                  <View className="w-8 h-8 rounded-full bg-accent/10 items-center justify-center">
+                    <Text className="text-accent font-bold">{index + 1}</Text>
                   </View>
                   <Text className="text-foreground font-semibold text-lg flex-1">
                     {section.title}

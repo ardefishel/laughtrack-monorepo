@@ -1,9 +1,9 @@
-import React from 'react';
-import { Pressable } from 'react-native';
+import { createNamespacedLogger } from '@/lib/logger';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { Button } from 'heroui-native';
+import React from 'react';
 import { withUniwind } from 'uniwind';
-import { createNamespacedLogger } from '@/lib/logger';
 
 const uiLogger = createNamespacedLogger('ui');
 
@@ -20,14 +20,14 @@ export function AudioRecorderButton() {
   };
 
   return (
-    <Pressable
+    <Button isIconOnly
       onPress={handleOpenSheet}
-      className="p-2.5 rounded-lg bg-field-background"
+      variant='ghost'
       hitSlop={8}
       accessibilityLabel="Record audio"
       accessibilityRole="button"
     >
       <StyledIonicons name="mic" size={18} className="text-warning" />
-    </Pressable>
+    </Button>
   );
 }

@@ -1,6 +1,6 @@
+import { Ionicons } from '@expo/vector-icons';
 import React, { ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { withUniwind } from 'uniwind';
 
@@ -35,7 +35,7 @@ export function SortableListItem({
         <StyledIonicons
           name="menu"
           size={18}
-          className={isActive ? 'text-primary' : 'text-muted-dim'}
+          className={isActive ? 'text-accent' : 'text-muted-dim'}
           style={{ marginRight: 12 }}
         />
         <View className="flex-1">

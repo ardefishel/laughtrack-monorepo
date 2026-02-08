@@ -1,18 +1,19 @@
-import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
-import { Ionicons } from '@expo/vector-icons';
-import { withUniwind } from 'uniwind';
-import { SetCard } from '@/components/sets';
 import { AnimatedSearchBar } from '@/components/jokes/AnimatedSearchBar';
-import { LoadingState } from '@/components/ui/LoadingState';
+import { SetCard } from '@/components/sets';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
 import { SwipeableRow } from '@/components/ui/SwipeableRow';
-import { useJokeSetsQuery } from '@/hooks/sets/useJokeSetsQuery';
 import { useDeleteJokeSet } from '@/hooks/sets/useDeleteJokeSet';
-import type { RawJokeSet } from '@/lib/types';
+import { useJokeSetsQuery } from '@/hooks/sets/useJokeSetsQuery';
 import { logVerbose, uiLogger } from '@/lib/loggers';
+import type { RawJokeSet } from '@/lib/types';
+import { Ionicons } from '@expo/vector-icons';
+import { FlashList } from '@shopify/flash-list';
+import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
+import { Button } from 'heroui-native';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { Text, View } from 'react-native';
+import { withUniwind } from 'uniwind';
 
 const StyledIonicons = withUniwind(Ionicons);
 
@@ -34,18 +35,18 @@ export default function SetsScreen() {
       focusCount.current++;
       logVerbose(uiLogger, `[SetsScreen] FOCUS EFFECT #${focusCount.current} - calling refetch`);
       refetch();
-      
+
       const currentCount = jokeSets.length;
       const prevCount = prevSetCountRef.current;
       logVerbose(uiLogger, `[SetsScreen] FOCUS - prev count: ${prevCount}, current count: ${currentCount}`);
-      
+
       if (currentCount > prevCount) {
         logVerbose(uiLogger, '[SetsScreen] New set detected, scrolling to top');
         listRef.current?.scrollToOffset({ offset: 0, animated: true });
       }
-      
+
       prevSetCountRef.current = currentCount;
-      
+
       return () => {
         logVerbose(uiLogger, `[SetsScreen] FOCUS EFFECT #${focusCount.current} - cleanup (unfocused)`);
       };
@@ -86,7 +87,7 @@ export default function SetsScreen() {
 
       uiLogger.debug('[SetsScreen] Initiating database delete operation for joke set:', jokeSet.id);
       const startTime = Date.now();
-      
+
       try {
         const success = await deleteJokeSet(jokeSet.id);
         const duration = Date.now() - startTime;
@@ -151,10 +152,10 @@ export default function SetsScreen() {
               <LoadingState />
             ) : (
               <>
-                  {(() => {
-                    logVerbose(uiLogger, '[SetsScreen] ListEmptyComponent rendered - jokeSets empty');
-                    return null;
-                  })()}
+                {(() => {
+                  logVerbose(uiLogger, '[SetsScreen] ListEmptyComponent rendered - jokeSets empty');
+                  return null;
+                })()}
                 <StyledIonicons name="albums-outline" size={48} className="text-muted mb-4" />
                 <Text className="text-foreground text-lg font-medium">
                   {searchQuery ? 'No sets found' : 'No sets yet'}
@@ -168,19 +169,12 @@ export default function SetsScreen() {
         }
       />
 
-      <Pressable
+      <Button isIconOnly
         onPress={handleAddPress}
-        className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-primary items-center justify-center"
-        style={{
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.25,
-          shadowRadius: 4,
-          elevation: 5
-        }}
+        className="absolute bottom-6 right-6"
       >
-        <StyledIonicons name="add" size={28} className="text-accent" />
-      </Pressable>
+        <StyledIonicons name="add" size={28} />
+      </Button>
     </View>
   );
 }

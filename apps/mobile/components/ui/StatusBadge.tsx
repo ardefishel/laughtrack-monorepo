@@ -1,7 +1,7 @@
-import { Chip } from 'heroui-native';
-import { View, Text } from 'react-native';
-import { JokeStatus, JokeSetStatus } from '@/lib/types';
 import { getStatusColor } from '@/lib/jokeUtils';
+import { JokeSetStatus, JokeStatus } from '@/lib/types';
+import { Chip } from 'heroui-native';
+import { Text, View } from 'react-native';
 
 interface StatusBadgeProps {
   status: JokeStatus | JokeSetStatus;
@@ -15,14 +15,13 @@ export function StatusBadge({ status, showDot = true, size = 'sm' }: StatusBadge
   if (showDot) {
     return (
       <View className="flex-row items-center gap-1">
-        <View className={`w-2 h-2 rounded-full ${
-          status === 'published' ? 'bg-success' :
-          status === 'draft' ? 'bg-warning' :
-          status === 'performed' ? 'bg-primary' :
-          status === 'bombed' ? 'bg-danger' :
-          status === 'killed' ? 'bg-success' :
-          'bg-muted'
-        }`} />
+        <View className={`w-2 h-2 rounded-full ${status === 'published' ? 'bg-success' :
+            status === 'draft' ? 'bg-warning' :
+              status === 'performed' ? 'bg-accent' :
+                status === 'bombed' ? 'bg-danger' :
+                  status === 'killed' ? 'bg-success' :
+                    'bg-muted'
+          }`} />
         <Text className="text-foreground text-sm font-medium capitalize">
           {status}
         </Text>

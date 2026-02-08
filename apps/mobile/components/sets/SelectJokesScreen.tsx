@@ -1,16 +1,16 @@
-import { useState, useCallback } from 'react';
-import { Pressable, Text, View, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
-import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { withUniwind } from 'uniwind';
-import { useJokesQuery } from '@/hooks/jokes';
-import { useJokeSetItems, useAddJokeSetItem } from '@/hooks/sets';
 import { useSetEditing } from '@/context/SetEditingContext';
-import { RawJoke, RawJokeSetItem } from '@/lib/types';
-import { SetJokeItem } from '@/lib/mockData';
+import { useJokesQuery } from '@/hooks/jokes';
+import { useAddJokeSetItem, useJokeSetItems } from '@/hooks/sets';
 import { extractTitleAndDescription } from '@/lib/htmlParser';
 import { uiLogger } from '@/lib/loggers';
+import { SetJokeItem } from '@/lib/mockData';
+import { RawJoke, RawJokeSetItem } from '@/lib/types';
+import { Ionicons } from '@expo/vector-icons';
+import { FlashList } from '@shopify/flash-list';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
+import { withUniwind } from 'uniwind';
 
 const StyledIonicons = withUniwind(Ionicons);
 
@@ -37,11 +37,11 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
 
   const existingJokeIds = mode === 'edit' && rawItems
     ? rawItems
-        .filter((item: RawJokeSetItem) => item.item_type === 'joke' && item.joke_id)
-        .map((item: RawJokeSetItem) => item.joke_id)
+      .filter((item: RawJokeSetItem) => item.item_type === 'joke' && item.joke_id)
+      .map((item: RawJokeSetItem) => item.joke_id)
     : contextItems
-        .filter((item) => item.type === 'joke')
-        .map((item) => item.id.replace(/^temp_/, ''));
+      .filter((item) => item.type === 'joke')
+      .map((item) => item.id.replace(/^temp_/, ''));
 
   const toggleJoke = useCallback((joke: RawJoke) => {
     setSelectedJokes((prev) => {
@@ -147,7 +147,7 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
         className="mx-4 mb-3"
         disabled={isInSet}
       >
-        <View className={`p-3 rounded-lg border ${isSelected ? 'bg-primary/10 border-primary' : isInSet ? 'bg-default/50 border-default opacity-50' : 'bg-surface border-default'}`}>
+        <View className={`p-3 rounded-lg border ${isSelected ? 'bg-accent/10 border-accent' : isInSet ? 'bg-default/50 border-default opacity-50' : 'bg-surface border-default'}`}>
           <View className="flex-row items-center justify-between">
             <View className="flex-1 mr-3">
               <Text className="text-foreground text-base font-medium" numberOfLines={1}>
@@ -171,7 +171,7 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
               <StyledIonicons
                 name={isSelected ? 'checkmark-circle' : 'ellipse-outline'}
                 size={24}
-                className={isSelected ? 'text-primary' : 'text-muted'}
+                className={isSelected ? 'text-accent' : 'text-muted'}
               />
             )}
           </View>
@@ -205,7 +205,7 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
               </Pressable>
             ) : selectedCount > 0 ? (
               <Pressable onPress={handleConfirm}>
-                <Text className="text-primary font-medium">Add ({selectedCount})</Text>
+                <Text className="text-accent font-medium">Add ({selectedCount})</Text>
               </Pressable>
             ) : null}
           </View>

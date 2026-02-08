@@ -8,9 +8,9 @@ import { logVerbose, uiLogger } from '@/lib/loggers';
 import { Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import { Input, TextField } from 'heroui-native';
+import { Button, Input } from 'heroui-native';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { withUniwind } from 'uniwind';
 
 const StyledIonicons = withUniwind(Ionicons);
@@ -133,35 +133,27 @@ export default function JokesScreen() {
           }
         />
 
-        <View className="absolute bottom-0 left-0 right-0 bg-background px-4 py-3 pb-6">
-          <View className="flex-row items-end gap-2">
-            <TextField className="flex-1">
-              <Input
-                placeholder="Add a new joke..."
-                placeholderTextColor="var(--muted)"
-                value={newJokeText}
-                onChangeText={setNewJokeText}
-                className="text-foreground min-h-[44px] max-h-[100px] py-2.5 pl-8"
-                multiline
-                maxLength={500}
-                onSubmitEditing={handleCreateJoke}
-              />
-              <View className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-                <Pressable onPress={() => setIsQuickCapture(!isQuickCapture)}>
-                  <StyledIonicons
-                    name={isQuickCapture ? 'flash' : 'flash-outline'}
-                    size={16}
-                    className={isQuickCapture ? 'text-warning/80' : 'text-muted/40'}
-                  />
-                </Pressable>
-              </View>
-            </TextField>
+        <View className="absolute bottom-0 left-0 right-0 bg-background px-4 py-3">
+          <View className="flex-row items-center relative">
+            <Button isIconOnly variant='ghost' className='absolute z-20' onPress={() => setIsQuickCapture(!isQuickCapture)}>
+              <StyledIonicons name={isQuickCapture ? 'flash' : 'flash-outline'} size={18} className={isQuickCapture ? 'text-warning/80' : 'text-muted/40'} />
+            </Button>
+            <Input
+              placeholder="Add a new joke..."
+              placeholderTextColor="var(--muted)"
+              value={newJokeText}
+              onChangeText={setNewJokeText}
+              className='flex-1 pl-10'
+              multiline
+              maxLength={500}
+              onSubmitEditing={handleCreateJoke}
+            />
             <AudioRecorderButton />
-            <Pressable
+            <Button
+              isIconOnly
+              variant='ghost'
               onPress={handleCreateJoke}
-              disabled={!newJokeText.trim() || isCreating}
-              className={`p-2.5 mb-0.5 rounded-lg ${newJokeText.trim() && !isCreating ? 'bg-primary' : 'opacity-40'
-                }`}
+              isDisabled={!newJokeText.trim() || isCreating}
             >
               {isCreating ? (
                 <StyledIonicons name="refresh-outline" size={18} className="text-accent animate-spin" />
@@ -172,10 +164,10 @@ export default function JokesScreen() {
                   className={newJokeText.trim() ? 'text-accent' : 'text-muted'}
                 />
               )}
-            </Pressable>
+            </Button>
           </View>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </KeyboardAvoidingView >
   );
 }

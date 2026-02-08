@@ -22,14 +22,14 @@ const RecordingListItem = ({ recording, isPlaying, isLoading, onPlay }: Recordin
                 onPress={onPlay}
                 className="flex-row items-center gap-3 flex-1"
             >
-                <View className="w-10 h-10 rounded-full bg-primary/20 items-center justify-center">
+                <View className="w-10 h-10 rounded-full bg-accent/20 items-center justify-center">
                     {isLoading ? (
                         <ActivityIndicator size="small" color="#5d3fd3" />
                     ) : (
                         <StyledIonicons
                             name={isPlaying ? 'pause' : 'play'}
                             size={20}
-                            className={isPlaying ? 'text-primary' : 'text-muted'}
+                            className={isPlaying ? 'text-accent' : 'text-muted'}
                         />
                     )}
                 </View>

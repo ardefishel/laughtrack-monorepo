@@ -1,8 +1,8 @@
+import { SortableListItem } from '@/components/ui/SortableListItem';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { withUniwind } from 'uniwind';
-import { SortableListItem } from '@/components/ui/SortableListItem';
 
 const StyledIonicons = withUniwind(Ionicons);
 
@@ -30,7 +30,7 @@ export function SortableNoteItem({ note, isActive, onPress, onLongPress }: Sorta
         <StyledIonicons
           name="document-text"
           size={18}
-          className={isActive ? 'text-primary' : 'text-secondary'}
+          className={isActive ? 'text-accent' : 'text-secondary'}
           style={{ marginRight: 12, marginTop: 2 }}
         />
         <View className="flex-1">

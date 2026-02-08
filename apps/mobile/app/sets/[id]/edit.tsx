@@ -68,9 +68,9 @@ export default function EditSetScreen() {
           className="px-3 py-1.5"
         >
           {isSaving ? (
-            <ActivityIndicator size="small" className="text-primary" />
+            <ActivityIndicator size="small" className="text-accent" />
           ) : (
-            <Text className="text-primary text-base font-medium">Save</Text>
+            <Text className="text-accent text-base font-medium">Save</Text>
           )}
         </Pressable>
       ),
@@ -80,7 +80,7 @@ export default function EditSetScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 bg-background items-center justify-center">
-        <ActivityIndicator size="large" className="text-primary" />
+        <ActivityIndicator size="large" className="text-accent" />
       </View>
     );
   }
