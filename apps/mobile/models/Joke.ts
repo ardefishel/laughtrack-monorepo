@@ -1,8 +1,9 @@
 import { Model, Query } from '@nozbe/watermelondb';
 import { field, date, writer, children } from '@nozbe/watermelondb/decorators';
 import { AudioRecording } from './AudioRecording';
+import { JokeStatus } from '@/lib/types';
 
-export type JokeStatus = 'draft' | 'published' | 'archived';
+export { JokeStatus };
 
 export const JOKES_TABLE = 'jokes';
 

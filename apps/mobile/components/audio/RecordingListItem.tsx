@@ -13,9 +13,10 @@ interface RecordingListItemProp {
     isPlaying: boolean;
     isLoading?: boolean;
     onPlay: () => void;
+    onDelete?: (recording: AudioRecording) => void;
 }
 
-const RecordingListItem = ({ recording, isPlaying, isLoading, onPlay }: RecordingListItemProp) => {
+const RecordingListItem = ({ recording, isPlaying, isLoading, onPlay, onDelete }: RecordingListItemProp) => {
     logVerbose(uiLogger, `[RecordingListItem] ${recording.id}: isPlaying=${isPlaying}, isLoading=${isLoading}`);
     return (
         <View collapsable={false} className="flex-row items-center justify-between py-3 border-b border-default">
@@ -45,10 +46,13 @@ const RecordingListItem = ({ recording, isPlaying, isLoading, onPlay }: Recordin
             </Pressable>
 
             <Pressable
-                onPress={() => { }}
+                onPress={() => onDelete?.(recording)}
+                disabled={!onDelete}
                 hitSlop={8}
                 className="p-2"
+                style={!onDelete ? { opacity: 0.3 } : undefined}
                 accessibilityLabel="Delete recording"
+                accessibilityState={{ disabled: !onDelete }}
             >
                 <StyledIonicons name="trash-outline" size={20} className="text-danger" />
             </Pressable>

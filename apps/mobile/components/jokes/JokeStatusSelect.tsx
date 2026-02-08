@@ -2,6 +2,7 @@ import { Select } from 'heroui-native';
 import { Pressable, View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { withUniwind } from 'uniwind';
+import { getJokeStatusDotClass } from '@/lib/status';
 import { JokeStatus } from '@/lib/types';
 
 const StyledIonicons = withUniwind(Ionicons);
@@ -33,8 +34,7 @@ export function JokeStatusSelect({ status, onStatusChange }: JokeStatusSelectPro
     >
       <Select.Trigger asChild>
         <Pressable className="flex-row items-center gap-1 px-3 py-1.5 rounded-full bg-surface border border-default active:opacity-70">
-          <View className={`w-2 h-2 rounded-full ${status === 'published' ? 'bg-success' : status === 'draft' ? 'bg-warning' : 'bg-muted'
-            }`} />
+          <View className={`w-2 h-2 rounded-full ${getJokeStatusDotClass(status)}`} />
           <Text className="text-foreground text-sm font-medium capitalize ml-1">
             {status}
           </Text>
@@ -48,8 +48,7 @@ export function JokeStatusSelect({ status, onStatusChange }: JokeStatusSelectPro
             <Select.Item key={option.value} value={option.value} label={option.label}>
               {({ value }) => (
                 <>
-                  <View className={`w-2 h-2 rounded-full ${value === 'published' ? 'bg-success' : value === 'draft' ? 'bg-warning' : 'bg-muted'
-                    }`} />
+                  <View className={`w-2 h-2 rounded-full ${getJokeStatusDotClass(value as JokeStatus)}`} />
                   <Text className="text-foreground text-sm font-medium capitalize ">
                     {option.label}
                   </Text>

@@ -1,12 +1,12 @@
-import { Stack } from 'expo-router';
-import { HeroUINativeProvider } from 'heroui-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useCSSVariable, useResolveClassNames } from 'uniwind';
 import { AudioProvider } from '@/context/AudioContext';
 import { DatabaseProvider } from '@/context/DatabaseContext';
 import { SetEditingProvider } from '@/context/SetEditingContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import '@/global.css';
+import { Stack } from 'expo-router';
+import { HeroUINativeProvider } from 'heroui-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useCSSVariable, useResolveClassNames } from 'uniwind';
 
 function ThemedStack() {
   const [foregroundColor] = useCSSVariable(['--foreground']);
@@ -53,7 +53,7 @@ function ThemedStack() {
         options={{
           headerShown: false,
           presentation: 'formSheet',
-          sheetAllowedDetents: [0.4, 0.8],
+          sheetAllowedDetents: [0.5, 0.8],
           sheetInitialDetentIndex: 0,
         }}
       />

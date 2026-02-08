@@ -4,15 +4,16 @@ import { useMemo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { withUniwind } from 'uniwind';
 
+import { getJokeSetStatusDotClass } from '@/lib/status';
 import type { JokeSetStatus } from '@/lib/types';
 
 const StyledIonicons = withUniwind(Ionicons);
 
 const STATUS_OPTIONS = [
-  { value: 'draft', label: 'Draft', color: 'bg-warning' },
-  { value: 'performed', label: 'Performed', color: 'bg-success' },
-  { value: 'bombed', label: 'Bombed', color: 'bg-danger' },
-  { value: 'killed', label: 'Killed', color: 'bg-muted' }
+  { value: 'draft', label: 'Draft' },
+  { value: 'performed', label: 'Performed' },
+  { value: 'bombed', label: 'Bombed' },
+  { value: 'killed', label: 'Killed' }
 ];
 
 interface SetDetailsFormProps {
@@ -99,7 +100,7 @@ export function SetDetailsForm({
           <Select.Trigger asChild>
             <Pressable className="flex-row items-center justify-between px-3 py-3 min-w-[140px] border-b border-default">
               <View className="flex-row items-center gap-2">
-                <View className={`w-2 h-2 rounded-full ${selectedStatus?.color || 'bg-warning'}`} />
+                <View className={`w-2 h-2 rounded-full ${getJokeSetStatusDotClass(status)}`} />
                 <Text className="text-foreground text-base font-medium capitalize">
                   {status}
                 </Text>
@@ -114,7 +115,7 @@ export function SetDetailsForm({
                 <Select.Item key={option.value} value={option.value} label={option.label}>
                   {() => (
                     <View className="flex-row items-center gap-2 py-2">
-                      <View className={`w-2 h-2 rounded-full ${option.color}`} />
+                      <View className={`w-2 h-2 rounded-full ${getJokeSetStatusDotClass(option.value as JokeSetStatus)}`} />
                       <Text className="text-foreground text-base font-medium capitalize">
                         {option.label}
                       </Text>

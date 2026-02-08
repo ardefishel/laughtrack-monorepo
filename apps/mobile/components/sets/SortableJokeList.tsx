@@ -2,7 +2,7 @@ import React, { useMemo, useState, useCallback, useRef } from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import { RenderItemParams } from 'react-native-draggable-flatlist';
 import { Joke } from '@/lib/types';
-import { SetJokeItem, MOCK_SET_ITEMS } from '@/lib/mockData';
+import { SetJokeItem } from '@/lib/mockData';
 import { SortableList } from '@/components/ui/SortableList';
 import { AddItemSeparator } from '@/components/ui/AddItemSeparator';
 import { AddItemButton } from '@/components/ui/AddItemButton';
@@ -11,7 +11,7 @@ import { SortableJokeItem } from './SortableJokeItem';
 import { SortableNoteItem } from './SortableNoteItem';
 
 interface SortableJokeListProps {
-  items?: SetJokeItem[];
+  items: SetJokeItem[];
   onJokePress?: (joke: Joke) => void;
   onAddJoke?: (afterId?: string | null) => void;
   onAddNote?: (afterId?: string | null) => void;
@@ -23,7 +23,7 @@ interface SortableJokeListProps {
 }
 
 export function SortableJokeList({
-  items: externalItems,
+  items,
   onJokePress,
   onAddJoke,
   onAddNote,
@@ -33,13 +33,6 @@ export function SortableJokeList({
   onSeparatorPress,
   onDismiss,
 }: SortableJokeListProps) {
-  const [internalItems, setInternalItems] = useState(MOCK_SET_ITEMS);
-  const items = externalItems ?? internalItems;
-  const setItems = useCallback((data: SetJokeItem[]) => {
-    if (!externalItems) {
-      setInternalItems(data);
-    }
-  }, [externalItems]);
   const [isDragging, setIsDragging] = useState(false);
   const isDraggingRef = useRef(false);
   const { height: windowHeight } = useWindowDimensions();
@@ -53,9 +46,8 @@ export function SortableJokeList({
   const handleDragEnd = useCallback(({ data }: { data: SetJokeItem[] }) => {
     isDraggingRef.current = false;
     setIsDragging(false);
-    setItems(data);
     externalOnDragEnd?.({ data });
-  }, [externalOnDragEnd, setItems]);
+  }, [externalOnDragEnd]);
 
   const handleItemPress = useCallback(() => {
     if (expandedSeparatorId) {
