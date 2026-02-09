@@ -1,0 +1,16 @@
+import { config } from 'dotenv'
+import { defineConfig } from 'drizzle-kit'
+
+// Load environment variables from .env file
+config()
+
+export default defineConfig({
+  dialect: 'postgresql',
+  schema: './src/db/schema.ts',
+  out: './src/db/migrations',
+  dbCredentials: {
+    url: process.env.DB_URL!,
+  },
+  verbose: true,
+  strict: true,
+})

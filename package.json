@@ -13,7 +13,15 @@
     "mobile:android": "bun run --cwd apps/mobile android",
     "mobile:ios": "bun run --cwd apps/mobile ios",
     "mobile:lint": "bun run --cwd apps/mobile lint",
-    "mobile:clean": "rm -rf node_modules/ bun.lock ios/ apps/mobile/node_modules/ apps/mobile/.expo/ apps/mobile/ios/ apps/mobile/android/ apps/mobile/dist"
+    "mobile:clean": "rm -rf node_modules/ bun.lock ios/ apps/mobile/node_modules/ apps/mobile/.expo/ apps/mobile/ios/ apps/mobile/android/ apps/mobile/dist",
+    "be:dev": "bun run --cwd apps/backend dev",
+    "be:db:generate": "bun run --cwd apps/backend db:generate",
+    "be:db:migrate": "bun run --cwd apps/backend db:migrate",
+    "be:db:push": "bun run --cwd apps/backend db:push",
+    "be:db:studio": "bun run --cwd apps/backend db:studio",
+    "be:docker:up": "bun run --cwd apps/backend docker:up",
+    "be:docker:down": "bun run --cwd apps/backend docker:down",
+    "be:docker:logs": "bun run --cwd apps/backend docker:logs"
   },
   "devDependencies": {
     "babel-jest": "^30.2.0",
