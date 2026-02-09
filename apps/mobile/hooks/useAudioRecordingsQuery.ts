@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Q } from '@nozbe/watermelondb';
 import { useDatabase } from '@/context/DatabaseContext';
 import { AudioRecording, AUDIO_RECORDINGS_TABLE } from '@/models/AudioRecording';
-import { createNamespacedLogger } from '@/lib/logger';
+import { createNamespacedLogger } from '@/lib/loggers';
 
 const hooksLogger = createNamespacedLogger('hooks');
 

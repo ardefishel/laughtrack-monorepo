@@ -5,7 +5,7 @@ import { useCreateJokeSet } from '@/hooks/sets';
 import { JokeSetItem, JOKE_SET_ITEMS_TABLE } from '@/models/JokeSetItem';
 import { useSetItemsHandlers } from '@/hooks/useSetItemsHandlers';
 import { uiLogger } from '@/lib/loggers';
-import { SetJokeItem } from '@/lib/mockData';
+import { SetJokeItem } from '@/lib/mocks';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRouter } from 'expo-router';
 import { Button } from 'heroui-native';

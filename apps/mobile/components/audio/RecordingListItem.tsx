@@ -4,6 +4,7 @@ import { AudioRecording } from '@/models/AudioRecording';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { useThemeColor } from 'heroui-native';
 import { withUniwind } from 'uniwind';
 
 const StyledIonicons = withUniwind(Ionicons);
@@ -17,6 +18,7 @@ interface RecordingListItemProp {
 }
 
 const RecordingListItem = ({ recording, isPlaying, isLoading, onPlay, onDelete }: RecordingListItemProp) => {
+    const accentColor = useThemeColor('accent');
     logVerbose(uiLogger, `[RecordingListItem] ${recording.id}: isPlaying=${isPlaying}, isLoading=${isLoading}`);
     return (
         <View collapsable={false} className="flex-row items-center justify-between py-3 border-b border-default">
@@ -26,7 +28,7 @@ const RecordingListItem = ({ recording, isPlaying, isLoading, onPlay, onDelete }
             >
                 <View className="w-10 h-10 rounded-full bg-accent/20 items-center justify-center">
                     {isLoading ? (
-                        <ActivityIndicator size="small" color="#5d3fd3" />
+                        <ActivityIndicator size="small" color={accentColor} />
                     ) : (
                         <StyledIonicons
                             name={isPlaying ? 'pause' : 'play'}

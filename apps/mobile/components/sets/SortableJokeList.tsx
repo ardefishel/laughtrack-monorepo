@@ -2,7 +2,7 @@ import React, { useMemo, useState, useCallback, useRef } from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import { RenderItemParams } from 'react-native-draggable-flatlist';
 import { Joke } from '@/lib/types';
-import { SetJokeItem } from '@/lib/mockData';
+import { SetJokeItem } from '@/lib/mocks';
 import { SortableList } from '@/components/ui/SortableList';
 import { AddItemSeparator } from '@/components/ui/AddItemSeparator';
 import { AddItemButton } from '@/components/ui/AddItemButton';

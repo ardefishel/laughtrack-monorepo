@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { ScrollView, View } from 'react-native';
 import { CollectionCard } from '@/components/learn/CollectionCard';
-import { learnCollections } from '@/lib/mockData/learn';
+import { learnCollections } from '@/lib/mocks/learn';
 import type { LearnCollection } from '@/lib/types/learn';
 import { useRouter } from 'expo-router';
 

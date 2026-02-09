@@ -2,7 +2,7 @@ import React, { memo, useEffect } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { withUniwind } from 'uniwind';
-import { createNamespacedLogger } from '@/lib/logger';
+import { createNamespacedLogger } from '@/lib/loggers';
 
 const uiLogger = createNamespacedLogger('ui');
 

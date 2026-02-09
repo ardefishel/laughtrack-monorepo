@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { JokeSetStatus } from '@/lib/types';
-import { SetJokeItem } from '@/lib/mockData';
+import { SetJokeItem } from '@/lib/mocks';
 
 type SetEditingMode = 'edit' | 'create';
 

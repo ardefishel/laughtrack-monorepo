@@ -1,4 +1,4 @@
-import { getArticleById, getCollectionById } from '@/lib/mockData/learn';
+import { getArticleById, getCollectionById } from '@/lib/mocks/learn';
 import type { ArticleSection } from '@/lib/types/learn';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useNavigation } from 'expo-router';

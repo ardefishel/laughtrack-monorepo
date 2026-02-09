@@ -1,21 +1,28 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Input, TextField } from 'heroui-native';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, TextInput, View } from 'react-native';
+import { Pressable, TextInput, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { withUniwind } from 'uniwind';
-import { Ionicons } from '@expo/vector-icons';
 
 const StyledIonicons = withUniwind(Ionicons);
 
 interface AnimatedSearchBarProps {
   searchQuery: string;
   onChangeText: (text: string) => void;
+  headerTitleWidth?: number;
 }
+
+const HEADER_HORIZONTAL_PADDING = 32;
+const HEADER_GAP = 12;
 
 function AnimatedSearchBarComponent({
   searchQuery,
   onChangeText,
+  headerTitleWidth = 0,
 }: AnimatedSearchBarProps) {
+  const { width: windowWidth } = useWindowDimensions();
+  const expandedWidth = Math.min(windowWidth - headerTitleWidth - HEADER_HORIZONTAL_PADDING - HEADER_GAP, 400);
   const [isExpanded, setIsExpanded] = useState(false);
   const searchWidth = useSharedValue(44);
   const searchMarginTop = useSharedValue(4);
@@ -24,7 +31,7 @@ function AnimatedSearchBarComponent({
   const toggleSearch = () => {
     const newExpanded = !isExpanded;
     setIsExpanded(newExpanded);
-    searchWidth.value = withTiming(newExpanded ? 280 : 44, { duration: 250 });
+    searchWidth.value = withTiming(newExpanded ? expandedWidth : 44, { duration: 250 });
     searchMarginTop.value = withTiming(newExpanded ? 8 : 4, { duration: 250 });
 
     if (newExpanded) {
@@ -35,10 +42,10 @@ function AnimatedSearchBarComponent({
   useEffect(() => {
     if (searchQuery.length > 0 && !isExpanded) {
       setIsExpanded(true);
-      searchWidth.value = withTiming(280, { duration: 250 });
+      searchWidth.value = withTiming(expandedWidth, { duration: 250 });
       searchMarginTop.value = withTiming(8, { duration: 250 });
     }
-  }, [searchQuery.length, isExpanded, searchMarginTop, searchWidth]);
+  }, [searchQuery.length, isExpanded, searchMarginTop, searchWidth, expandedWidth]);
 
   const handleBlur = () => {
     if (searchQuery.length === 0 && isExpanded) {

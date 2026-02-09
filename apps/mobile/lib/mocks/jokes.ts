@@ -1,7 +1,7 @@
-import { Joke } from './types';
-import { filterJokesBySearch } from './jokeUtils';
+import { Joke } from '../types';
+import { filterJokesBySearch } from '../jokeUtils';
 
-export { filterJokesBySearch } from './jokeUtils';
+export { filterJokesBySearch } from '../jokeUtils';
 
 export const mockJokes: Joke[] = [
   {
@@ -85,5 +85,3 @@ export const mockJokes: Joke[] = [
     tags: ['food', 'puns', 'dad-jokes'],
   },
 ];
-
-// filterJokesBySearch is now exported from './jokeUtils'

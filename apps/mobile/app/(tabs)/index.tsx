@@ -1,5 +1,6 @@
 import { AudioRecorderButton } from '@/components/audio/AudioRecorderButton';
 import { AnimatedSearchBar } from '@/components/jokes/AnimatedSearchBar';
+import { useHeaderTitleWidth } from './_layout';
 import { JokeCard } from '@/components/jokes/JokeCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
@@ -18,6 +19,7 @@ const StyledIonicons = withUniwind(Ionicons);
 export default function JokesScreen() {
   const router = useRouter();
   const navigation = useNavigation();
+  const headerTitleWidth = useHeaderTitleWidth();
   const { scrollToTop } = useLocalSearchParams<{ scrollToTop?: string }>();
   const flashListRef = useRef<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -65,10 +67,11 @@ export default function JokesScreen() {
         <AnimatedSearchBar
           searchQuery={searchQuery}
           onChangeText={handleSearch}
+          headerTitleWidth={headerTitleWidth}
         />
       ),
     });
-  }, [navigation, searchQuery, handleSearch]);
+  }, [navigation, searchQuery, handleSearch, headerTitleWidth]);
 
   const handleCreateJoke = async () => {
     if (!newJokeText.trim() || isCreating) return;

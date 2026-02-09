@@ -1,5 +1,5 @@
 import { formatDuration } from '@/lib/audioStorage';
-import { createNamespacedLogger } from '@/lib/logger';
+import { createNamespacedLogger } from '@/lib/loggers';
 import { Ionicons } from '@expo/vector-icons';
 import { Button, Dialog, Input, TextField } from 'heroui-native';
 import React, { useEffect, useState } from 'react';

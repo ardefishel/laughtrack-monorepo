@@ -1,13 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { createContext, useCallback, useContext, useState } from "react";
 import { Text, View } from "react-native";
+import type { LayoutChangeEvent } from "react-native";
 import { useCSSVariable, useResolveClassNames, withUniwind } from "uniwind";
 
 const StyledView = withUniwind(View);
 
-function HeaderTitle() {
+const HeaderTitleWidthContext = createContext<number>(0);
+export function useHeaderTitleWidth() {
+  return useContext(HeaderTitleWidthContext);
+}
+
+function HeaderTitle({ onLayout }: { onLayout?: (e: LayoutChangeEvent) => void }) {
   return (
-    <StyledView className="flex-row items-center h-full">
+    <StyledView className="flex-row items-center h-full" onLayout={onLayout}>
       <Text className="text-accent text-xl italic font-black">Laugh</Text>
       <Text className="text-foreground text-xl ">Track</Text>
     </StyledView>
@@ -17,14 +24,24 @@ function HeaderTitle() {
 export default function TabsLayout() {
   const headerStyle = useResolveClassNames('bg-background h-30');
   const tabBarStyle = useResolveClassNames('bg-background border-t border-default pt-2');
+  const [titleWidth, setTitleWidth] = useState(0);
 
   const [accentColor, foregroundColor, mutedColor] = useCSSVariable(['--accent', '--foreground', '--muted']);
 
+  const handleTitleLayout = useCallback((e: LayoutChangeEvent) => {
+    setTitleWidth(e.nativeEvent.layout.width);
+  }, []);
+
+  const renderHeaderTitle = useCallback(() => (
+    <HeaderTitle onLayout={handleTitleLayout} />
+  ), [handleTitleLayout]);
+
   return (
+    <HeaderTitleWidthContext.Provider value={titleWidth}>
     <Tabs
       screenOptions={{
         headerShown: true,
-        headerTitle: HeaderTitle,
+        headerTitle: renderHeaderTitle,
         headerStyle,
         headerTintColor: foregroundColor as string,
         headerTitleAlign: 'left',
@@ -70,5 +87,6 @@ export default function TabsLayout() {
         }}
       />
     </Tabs>
+    </HeaderTitleWidthContext.Provider>
   );
 }

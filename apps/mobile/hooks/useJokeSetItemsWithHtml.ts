@@ -4,7 +4,7 @@ import { useDatabase } from '@/context/DatabaseContext';
 import { useJokeSetItems } from './sets';
 import { Joke, JOKES_TABLE } from '@/models/Joke';
 import { stripHtmlWrapper, combineHtmlContents } from '@/lib/htmlParser';
-import { createNamespacedLogger } from '@/lib/logger';
+import { createNamespacedLogger } from '@/lib/loggers';
 
 const hooksLogger = createNamespacedLogger('hooks');
 

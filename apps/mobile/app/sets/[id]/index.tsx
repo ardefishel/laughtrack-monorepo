@@ -2,7 +2,7 @@ import { SortableJokeList } from '@/components/sets';
 import { useDatabase } from '@/context/DatabaseContext';
 import { RawJokeSetItem, RawJoke } from '@/lib/types';
 import { useJokeSet, useJokeSetItems, useAddJokeSetItem, useRemoveJokeSetItem } from '@/hooks/sets';
-import { SetJokeItem } from '@/lib/mockData';
+import { SetJokeItem } from '@/lib/mocks';
 import { useSetEditing } from '@/context/SetEditingContext';
 import { useSetItemsHandlers } from '@/hooks/useSetItemsHandlers';
 import { extractTitleAndDescription } from '@/lib/htmlParser';

@@ -1,5 +1,5 @@
 import { ArticleCard } from '@/components/learn/ArticleCard';
-import { getArticlesByCollection, getCollectionById } from '@/lib/mockData/learn';
+import { getArticlesByCollection, getCollectionById } from '@/lib/mocks/learn';
 import type { LearnArticle } from '@/lib/types/learn';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';

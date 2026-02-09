@@ -1,7 +1,7 @@
 import RecordingListItem from '@/components/audio/RecordingListItem';
 import { useRecordingPlayer } from '@/hooks/useAudioPlayer';
 import { useAudioRecordingsQuery } from '@/hooks/useAudioRecordingsQuery';
-import { uiLogger } from '@/lib/logger';
+import { uiLogger } from '@/lib/loggers';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';

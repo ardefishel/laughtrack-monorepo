@@ -5,7 +5,7 @@ import {
   RecordingPresets,
   type RecordingOptions,
 } from 'expo-audio';
-import { createNamespacedLogger } from '@/lib/logger';
+import { createNamespacedLogger } from '@/lib/loggers';
 
 const audioLogger = createNamespacedLogger('audio');
 

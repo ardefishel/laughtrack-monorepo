@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { Card } from 'heroui-native';
+import { Card, useThemeColor } from 'heroui-native';
 import { Ionicons } from '@expo/vector-icons';
 import { withUniwind } from 'uniwind';
 import type { LearnArticle, ArticleDifficulty } from '@/lib/types/learn';
@@ -12,18 +12,27 @@ interface ArticleCardProps {
   onPress: (article: LearnArticle) => void;
 }
 
-const difficultyConfig: Record<ArticleDifficulty, { label: string; color: string; icon: string }> = {
-  beginner: { label: 'Beginner', color: '#10B981', icon: 'leaf' },
-  intermediate: { label: 'Intermediate', color: '#F59E0B', icon: 'flame' },
-  advanced: { label: 'Advanced', color: '#8B5CF6', icon: 'trophy' },
+const difficultyConfig: Record<
+  ArticleDifficulty,
+  { label: string; colorToken: 'success' | 'warning' | 'accent'; icon: string }
+> = {
+  beginner: { label: 'Beginner', colorToken: 'success', icon: 'leaf' },
+  intermediate: { label: 'Intermediate', colorToken: 'warning', icon: 'flame' },
+  advanced: { label: 'Advanced', colorToken: 'accent', icon: 'trophy' }
 };
 
 function ArticleCardComponent({ article, onPress }: ArticleCardProps) {
+  const successColor = useThemeColor('success');
+  const warningColor = useThemeColor('warning');
+  const accentColor = useThemeColor('accent');
+  const colorMap = { success: successColor, warning: warningColor, accent: accentColor } as const;
+
   const handlePress = () => {
     onPress(article);
   };
 
   const difficulty = difficultyConfig[article.difficulty];
+  const difficultyColor = colorMap[difficulty.colorToken];
   const premiumSectionsCount = article.sections.filter((s) => s.isPremium).length;
 
   return (
@@ -34,10 +43,10 @@ function ArticleCardComponent({ article, onPress }: ArticleCardProps) {
             <View className="flex-row items-center gap-2">
               <View
                 className="px-2 py-0.5 rounded-full flex-row items-center gap-1"
-                style={{ backgroundColor: `${difficulty.color}20` }}
+                style={{ backgroundColor: `${difficultyColor}20` }}
               >
-                <StyledIonicons name={difficulty.icon as any} size={12} style={{ color: difficulty.color }} />
-                <Text className="text-xs font-medium" style={{ color: difficulty.color }}>
+                <StyledIonicons name={difficulty.icon as any} size={12} style={{ color: difficultyColor }} />
+                <Text className="text-xs font-medium" style={{ color: difficultyColor }}>
                   {difficulty.label}
                 </Text>
               </View>

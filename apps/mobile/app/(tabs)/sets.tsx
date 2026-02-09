@@ -1,4 +1,5 @@
 import { AnimatedSearchBar } from '@/components/jokes/AnimatedSearchBar';
+import { useHeaderTitleWidth } from './_layout';
 import { SetCard } from '@/components/sets';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
@@ -20,6 +21,7 @@ const StyledIonicons = withUniwind(Ionicons);
 export default function SetsScreen() {
   const router = useRouter();
   const navigation = useNavigation();
+  const headerTitleWidth = useHeaderTitleWidth();
   const [searchQuery, setSearchQuery] = useState('');
   const { jokeSets, isLoading, error, refetch } = useJokeSetsQuery(searchQuery);
   const { deleteJokeSet } = useDeleteJokeSet();
@@ -59,10 +61,11 @@ export default function SetsScreen() {
         <AnimatedSearchBar
           searchQuery={searchQuery}
           onChangeText={handleSearch}
+          headerTitleWidth={headerTitleWidth}
         />
       ),
     });
-  }, [navigation, searchQuery, handleSearch]);
+  }, [navigation, searchQuery, handleSearch, headerTitleWidth]);
 
   const handleSetPress = (jokeSet: RawJokeSet) => {
     router.push({ pathname: '/sets/[id]', params: { id: jokeSet.id } });

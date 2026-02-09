@@ -1,5 +1,5 @@
 import { Paths, File, Directory } from 'expo-file-system';
-import { createNamespacedLogger } from '@/lib/logger';
+import { createNamespacedLogger } from '@/lib/loggers';
 
 const audioLogger = createNamespacedLogger('audio');
 const AUDIO_DIR_NAME = 'audio';

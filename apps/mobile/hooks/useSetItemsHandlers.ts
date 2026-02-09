@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import { Joke } from '@/lib/types';
-import { SetJokeItem } from '@/lib/mockData';
+import { SetJokeItem } from '@/lib/mocks';
 import { useSetEditing } from '@/context/SetEditingContext';
 import { uiLogger } from '@/lib/loggers';
 
