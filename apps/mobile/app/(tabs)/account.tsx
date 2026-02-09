@@ -5,12 +5,13 @@ import { Button, Spinner } from 'heroui-native';
 
 import { ThemeSwitcher } from '../../components/theme/ThemeSwitcher';
 import { useAuth } from '@/context/AuthContext';
-import { database } from '@/db';
+import { useDatabase } from '@/context/DatabaseContext';
 import { performSync } from '@/lib/sync';
 
 export default function AccountScreen() {
   const router = useRouter();
   const { user, isAuthenticated, isPending, signOut } = useAuth();
+  const { database } = useDatabase();
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<string | null>(null);
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);

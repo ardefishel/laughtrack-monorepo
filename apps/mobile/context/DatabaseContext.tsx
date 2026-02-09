@@ -1,16 +1,29 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, useCallback, useState, ReactNode } from 'react';
 import { Database } from '@nozbe/watermelondb';
 import { database } from '@/db';
+import { dbLogger } from '@/lib/loggers';
 
 interface DatabaseContextType {
   database: Database;
+  resetDatabase: () => Promise<void>;
 }
 
 const DatabaseContext = createContext<DatabaseContextType | undefined>(undefined);
 
 export function DatabaseProvider({ children }: { children: ReactNode }) {
+  const [dbKey, setDbKey] = useState(0);
+
+  const resetDatabase = useCallback(async () => {
+    dbLogger.info('[DatabaseContext] Resetting database...');
+    await database.write(async () => {
+      await database.unsafeResetDatabase();
+    });
+    setDbKey((k) => k + 1);
+    dbLogger.info('[DatabaseContext] Database reset complete, remounting consumers');
+  }, []);
+
   return (
-    <DatabaseContext.Provider value={{ database }}>
+    <DatabaseContext.Provider key={dbKey} value={{ database, resetDatabase }}>
       {children}
     </DatabaseContext.Provider>
   );

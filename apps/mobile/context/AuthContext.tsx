@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useCallback, ReactNode } from 'react';
 
 import { authClient } from '@/lib/auth-client';
-import { database } from '@/db';
+import { useDatabase } from '@/context/DatabaseContext';
 import { uiLogger } from '@/lib/loggers';
 
 interface AuthContextType {
@@ -16,6 +16,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { resetDatabase } = useDatabase();
   const session = authClient.useSession();
 
   const user = (session.data?.user as AuthContextType['user']) ?? null;
@@ -53,15 +54,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     try {
       await authClient.signOut();
-      uiLogger.info('Resetting local database after sign out...');
-      await database.write(async () => {
-        await database.unsafeResetDatabase();
-      });
-      uiLogger.info('Local database reset complete');
+      await resetDatabase();
     } catch (error) {
       uiLogger.error('Sign out error:', error);
     }
-  }, []);
+  }, [resetDatabase]);
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated, isPending, signIn, signUp, signOut }}>
