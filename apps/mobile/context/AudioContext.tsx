@@ -5,6 +5,7 @@ import {
   RecordingPresets,
   type RecordingOptions,
 } from 'expo-audio';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { createNamespacedLogger } from '@/lib/loggers';
 
 const audioLogger = createNamespacedLogger('audio');
@@ -58,15 +59,17 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AudioContext.Provider
-      value={{
-        isPermissionGranted,
-        requestPermission,
-        recordingOptions: RECORDING_OPTIONS,
-      }}
-    >
-      {children}
-    </AudioContext.Provider>
+    <ErrorBoundary sectionName="Audio">
+      <AudioContext.Provider
+        value={{
+          isPermissionGranted,
+          requestPermission,
+          recordingOptions: RECORDING_OPTIONS,
+        }}
+      >
+        {children}
+      </AudioContext.Provider>
+    </ErrorBoundary>
   );
 }
 

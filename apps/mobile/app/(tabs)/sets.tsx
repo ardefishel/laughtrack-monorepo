@@ -1,6 +1,7 @@
 import { AnimatedSearchBar } from '@/components/jokes/AnimatedSearchBar';
 import { useHeaderTitleWidth } from './_layout';
 import { SetCard } from '@/components/sets';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { SwipeableRow } from '@/components/ui/SwipeableRow';
@@ -138,6 +139,7 @@ export default function SetsScreen() {
   }
 
   return (
+    <ErrorBoundary sectionName="Sets">
     <View className="flex-1 bg-background">
       <FlashList
         ref={listRef}
@@ -175,5 +177,6 @@ export default function SetsScreen() {
         <StyledIonicons name="add" size={28} />
       </Button>
     </View>
+    </ErrorBoundary>
   );
 }

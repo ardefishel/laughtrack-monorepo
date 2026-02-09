@@ -2,6 +2,7 @@ import { AudioProvider } from '@/context/AudioContext';
 import { DatabaseProvider } from '@/context/DatabaseContext';
 import { SetEditingProvider } from '@/context/SetEditingContext';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import '@/global.css';
 import { Stack } from 'expo-router';
 import { HeroUINativeProvider } from 'heroui-native';
@@ -64,17 +65,19 @@ function ThemedStack() {
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <HeroUINativeProvider>
-        <DatabaseProvider>
-          <ThemeProvider>
-            <AudioProvider>
-              <SetEditingProvider mode="edit">
-                <ThemedStack />
-              </SetEditingProvider>
-            </AudioProvider>
-          </ThemeProvider>
-        </DatabaseProvider>
-      </HeroUINativeProvider>
+      <ErrorBoundary sectionName="Root">
+        <HeroUINativeProvider>
+          <DatabaseProvider>
+            <ThemeProvider>
+              <AudioProvider>
+                <SetEditingProvider mode="edit">
+                  <ThemedStack />
+                </SetEditingProvider>
+              </AudioProvider>
+            </ThemeProvider>
+          </DatabaseProvider>
+        </HeroUINativeProvider>
+      </ErrorBoundary>
     </GestureHandlerRootView>
   );
 }

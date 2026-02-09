@@ -14,5 +14,9 @@
     "mobile:ios": "bun run --cwd apps/mobile ios",
     "mobile:lint": "bun run --cwd apps/mobile lint",
     "mobile:clean": "rm -rf node_modules/ bun.lock ios/ apps/mobile/node_modules/ apps/mobile/.expo/ apps/mobile/ios/ apps/mobile/android/ apps/mobile/dist"
+  },
+  "devDependencies": {
+    "babel-jest": "^30.2.0",
+    "ts-jest": "^29.4.6"
   }
 }

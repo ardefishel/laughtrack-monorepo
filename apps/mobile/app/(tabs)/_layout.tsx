@@ -1,3 +1,4 @@
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { createContext, useCallback, useContext, useState } from "react";
@@ -38,55 +39,57 @@ export default function TabsLayout() {
 
   return (
     <HeaderTitleWidthContext.Provider value={titleWidth}>
-    <Tabs
-      screenOptions={{
-        headerShown: true,
-        headerTitle: renderHeaderTitle,
-        headerStyle,
-        headerTintColor: foregroundColor as string,
-        headerTitleAlign: 'left',
-        tabBarStyle,
-        tabBarActiveTintColor: accentColor as string,
-        tabBarInactiveTintColor: mutedColor as string,
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Jokes",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="chatbubble-ellipses-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="sets"
-        options={{
-          title: "Sets",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="library-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="learn"
-        options={{
-          title: "Learn",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="school-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="account"
-        options={{
-          title: "Account",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+      <ErrorBoundary sectionName="Main Tabs">
+        <Tabs
+          screenOptions={{
+            headerShown: true,
+            headerTitle: renderHeaderTitle,
+            headerStyle,
+            headerTintColor: foregroundColor as string,
+            headerTitleAlign: 'left',
+            tabBarStyle,
+            tabBarActiveTintColor: accentColor as string,
+            tabBarInactiveTintColor: mutedColor as string,
+          }}
+        >
+          <Tabs.Screen
+            name="index"
+            options={{
+              title: "Jokes",
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="chatbubble-ellipses-outline" size={size} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="sets"
+            options={{
+              title: "Sets",
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="library-outline" size={size} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="learn"
+            options={{
+              title: "Learn",
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="school-outline" size={size} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="account"
+            options={{
+              title: "Account",
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="person-outline" size={size} color={color} />
+              ),
+            }}
+          />
+        </Tabs>
+      </ErrorBoundary>
     </HeaderTitleWidthContext.Provider>
   );
 }
