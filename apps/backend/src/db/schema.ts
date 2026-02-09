@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, boolean, bigint, integer } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
 // Users table
@@ -55,10 +55,67 @@ export const verification = pgTable('verification', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
 
+// Jokes table
+export const jokes = pgTable('jokes', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  contentHtml: text('content_html'),
+  contentText: text('content_text'),
+  status: text('status'),
+  createdAt: bigint('created_at', { mode: 'number' }),
+  updatedAt: bigint('updated_at', { mode: 'number' }),
+  draftUpdatedAt: bigint('draft_updated_at', { mode: 'number' }),
+  tags: text('tags'),
+  serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
+  lastModified: timestamp('last_modified').notNull().defaultNow(),
+  isDeleted: boolean('is_deleted').notNull().default(false),
+})
+
+// Joke sets table
+export const jokeSets = pgTable('joke_sets', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  title: text('title'),
+  description: text('description'),
+  duration: integer('duration'),
+  place: text('place'),
+  status: text('status'),
+  createdAt: bigint('created_at', { mode: 'number' }),
+  updatedAt: bigint('updated_at', { mode: 'number' }),
+  serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
+  lastModified: timestamp('last_modified').notNull().defaultNow(),
+  isDeleted: boolean('is_deleted').notNull().default(false),
+})
+
+// Joke set items table
+export const jokeSetItems = pgTable('joke_set_items', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  setId: text('set_id'),
+  itemType: text('item_type'),
+  jokeId: text('joke_id'),
+  content: text('content'),
+  position: integer('position'),
+  createdAt: bigint('created_at', { mode: 'number' }),
+  updatedAt: bigint('updated_at', { mode: 'number' }),
+  serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
+  lastModified: timestamp('last_modified').notNull().defaultNow(),
+  isDeleted: boolean('is_deleted').notNull().default(false),
+})
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   accounts: many(accounts),
+  jokes: many(jokes),
+  jokeSets: many(jokeSets),
+  jokeSetItems: many(jokeSetItems),
 }))
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -75,6 +132,32 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
   }),
 }))
 
+export const jokesRelations = relations(jokes, ({ one }) => ({
+  user: one(users, {
+    fields: [jokes.userId],
+    references: [users.id],
+  }),
+}))
+
+export const jokeSetsRelations = relations(jokeSets, ({ one, many }) => ({
+  user: one(users, {
+    fields: [jokeSets.userId],
+    references: [users.id],
+  }),
+  items: many(jokeSetItems),
+}))
+
+export const jokeSetItemsRelations = relations(jokeSetItems, ({ one }) => ({
+  user: one(users, {
+    fields: [jokeSetItems.userId],
+    references: [users.id],
+  }),
+  jokeSet: one(jokeSets, {
+    fields: [jokeSetItems.setId],
+    references: [jokeSets.id],
+  }),
+}))
+
 // Type exports
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
@@ -82,3 +165,9 @@ export type Session = typeof sessions.$inferSelect
 export type NewSession = typeof sessions.$inferInsert
 export type Account = typeof accounts.$inferSelect
 export type Verification = typeof verification.$inferSelect
+export type Joke = typeof jokes.$inferSelect
+export type NewJoke = typeof jokes.$inferInsert
+export type JokeSet = typeof jokeSets.$inferSelect
+export type NewJokeSet = typeof jokeSets.$inferInsert
+export type JokeSetItem = typeof jokeSetItems.$inferSelect
+export type NewJokeSetItem = typeof jokeSetItems.$inferInsert

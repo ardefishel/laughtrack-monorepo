@@ -1,16 +1,33 @@
-import { useRouter } from 'expo-router';
-import { Button } from 'heroui-native';
+import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Button, Spinner } from 'heroui-native';
 
 import { ThemeSwitcher } from '../../components/theme/ThemeSwitcher';
 import { useAuth } from '@/context/AuthContext';
+import { database } from '@/db';
+import { performSync } from '@/lib/sync';
 
 export default function AccountScreen() {
   const router = useRouter();
   const { user, isAuthenticated, isPending, signOut } = useAuth();
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<string | null>(null);
+  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
 
   const handleSignOut = async () => {
     await signOut();
+  };
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    setSyncStatus('Syncing...');
+    const result = await performSync(database);
+    setIsSyncing(false);
+    setSyncStatus(result.message);
+    if (result.success) {
+      setLastSyncTime(new Date());
+    }
   };
 
   return (
@@ -44,6 +61,34 @@ export default function AccountScreen() {
             </Text>
           )}
         </View>
+
+        {isAuthenticated && (
+          <View className="mb-4">
+            <Text className="text-sm font-medium text-muted uppercase tracking-wide mb-3">
+              Data Sync
+            </Text>
+            <View className="bg-surface rounded-lg p-4">
+              <View className="flex-row items-center gap-3">
+                <View className="flex-1">
+                  <Button onPress={handleSync} variant="outline" isDisabled={isSyncing}>
+                    <Button.Label>{isSyncing ? 'Syncing...' : 'Sync Now'}</Button.Label>
+                  </Button>
+                </View>
+                {isSyncing && <Spinner size="sm" color="default" />}
+              </View>
+              {syncStatus && (
+                <Text className={`text-sm mt-2 ${syncStatus.includes('fail') || syncStatus.includes('error') || syncStatus.includes('Error') ? 'text-danger' : 'text-muted'}`}>
+                  {syncStatus}
+                </Text>
+              )}
+              {lastSyncTime && (
+                <Text className="text-xs text-muted mt-1">
+                  Last synced: {lastSyncTime.toLocaleTimeString()}
+                </Text>
+              )}
+            </View>
+          </View>
+        )}
 
         <View className="bg-surface rounded-lg p-4">
           {isAuthenticated ? (

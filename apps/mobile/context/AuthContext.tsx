@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useCallback, ReactNode } from 'react';
 
 import { authClient } from '@/lib/auth-client';
+import { database } from '@/db';
 import { uiLogger } from '@/lib/loggers';
 
 interface AuthContextType {
@@ -52,6 +53,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     try {
       await authClient.signOut();
+      uiLogger.info('Resetting local database after sign out...');
+      await database.write(async () => {
+        await database.unsafeResetDatabase();
+      });
+      uiLogger.info('Local database reset complete');
     } catch (error) {
       uiLogger.error('Sign out error:', error);
     }
