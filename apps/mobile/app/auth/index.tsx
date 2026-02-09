@@ -1,18 +1,36 @@
+import React, { useState } from 'react';
+import { View, Text, Pressable, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Button, Input, TextField } from 'heroui-native';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { withUniwind } from 'uniwind';
 
 import { AuthContainer } from '@/components/auth/AuthContainer';
+import { useAuth } from '@/context/AuthContext';
 
 const StyledIonicons = withUniwind(Ionicons);
 
 export default function SignInScreen() {
   const router = useRouter();
+  const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+    setLoading(true);
+    const result = await signIn(email, password);
+    setLoading(false);
+    if (result.success) {
+      router.back();
+    } else {
+      Alert.alert('Sign In Failed', result.error ?? 'An unexpected error occurred');
+    }
+  };
 
   return (
     <AuthContainer
@@ -51,10 +69,11 @@ export default function SignInScreen() {
 
         <Button
           variant="primary"
-          onPress={() => console.log('Sign In pressed')}
+          onPress={handleSignIn}
+          isDisabled={loading}
           className="w-full"
         >
-          <Button.Label>Sign In</Button.Label>
+          <Button.Label>{loading ? 'Signing In...' : 'Sign In'}</Button.Label>
         </Button>
 
         <View className="flex-row items-center gap-3 my-4">

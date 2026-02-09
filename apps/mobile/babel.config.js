@@ -3,9 +3,17 @@ module.exports = function(api) {
   return {
     presets: ['babel-preset-expo'],
     plugins: [
-      // Enable decorator support for WatermelonDB models
       ['@babel/plugin-proposal-decorators', { legacy: true }],
-      // Required for React Native with new architecture
+      [
+        'module-resolver',
+        {
+          alias: {
+            'better-auth/react': './node_modules/better-auth/dist/client/react/index.mjs',
+            'better-auth/client/plugins': './node_modules/better-auth/dist/client/plugins/index.mjs',
+            '@better-auth/expo/client': './node_modules/@better-auth/expo/dist/client.mjs',
+          },
+        },
+      ],
       'react-native-reanimated/plugin',
     ],
   };

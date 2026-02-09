@@ -20,7 +20,7 @@ app.use('*', loggerMiddleware())
 app.use(
   '*',
   cors({
-    origin: process.env.CORS_ORIGIN ?? 'http://localhost:3000',
+    origin: [process.env.CORS_ORIGIN ?? 'http://localhost:3000', 'laughtrack://'],
     allowHeaders: ['Content-Type', 'Authorization'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,

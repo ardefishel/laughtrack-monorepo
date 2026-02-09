@@ -1,25 +1,65 @@
+import React, { useState } from 'react';
+import { View, Text, Pressable, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Button, Input, TextField } from 'heroui-native';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { withUniwind } from 'uniwind';
 
 import { AuthContainer } from '@/components/auth/AuthContainer';
+import { useAuth } from '@/context/AuthContext';
 
 const StyledIonicons = withUniwind(Ionicons);
 
 export default function SignUpScreen() {
   const router = useRouter();
+  const { signUp } = useAuth();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSignUp = async () => {
+    if (!name || !email || !password || !confirmPassword) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+    if (password.length < 8) {
+      Alert.alert('Error', 'Password must be at least 8 characters');
+      return;
+    }
+    setLoading(true);
+    const result = await signUp(email, password, name);
+    setLoading(false);
+    if (result.success) {
+      Alert.alert('Account Created', 'You can now sign in with your credentials', [
+        { text: 'OK', onPress: () => router.back() }
+      ]);
+    } else {
+      Alert.alert('Sign Up Failed', result.error ?? 'An unexpected error occurred');
+    }
+  };
 
   return (
     <AuthContainer
       header={{ title: 'Create Account', subtitle: 'Sign up to get started' }}
     >
       <View className="gap-4">
+        <TextField>
+          <Input
+            placeholder="Name"
+            placeholderTextColor="var(--muted)"
+            value={name}
+            onChangeText={setName}
+            autoCapitalize="words"
+            className="text-foreground"
+          />
+        </TextField>
+
         <TextField>
           <Input
             placeholder="Email"
@@ -56,10 +96,11 @@ export default function SignUpScreen() {
 
         <Button
           variant="primary"
-          onPress={() => console.log('Sign Up pressed')}
+          onPress={handleSignUp}
+          isDisabled={loading}
           className="w-full"
         >
-          <Button.Label>Sign Up</Button.Label>
+          <Button.Label>{loading ? 'Creating Account...' : 'Sign Up'}</Button.Label>
         </Button>
 
         <View className="flex-row items-center gap-3 my-4">

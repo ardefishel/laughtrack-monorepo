@@ -1,5 +1,6 @@
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { AudioProvider } from '@/context/AudioContext';
+import { AuthProvider } from '@/context/AuthContext';
 import { DatabaseProvider } from '@/context/DatabaseContext';
 import { SetEditingProvider } from '@/context/SetEditingContext';
 import { ThemeProvider } from '@/context/ThemeContext';
@@ -76,13 +77,15 @@ export default function RootLayout() {
       <ErrorBoundary sectionName="Root">
         <HeroUINativeProvider>
           <DatabaseProvider>
-            <ThemeProvider>
-              <AudioProvider>
-                <SetEditingProvider mode="edit">
-                  <ThemedStack />
-                </SetEditingProvider>
-              </AudioProvider>
-            </ThemeProvider>
+            <AuthProvider>
+              <ThemeProvider>
+                <AudioProvider>
+                  <SetEditingProvider mode="edit">
+                    <ThemedStack />
+                  </SetEditingProvider>
+                </AudioProvider>
+              </ThemeProvider>
+            </AuthProvider>
           </DatabaseProvider>
         </HeroUINativeProvider>
       </ErrorBoundary>

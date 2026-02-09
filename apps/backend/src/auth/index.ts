@@ -1,9 +1,8 @@
 import { betterAuth } from 'better-auth'
+import { expo } from '@better-auth/expo'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { db } from '../db'
 import { users, sessions, accounts, verification } from '../db/schema'
-
-console.log(process.env.AUTH_URL)
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -16,6 +15,8 @@ export const auth = betterAuth({
     },
   }),
   baseURL: process.env.AUTH_URL,
+  trustedOrigins: ['laughtrack://'],
+  plugins: [expo()],
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
