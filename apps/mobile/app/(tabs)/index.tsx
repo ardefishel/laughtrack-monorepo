@@ -4,7 +4,8 @@ import { useHeaderTitleWidth } from './_layout';
 import { JokeCard } from '@/components/jokes/JokeCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { RawJoke, useCreateJoke, useJokesQuery } from '@/hooks/jokes';
+import { SwipeableRow } from '@/components/ui/SwipeableRow';
+import { RawJoke, useCreateJoke, useDeleteJoke, useJokesQuery } from '@/hooks/jokes';
 import { logVerbose, uiLogger } from '@/lib/loggers';
 import { Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
@@ -26,8 +27,9 @@ export default function JokesScreen() {
   const [newJokeText, setNewJokeText] = useState('');
   const [shouldScrollToTop, setShouldScrollToTop] = useState(false);
   const [isQuickCapture, setIsQuickCapture] = useState(true);
-  const { jokes, isLoading, error } = useJokesQuery(searchQuery);
+  const { jokes, isLoading, error, refetch } = useJokesQuery(searchQuery);
   const { createJoke, isLoading: isCreating } = useCreateJoke();
+  const { deleteJoke } = useDeleteJoke();
 
   useEffect(() => {
     logVerbose(uiLogger, '[JokesScreen] MOUNTED, jokes count:', jokes.length);
@@ -89,6 +91,51 @@ export default function JokesScreen() {
     }
   };
 
+  const handleDeleteJoke = useCallback(
+    async (joke: RawJoke) => {
+      uiLogger.info('[JokesScreen] USER ACTION: Delete button pressed for joke', {
+        id: joke.id,
+        content: joke.content_html.substring(0, 50),
+        status: joke.status,
+        createdAt: joke.created_at,
+      });
+
+      uiLogger.debug('[JokesScreen] Initiating database delete operation for joke:', joke.id);
+      const startTime = Date.now();
+
+      try {
+        const success = await deleteJoke(joke.id);
+        const duration = Date.now() - startTime;
+
+        if (success) {
+          uiLogger.info('[JokesScreen] Joke deleted successfully:', {
+            id: joke.id,
+            content: joke.content_html.substring(0, 50),
+            duration: `${duration}ms`,
+          });
+          uiLogger.debug('[JokesScreen] Triggering refetch after successful deletion');
+          refetch();
+        } else {
+          uiLogger.error('[JokesScreen] Delete operation returned false for joke:', {
+            id: joke.id,
+            content: joke.content_html.substring(0, 50),
+            duration: `${duration}ms`,
+          });
+        }
+      } catch (err) {
+        const duration = Date.now() - startTime;
+        uiLogger.error('[JokesScreen] Exception during joke deletion:', {
+          id: joke.id,
+          content: joke.content_html.substring(0, 50),
+          error: err instanceof Error ? err.message : 'Unknown error',
+          stack: err instanceof Error ? err.stack : undefined,
+          duration: `${duration}ms`,
+        });
+      }
+    },
+    [deleteJoke, refetch]
+  );
+
   const renderJokeCard = useCallback(({ item }: { item: RawJoke }) => {
     logVerbose(uiLogger, '[JokesScreen] RENDERING joke:', item.id, 'updated_at:', item.updated_at, 'content:', item.content_html.substring(0, 30));
     const jokeWithStringDates = {
@@ -96,8 +143,16 @@ export default function JokesScreen() {
       created_at: new Date(item.created_at).toISOString(),
       updated_at: new Date(item.updated_at).toISOString(),
     };
-    return <JokeCard joke={jokeWithStringDates} onPress={handleJokePress as any} />;
-  }, [handleJokePress]);
+    return (
+      <SwipeableRow
+        onDelete={() => handleDeleteJoke(item)}
+        onSwipeStart={() => logVerbose(uiLogger, '[JokesScreen] Swipe gesture started for joke:', item.id)}
+        onSwipeOpen={() => logVerbose(uiLogger, '[JokesScreen] Swipe gesture opened for joke:', item.id)}
+      >
+        <JokeCard joke={jokeWithStringDates} onPress={handleJokePress as any} />
+      </SwipeableRow>
+    );
+  }, [handleJokePress, handleDeleteJoke]);
 
   if (error) {
     return <ErrorState title="Error loading jokes" message={error.message} icon="alert" />;
