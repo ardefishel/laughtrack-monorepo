@@ -1,8 +1,8 @@
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { AudioProvider } from '@/context/AudioContext';
 import { DatabaseProvider } from '@/context/DatabaseContext';
 import { SetEditingProvider } from '@/context/SetEditingContext';
 import { ThemeProvider } from '@/context/ThemeContext';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
 import '@/global.css';
 import { Stack } from 'expo-router';
 import { HeroUINativeProvider } from 'heroui-native';
@@ -58,6 +58,14 @@ function ThemedStack() {
           sheetInitialDetentIndex: 0,
         }}
       />
+
+      <Stack.Screen name="auth" options={{ headerShown: false }} />
+      <Stack.Screen name="auth/index" options={{ headerShown: false }} />
+      <Stack.Screen name="auth/sign-up" options={{ headerShown: false }} />
+      <Stack.Screen name="auth/sign-in" options={{ headerShown: false }} />
+      <Stack.Screen name="auth/forgot-password" options={{ headerShown: false }} />
+      <Stack.Screen name="auth/change-password" options={{ headerShown: false }} />
+      <Stack.Screen name="auth/verify-forgot-password" options={{ headerShown: false }} />
     </Stack>
   );
 }

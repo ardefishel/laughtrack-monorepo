@@ -1,7 +1,10 @@
-import { Text, View, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
+import { Button } from "heroui-native";
+import { ScrollView, Text, View } from "react-native";
 import { ThemeSwitcher } from "../../components/theme/ThemeSwitcher";
 
 export default function AccountScreen() {
+  const router = useRouter()
   return (
     <ScrollView className="flex-1 bg-background">
       <View className="flex-1 px-4 py-6">
@@ -28,6 +31,11 @@ export default function AccountScreen() {
           <Text className="text-sm text-muted">
             More account settings will appear here.
           </Text>
+        </View>
+        <View className="bg-surface rounded-lg p-4">
+          <Button onPress={() => router.push('/auth')}>
+            <Text>Sign In</Text>
+          </Button>
         </View>
       </View>
     </ScrollView>
