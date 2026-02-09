@@ -33,7 +33,7 @@ function JokeCardComponent({ joke, onPress }: JokeCardProps) {
   };
 
   return (
-    <Pressable onPress={handlePress} className="mx-4 mb-3">
+    <Pressable onPress={handlePress} className="mx-4 mb-3" accessibilityRole="button" accessibilityLabel={title || 'Untitled Joke'}>
       <Card className="p-4 bg-surface">
         <View className="flex-row items-start justify-between">
           <Text className="text-foreground text-lg font-semibold leading-snug flex-1 pr-2" numberOfLines={1}>

@@ -25,6 +25,8 @@ const RecordingListItem = ({ recording, isPlaying, isLoading, onPlay, onDelete }
             <Pressable
                 onPress={onPlay}
                 className="flex-row items-center gap-3 flex-1"
+                accessibilityRole="button"
+                accessibilityLabel={isPlaying ? 'Pause recording' : 'Play recording'}
             >
                 <View className="w-10 h-10 rounded-full bg-accent/20 items-center justify-center">
                     {isLoading ? (
@@ -53,6 +55,7 @@ const RecordingListItem = ({ recording, isPlaying, isLoading, onPlay, onDelete }
                 hitSlop={8}
                 className="p-2"
                 style={!onDelete ? { opacity: 0.3 } : undefined}
+                accessibilityRole="button"
                 accessibilityLabel="Delete recording"
                 accessibilityState={{ disabled: !onDelete }}
             >

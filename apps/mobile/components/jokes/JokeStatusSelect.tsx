@@ -33,7 +33,11 @@ export function JokeStatusSelect({ status, onStatusChange }: JokeStatusSelectPro
       onValueChange={handleValueChange}
     >
       <Select.Trigger asChild>
-        <Pressable className="flex-row items-center gap-1 px-3 py-1.5 rounded-full bg-surface border border-default active:opacity-70">
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Joke status: ${status}`}
+          className="flex-row items-center gap-1 px-3 py-1.5 rounded-full bg-surface border border-default active:opacity-70 min-h-[44px]"
+        >
           <View className={`w-2 h-2 rounded-full ${getJokeStatusDotClass(status)}`} />
           <Text className="text-foreground text-sm font-medium capitalize ml-1">
             {status}

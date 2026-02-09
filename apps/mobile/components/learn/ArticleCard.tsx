@@ -36,7 +36,7 @@ function ArticleCardComponent({ article, onPress }: ArticleCardProps) {
   const premiumSectionsCount = article.sections.filter((s) => s.isPremium).length;
 
   return (
-    <Pressable onPress={handlePress} className="mx-4 mb-3">
+    <Pressable onPress={handlePress} className="mx-4 mb-3" accessibilityRole="button" accessibilityLabel={article.title}>
       <Card className="p-4 bg-surface">
         <View className="flex-row items-start justify-between gap-3">
           <View className="flex-1 gap-2">

@@ -144,7 +144,12 @@ export default function SetDetailScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Pressable onPress={() => router.push(`/sets/${id}/edit` as const)} className="py-2">
+        <Pressable
+          onPress={() => router.push(`/sets/${id}/edit` as const)}
+          className="py-2 min-h-[44px] justify-center"
+          accessibilityRole="button"
+          accessibilityLabel="Edit set details"
+        >
           <Text className="text-xl font-semibold text-foreground">
             {jokeSet?.title || 'Untitled Set'}
           </Text>
@@ -153,7 +158,9 @@ export default function SetDetailScreen() {
       headerRight: () => (
         <Pressable
           onPress={() => router.push({ pathname: '/sets/[id]/reader', params: { id: setId } })}
-          className="p-2 -m-2"
+          className="p-2 -m-2 min-h-[44px] min-w-[44px] justify-center items-center"
+          accessibilityRole="button"
+          accessibilityLabel="Open set reader"
         >
           <StyledIonicons name="book-outline" size={22} className="text-foreground" />
         </Pressable>

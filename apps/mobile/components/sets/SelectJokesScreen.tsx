@@ -153,6 +153,9 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
         }}
         className="mx-4 mb-3"
         disabled={isInSet}
+        accessibilityRole="button"
+        accessibilityLabel={title || 'Untitled Joke'}
+        accessibilityState={{ selected: isSelected, disabled: isInSet }}
       >
         <View className={`p-3 rounded-lg border ${isSelected ? 'bg-accent/10 border-accent' : isInSet ? 'bg-default/50 border-default opacity-50' : 'bg-surface border-default'}`}>
           <View className="flex-row items-center justify-between">
@@ -197,7 +200,7 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
     >
       <View className="flex-1 bg-background">
         <View className="px-4 py-3 border-b border-default">
-          <View className="flex-row items-center bg-field-background rounded-lg px-3 py-2">
+          <View className="flex-row items-center bg-field-background rounded-lg px-3 py-2" accessibilityRole="search">
             <StyledIonicons name="search" size={18} className="text-muted mr-2" />
             <TextInput
               value={searchQuery}
@@ -205,13 +208,15 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
               placeholder="Search jokes..."
               placeholderTextColor="var(--muted)"
               className="flex-1 text-foreground"
+              accessibilityLabel="Search jokes"
+              accessibilityRole="search"
             />
             {searchQuery.length > 0 ? (
-              <Pressable onPress={() => setSearchQuery('')}>
+              <Pressable onPress={() => setSearchQuery('')} accessibilityRole="button" accessibilityLabel="Clear search">
                 <StyledIonicons name="close-circle" size={18} className="text-muted" />
               </Pressable>
             ) : selectedCount > 0 ? (
-              <Pressable onPress={handleConfirm}>
+              <Pressable onPress={handleConfirm} accessibilityRole="button" accessibilityLabel={`Add ${selectedCount} jokes`}>
                 <Text className="text-accent font-medium">Add ({selectedCount})</Text>
               </Pressable>
             ) : null}

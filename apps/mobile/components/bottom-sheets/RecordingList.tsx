@@ -59,7 +59,9 @@ const RecordingListBottomSheet = () => {
                             router.push({ pathname: '/recording-capture-bottom-sheet', params: { jokeId } });
                         }}
                         hitSlop={8}
+                        accessibilityRole="button"
                         accessibilityLabel="Add recording"
+                        className="min-h-[44px] min-w-[44px] justify-center items-center"
                     >
                         <StyledIonicons name="add" size={24} className="text-accent" />
                     </Pressable>
@@ -69,7 +71,9 @@ const RecordingListBottomSheet = () => {
                             router.back();
                         }}
                         hitSlop={8}
+                        accessibilityRole="button"
                         accessibilityLabel="Close recordings"
+                        className="min-h-[44px] min-w-[44px] justify-center items-center"
                     >
                         <StyledIonicons name="close" size={24} className="text-muted" />
                     </Pressable>

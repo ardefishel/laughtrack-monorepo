@@ -30,7 +30,7 @@ function SetCardComponent({ jokeSet, onPress }: SetCardProps) {
   const duration = formatDuration(jokeSet.duration);
 
   return (
-    <Pressable onPress={handlePress} className="mx-4 mb-3">
+    <Pressable onPress={handlePress} className="mx-4 mb-3" accessibilityRole="button" accessibilityLabel={jokeSet.title || 'Untitled Set'}>
       <Card className="p-3 bg-surface">
         <Text className="text-foreground text-lg font-semibold leading-snug" numberOfLines={1}>
           {jokeSet.title || 'Untitled Set'}

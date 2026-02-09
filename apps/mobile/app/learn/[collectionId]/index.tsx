@@ -32,7 +32,12 @@ export default function LearnArticleListScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Pressable onPress={() => { }} className="py-2">
+        <Pressable
+          onPress={() => { }}
+          className="py-2 min-h-[44px] justify-center"
+          accessibilityRole="button"
+          accessibilityLabel={collection?.title || 'Articles'}
+        >
           <Text className="text-xl font-semibold text-foreground" numberOfLines={1}>
             {collection?.title || 'Articles'}
           </Text>

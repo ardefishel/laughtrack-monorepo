@@ -47,7 +47,12 @@ export function AddItemSeparator({
       {isExpanded ? (
         <AddItemOptions onAddJoke={onAddJoke} onAddNote={onAddNote} />
       ) : (
-        <Pressable onPress={onPress} className="h-8 mx-4 justify-center items-center">
+        <Pressable
+          onPress={onPress}
+          accessibilityRole="button"
+          accessibilityLabel="Add item to set"
+          className="h-8 mx-4 justify-center items-center min-h-[44px]"
+        >
           <View className="absolute w-full h-px bg-default" />
           <View className="bg-background px-1">
             <StyledIonicons name="add-circle-outline" size={16} className="text-muted-dim" />

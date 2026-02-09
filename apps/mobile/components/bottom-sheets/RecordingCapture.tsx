@@ -169,7 +169,13 @@ export default function RecordingCaptureBottomSheet() {
         <Text className="text-foreground text-lg font-semibold">
           Add Description
         </Text>
-        <Pressable onPress={handleBackToRecording} hitSlop={8}>
+        <Pressable
+          onPress={handleBackToRecording}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Go back to recording"
+          className="min-h-[44px] min-w-[44px] justify-center items-center"
+        >
           <StyledIonicons name="chevron-back" size={24} className="text-muted" />
         </Pressable>
       </View>

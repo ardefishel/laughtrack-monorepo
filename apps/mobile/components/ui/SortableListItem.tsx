@@ -30,7 +30,10 @@ export function SortableListItem({
         delayLongPress={120}
         onPress={onPress}
         disabled={isPressDisabled}
-        className={`flex-row items-center px-4 py-3 ${isActive ? 'bg-surface rounded-lg mx-1' : ''}`}
+        accessibilityRole="button"
+        accessibilityLabel="Sortable list item"
+        accessibilityState={{ disabled: isPressDisabled }}
+        className={`flex-row items-center px-4 py-3 min-h-[44px] ${isActive ? 'bg-surface rounded-lg mx-1' : ''}`}
       >
         <StyledIonicons
           name="menu"

@@ -56,7 +56,12 @@ export default function EditSetScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={() => router.back()} className="p-2 -m-2">
+        <Pressable
+          onPress={() => router.back()}
+          className="p-2 -m-2 min-h-[44px] min-w-[44px] justify-center items-center"
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
           <StyledIonicons name="chevron-back" size={24} className="text-foreground" />
         </Pressable>
       ),
@@ -65,7 +70,10 @@ export default function EditSetScreen() {
         <Pressable
           onPress={handleSave}
           disabled={isSaving}
-          className="px-3 py-1.5"
+          className="px-3 py-1.5 min-h-[44px] min-w-[44px] justify-center items-center"
+          accessibilityRole="button"
+          accessibilityLabel="Save set"
+          accessibilityState={{ disabled: isSaving }}
         >
           {isSaving ? (
             <ActivityIndicator size="small" className="text-accent" />

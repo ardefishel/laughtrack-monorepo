@@ -66,6 +66,7 @@ export function SetDetailsForm({
           value={title}
           onChangeText={onChangeTitle}
           className="text-foreground py-3"
+          accessibilityLabel="Set title"
         />
       </TextField>
 
@@ -78,6 +79,7 @@ export function SetDetailsForm({
           className="text-foreground min-h-[80px] py-3"
           multiline
           textAlignVertical="top"
+          accessibilityLabel="Set description"
         />
       </TextField>
 
@@ -90,6 +92,7 @@ export function SetDetailsForm({
             onChangeText={onChangeDuration}
             className="text-foreground py-3"
             keyboardType="numeric"
+            accessibilityLabel="Set duration in minutes"
           />
         </TextField>
 
@@ -98,7 +101,11 @@ export function SetDetailsForm({
           onValueChange={(value) => value && onChangeStatus(value.value as JokeSetStatus)}
         >
           <Select.Trigger asChild>
-            <Pressable className="flex-row items-center justify-between px-3 py-3 min-w-[140px] border-b border-default">
+            <Pressable
+              className="flex-row items-center justify-between px-3 py-3 min-w-[140px] border-b border-default min-h-[44px]"
+              accessibilityRole="button"
+              accessibilityLabel={`Set status: ${status}`}
+            >
               <View className="flex-row items-center gap-2">
                 <View className={`w-2 h-2 rounded-full ${getJokeSetStatusDotClass(status)}`} />
                 <Text className="text-foreground text-base font-medium capitalize">
@@ -135,6 +142,7 @@ export function SetDetailsForm({
           value={place}
           onChangeText={onChangePlace}
           className="text-foreground py-3"
+          accessibilityLabel="Performance place"
         />
       </TextField>
 

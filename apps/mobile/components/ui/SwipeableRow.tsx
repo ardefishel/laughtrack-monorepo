@@ -47,6 +47,8 @@ export function SwipeableRow({ children, onDelete, enabled = true, onSwipeStart,
             swipeableRef.current?.close();
             onDelete();
           }}
+          accessibilityRole="button"
+          accessibilityLabel="Delete"
           className="bg-danger h-full justify-center items-center px-6"
         >
           <StyledIonicons name="trash-outline" size={24} className="text-danger-foreground" />

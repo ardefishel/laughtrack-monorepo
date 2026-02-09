@@ -27,7 +27,12 @@ export default function ReaderScreen() {
         </Text>
       ),
       headerLeft: () => (
-        <Pressable onPress={() => navigation.goBack()} className="p-2 -m-2">
+        <Pressable
+          onPress={() => navigation.goBack()}
+          className="p-2 -m-2 min-h-[44px] min-w-[44px] justify-center items-center"
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
           <StyledIonicons name="chevron-back" size={24} className="text-foreground" />
         </Pressable>
       ),

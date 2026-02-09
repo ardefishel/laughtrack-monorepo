@@ -18,7 +18,12 @@ function CollectionCardComponent({ collection, onPress }: CollectionCardProps) {
   };
 
   return (
-    <Pressable onPress={handlePress} className="flex-1 min-w-[45%]">
+    <Pressable
+      onPress={handlePress}
+      className="flex-1 min-w-[45%]"
+      accessibilityRole="button"
+      accessibilityLabel={collection.title}
+    >
       <Card className="p-4 h-44 justify-between" style={{ backgroundColor: `${collection.color}15` }}>
         <View
           className="w-12 h-12 rounded-xl items-center justify-center"

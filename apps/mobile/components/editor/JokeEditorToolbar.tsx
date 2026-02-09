@@ -45,6 +45,9 @@ export function JokeEditorToolbar({
       <View className="flex-row items-center gap-2 p-3 border-t border-default bg-surface">
         <StyledPressable
           onPress={onH1}
+          accessibilityRole="button"
+          accessibilityLabel="Heading 1"
+          accessibilityState={{ selected: activeStyles.h1 }}
           className={`px-3 py-1.5 rounded-md ${activeStyles.h1 ? 'bg-accent' : 'bg-field-background'
             }`}
         >
@@ -58,6 +61,9 @@ export function JokeEditorToolbar({
 
         <StyledPressable
           onPress={onH2}
+          accessibilityRole="button"
+          accessibilityLabel="Heading 2"
+          accessibilityState={{ selected: activeStyles.h2 }}
           className={`px-3 py-1.5 rounded-md ${activeStyles.h2 ? 'bg-accent' : 'bg-field-background'
             }`}
         >
@@ -71,6 +77,9 @@ export function JokeEditorToolbar({
 
         <StyledPressable
           onPress={onParagraph}
+          accessibilityRole="button"
+          accessibilityLabel="Paragraph"
+          accessibilityState={{ selected: isParagraph }}
           className={`px-3 py-1.5 rounded-md ${isParagraph ? 'bg-accent' : 'bg-field-background'
             }`}
         >
@@ -86,6 +95,9 @@ export function JokeEditorToolbar({
 
         <StyledPressable
           onPress={onBold}
+          accessibilityRole="button"
+          accessibilityLabel="Bold"
+          accessibilityState={{ selected: activeStyles.bold }}
           className={`px-3 py-1.5 rounded-md ${activeStyles.bold ? 'bg-accent' : 'bg-field-background'
             }`}
         >
@@ -99,6 +111,9 @@ export function JokeEditorToolbar({
 
         <StyledPressable
           onPress={onItalic}
+          accessibilityRole="button"
+          accessibilityLabel="Italic"
+          accessibilityState={{ selected: activeStyles.italic }}
           className={`px-3 py-1.5 rounded-md ${activeStyles.italic ? 'bg-accent' : 'bg-field-background'
             }`}
         >
@@ -112,6 +127,9 @@ export function JokeEditorToolbar({
 
         <StyledPressable
           onPress={onUnderline}
+          accessibilityRole="button"
+          accessibilityLabel="Underline"
+          accessibilityState={{ selected: activeStyles.underline }}
           className={`px-3 py-1.5 rounded-md ${activeStyles.underline ? 'bg-accent' : 'bg-field-background'
             }`}
         >
@@ -128,7 +146,9 @@ export function JokeEditorToolbar({
             <View className="w-px h-6 bg-default mx-2" />
             <StyledPressable
               onPress={onOpenAudioList}
-              className={`px-3 py-1.5 rounded-md flex-row items-center gap-1 ${audioCount > 0 ? 'bg-warning/20' : 'bg-field-background'
+              accessibilityRole="button"
+              accessibilityLabel={`${audioCount} audio recordings`}
+              className={`px-3 py-1.5 rounded-md flex-row items-center gap-1 min-h-[44px] ${audioCount > 0 ? 'bg-warning/20' : 'bg-field-background'
                 }`}
             >
               <StyledIonicons

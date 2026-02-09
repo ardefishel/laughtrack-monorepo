@@ -35,9 +35,14 @@ function JokeInputBarComponent({
           multiline
           maxLength={500}
           onSubmitEditing={onSubmit}
+          accessibilityLabel="New joke text"
         />
         <View className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-          <Pressable onPress={onToggleQuickCapture}>
+          <Pressable
+            onPress={onToggleQuickCapture}
+            accessibilityRole="button"
+            accessibilityLabel={isQuickCapture ? 'Disable quick capture' : 'Enable quick capture'}
+          >
             <StyledIonicons
               name={isQuickCapture ? 'flash' : 'flash-outline'}
               size={16}
@@ -51,6 +56,9 @@ function JokeInputBarComponent({
         onPress={onSubmit}
         disabled={!newJokeText.trim() || isCreating}
         className={`p-2.5 mb-0.5 rounded-lg ${newJokeText.trim() && !isCreating ? 'bg-accent' : 'opacity-40'}`}
+        accessibilityRole="button"
+        accessibilityLabel="Submit joke"
+        accessibilityState={{ disabled: !newJokeText.trim() || isCreating }}
       >
         {isCreating ? (
           <StyledIonicons name="refresh-outline" size={18} className="text-accent animate-spin" />

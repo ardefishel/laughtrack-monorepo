@@ -34,7 +34,12 @@ export default function EditSetDetailScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={() => router.dismiss()} className="p-2 -m-2">
+        <Pressable
+          onPress={() => router.dismiss()}
+          className="p-2 -m-2 min-h-[44px] min-w-[44px] justify-center items-center"
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
           <StyledIonicons name="chevron-back" size={24} className="text-foreground" />
         </Pressable>
       ),
@@ -42,7 +47,9 @@ export default function EditSetDetailScreen() {
       headerRight: () => (
         <Pressable
           onPress={handleSave}
-          className="px-3 py-1.5"
+          className="px-3 py-1.5 min-h-[44px] min-w-[44px] justify-center items-center"
+          accessibilityRole="button"
+          accessibilityLabel="Save set details"
         >
           <Text className="text-accent text-base font-medium">Done</Text>
         </Pressable>

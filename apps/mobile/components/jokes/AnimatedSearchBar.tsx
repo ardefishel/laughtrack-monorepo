@@ -63,6 +63,7 @@ function AnimatedSearchBarComponent({
   return (
     <Animated.View
       style={animatedStyle}
+      accessibilityRole="search"
       className="flex-row h-full items-center bg-field-background rounded-full overflow-hidden mb-2"
     >
       {isExpanded ? (
@@ -74,19 +75,20 @@ function AnimatedSearchBarComponent({
               placeholderTextColor="var(--field-placeholder)"
               value={searchQuery}
               onChangeText={onChangeText}
+              accessibilityLabel="Search jokes"
               variant="primary"
               className="text-foreground py-2.5 pl-8"
               onBlur={handleBlur}
             />
             <View className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-              <Pressable onPress={toggleSearch}>
+              <Pressable onPress={toggleSearch} accessibilityRole="button" accessibilityLabel="Close search">
                 <StyledIonicons name="search" size={20} className="text-muted" />
               </Pressable>
             </View>
           </TextField>
         </View>
       ) : (
-        <Pressable onPress={toggleSearch} className="h-full flex-1 justify-center items-center">
+        <Pressable onPress={toggleSearch} accessibilityRole="button" accessibilityLabel="Open search" className="h-full flex-1 justify-center items-center">
           <StyledIonicons name="search" size={20} className="text-muted" />
         </Pressable>
       )}

@@ -27,7 +27,7 @@ export function AddItemButton({
   }
 
   return (
-    <Pressable onPress={onPress} className="flex-row items-center px-4 py-3">
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel="Add set item" className="flex-row items-center px-4 py-3">
       <StyledIonicons name="add" size={18} className="text-muted mr-2" />
       <Text className="text-muted text-base">Add Set Item</Text>
     </Pressable>
