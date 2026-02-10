@@ -12,4 +12,6 @@ export class AudioRecording extends Model {
   @field('size') size!: number;
   @field('description') description!: string;
   @date('created_at') createdAt!: Date;
+  @field('remote_url') remoteUrl!: string | null;
+  @date('updated_at') updatedAt!: Date;
 }

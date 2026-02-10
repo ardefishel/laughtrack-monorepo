@@ -109,6 +109,25 @@ export const jokeSetItems = pgTable('joke_set_items', {
   isDeleted: boolean('is_deleted').notNull().default(false),
 })
 
+// Audio recordings table
+export const audioRecordings = pgTable('audio_recordings', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  jokeId: text('joke_id'),
+  filePath: text('file_path'),
+  duration: integer('duration'),
+  size: integer('size'),
+  description: text('description'),
+  remoteUrl: text('remote_url'),
+  createdAt: bigint('created_at', { mode: 'number' }),
+  updatedAt: bigint('updated_at', { mode: 'number' }),
+  serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
+  lastModified: timestamp('last_modified').notNull().defaultNow(),
+  isDeleted: boolean('is_deleted').notNull().default(false),
+})
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
@@ -116,6 +135,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   jokes: many(jokes),
   jokeSets: many(jokeSets),
   jokeSetItems: many(jokeSetItems),
+  audioRecordings: many(audioRecordings),
 }))
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -132,11 +152,12 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
   }),
 }))
 
-export const jokesRelations = relations(jokes, ({ one }) => ({
+export const jokesRelations = relations(jokes, ({ one, many }) => ({
   user: one(users, {
     fields: [jokes.userId],
     references: [users.id],
   }),
+  audioRecordings: many(audioRecordings),
 }))
 
 export const jokeSetsRelations = relations(jokeSets, ({ one, many }) => ({
@@ -158,6 +179,17 @@ export const jokeSetItemsRelations = relations(jokeSetItems, ({ one }) => ({
   }),
 }))
 
+export const audioRecordingsRelations = relations(audioRecordings, ({ one }) => ({
+  user: one(users, {
+    fields: [audioRecordings.userId],
+    references: [users.id],
+  }),
+  joke: one(jokes, {
+    fields: [audioRecordings.jokeId],
+    references: [jokes.id],
+  }),
+}))
+
 // Type exports
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
@@ -171,3 +203,5 @@ export type JokeSet = typeof jokeSets.$inferSelect
 export type NewJokeSet = typeof jokeSets.$inferInsert
 export type JokeSetItem = typeof jokeSetItems.$inferSelect
 export type NewJokeSetItem = typeof jokeSetItems.$inferInsert
+export type AudioRecording = typeof audioRecordings.$inferSelect
+export type NewAudioRecording = typeof audioRecordings.$inferInsert

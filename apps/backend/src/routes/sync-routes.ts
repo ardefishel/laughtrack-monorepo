@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { and, eq, gt } from 'drizzle-orm'
 import { db } from '../db'
-import { jokes, jokeSets, jokeSetItems } from '../db/schema'
+import { jokes, jokeSets, jokeSetItems, audioRecordings } from '../db/schema'
 import { requireAuth } from '../middlewares/auth'
 
 const syncRoutes = new Hono()
@@ -10,6 +10,7 @@ const SYNC_TABLES = {
   jokes,
   joke_sets: jokeSets,
   joke_set_items: jokeSetItems,
+  audio_recordings: audioRecordings,
 } as const
 
 type SyncTableName = keyof typeof SYNC_TABLES
@@ -23,6 +24,8 @@ const CAMEL_TO_SNAKE: Record<string, string> = {
   setId: 'set_id',
   itemType: 'item_type',
   jokeId: 'joke_id',
+  filePath: 'file_path',
+  remoteUrl: 'remote_url',
 }
 
 const SNAKE_TO_CAMEL: Record<string, string> = Object.fromEntries(
@@ -52,7 +55,7 @@ function snakeToDrizzleRecord(record: Record<string, unknown>): Record<string, u
   return result
 }
 
-type SyncTable = typeof jokes | typeof jokeSets | typeof jokeSetItems
+type SyncTable = typeof jokes | typeof jokeSets | typeof jokeSetItems | typeof audioRecordings
 
 async function pullTable(table: SyncTable, userId: string, lastPulledAt: Date | null) {
   if (!lastPulledAt) {

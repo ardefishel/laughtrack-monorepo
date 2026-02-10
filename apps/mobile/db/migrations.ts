@@ -68,5 +68,17 @@ export const migrations = schemaMigrations({
         }),
       ],
     },
+    {
+      toVersion: 6,
+      steps: [
+        addColumns({
+          table: 'audio_recordings',
+          columns: [
+            { name: 'remote_url', type: 'string', isOptional: true },
+            { name: 'updated_at', type: 'number' },
+          ],
+        }),
+      ],
+    },
   ],
 });
