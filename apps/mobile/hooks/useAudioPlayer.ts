@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAudioPlayer as useExpoAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { AudioRecording } from '@/models/AudioRecording';
 import { hooksLogger, logVerbose } from '@/lib/loggers';
@@ -6,11 +6,15 @@ import { hooksLogger, logVerbose } from '@/lib/loggers';
 interface UseRecordingPlayerReturn {
     isPlaying: boolean;
     isLoading: boolean;
+    loadError: string | null;
     activeRecordingId: string | null;
     play: (recording: AudioRecording) => void;
     pause: () => void;
     toggle: (recording: AudioRecording) => void;
+    clearError: () => void;
 }
+
+const LOADING_TIMEOUT_MS = 10000;
 
 export function useRecordingPlayer(): UseRecordingPlayerReturn {
     const player = useExpoAudioPlayer(null);
@@ -22,18 +26,36 @@ export function useRecordingPlayer(): UseRecordingPlayerReturn {
     const [pendingPlay, setPendingPlay] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [loadError, setLoadError] = useState<string | null>(null);
+    const loadingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Auto-play when audio finishes loading
+    const clearLoadingTimeout = useCallback(() => {
+        if (loadingTimeoutRef.current) {
+            clearTimeout(loadingTimeoutRef.current);
+            loadingTimeoutRef.current = null;
+        }
+    }, []);
+
+    const clearError = useCallback(() => {
+        setLoadError(null);
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            clearLoadingTimeout();
+        };
+    }, [clearLoadingTimeout]);
+
     useEffect(() => {
         if (pendingPlay && playerStatus?.isLoaded) {
             hooksLogger.debug('[useRecordingPlayer] Audio loaded, playing...');
             player.play();
             setPendingPlay(false);
             setIsLoading(false);
+            clearLoadingTimeout();
         }
-    }, [playerStatus?.isLoaded, pendingPlay, player]);
+    }, [playerStatus?.isLoaded, pendingPlay, player, clearLoadingTimeout]);
 
-    // Sync playing state with player status
     useEffect(() => {
         if (playerStatus?.playing !== undefined) {
             setIsPlaying(playerStatus.playing);
@@ -42,11 +64,20 @@ export function useRecordingPlayer(): UseRecordingPlayerReturn {
 
     const play = useCallback((recording: AudioRecording) => {
         hooksLogger.debug(`[useRecordingPlayer] Playing recording: ${recording.id}, uri: ${recording.filePath}`);
+        setLoadError(null);
         player.replace({ uri: recording.filePath });
         setActiveRecordingId(recording.id);
         setPendingPlay(true);
         setIsLoading(true);
-    }, [player]);
+
+        clearLoadingTimeout();
+        loadingTimeoutRef.current = setTimeout(() => {
+            hooksLogger.error('[useRecordingPlayer] Audio loading timeout - file may not exist');
+            setLoadError('Audio file not found or inaccessible');
+            setIsLoading(false);
+            setPendingPlay(false);
+        }, LOADING_TIMEOUT_MS);
+    }, [player, clearLoadingTimeout]);
 
     const pause = useCallback(() => {
         hooksLogger.debug('[useRecordingPlayer] Pausing playback');
@@ -69,9 +100,11 @@ export function useRecordingPlayer(): UseRecordingPlayerReturn {
     return {
         isPlaying,
         isLoading,
+        loadError,
         activeRecordingId,
         play,
         pause,
         toggle,
+        clearError,
     };
 }

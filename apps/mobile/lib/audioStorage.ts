@@ -1,40 +1,49 @@
-import { Paths, File, Directory } from 'expo-file-system';
+import * as FileSystem from 'expo-file-system';
 import { createNamespacedLogger } from '@/lib/loggers';
 
 const audioLogger = createNamespacedLogger('audio');
 const AUDIO_DIR_NAME = 'audio';
 
+const getDocumentDirectory = (): string => {
+  return FileSystem.documentDirectory || '';
+};
+
 export const getRecordingsDirectory = (): string => {
-  const audioDir = new Directory(Paths.document, AUDIO_DIR_NAME);
-  const uri = audioDir.uri;
+  const uri = `${getDocumentDirectory()}${AUDIO_DIR_NAME}`;
   audioLogger.debug(`[audioStorage] getRecordingsDirectory: ${uri}`);
   return uri;
 };
 
 export const ensureAudioDirectory = async (): Promise<void> => {
-  const audioDir = new Directory(Paths.document, AUDIO_DIR_NAME);
-  if (!audioDir.exists) {
-    audioLogger.info('[audioStorage] Creating audio directory');
-    audioDir.create();
-    audioLogger.info('[audioStorage] Audio directory created successfully');
-  } else {
-    audioLogger.debug('[audioStorage] Audio directory already exists');
+  const audioDirUri = getRecordingsDirectory();
+  try {
+    const dirInfo = await FileSystem.getInfoAsync(audioDirUri);
+    if (!dirInfo.exists) {
+      audioLogger.info('[audioStorage] Creating audio directory');
+      await FileSystem.makeDirectoryAsync(audioDirUri, { intermediates: true });
+      audioLogger.info('[audioStorage] Audio directory created successfully');
+    } else {
+      audioLogger.debug('[audioStorage] Audio directory already exists');
+    }
+  } catch (error) {
+    audioLogger.error('[audioStorage] Failed to ensure audio directory:', error);
+    throw error;
   }
 };
 
 export const getAudioPathForRecording = (recordingId: string): string => {
-  const audioFile = new File(Paths.document, AUDIO_DIR_NAME, `${recordingId}.m4a`);
-  const uri = audioFile.uri;
+  const uri = `${getRecordingsDirectory()}/${recordingId}.m4a`;
   audioLogger.debug(`[audioStorage] getAudioPathForRecording: id=${recordingId}, path=${uri}`);
   return uri;
 };
 
 export const deleteAudioFile = async (recordingId: string): Promise<void> => {
-  const audioFile = new File(Paths.document, AUDIO_DIR_NAME, `${recordingId}.m4a`);
+  const fileUri = getAudioPathForRecording(recordingId);
   try {
-    if (audioFile.exists) {
+    const fileInfo = await FileSystem.getInfoAsync(fileUri);
+    if (fileInfo.exists) {
       audioLogger.debug(`[audioStorage] Deleting audio file: id=${recordingId}`);
-      await audioFile.delete();
+      await FileSystem.deleteAsync(fileUri);
       audioLogger.info(`[audioStorage] Successfully deleted audio file: id=${recordingId}`);
     } else {
       audioLogger.warn(`[audioStorage] Audio file not found for deletion: id=${recordingId}`);
@@ -49,10 +58,10 @@ export const getAudioFileInfo = async (
   filePath: string
 ): Promise<{ size: number } | null> => {
   try {
-    const file = new File(filePath);
-    if (file.exists && file.size !== undefined) {
-      audioLogger.debug(`[audioStorage] getAudioFileInfo: path=${filePath}, size=${file.size} bytes`);
-      return { size: file.size };
+    const fileInfo = await FileSystem.getInfoAsync(filePath);
+    if (fileInfo.exists && 'size' in fileInfo) {
+      audioLogger.debug(`[audioStorage] getAudioFileInfo: path=${filePath}, size=${fileInfo.size} bytes`);
+      return { size: fileInfo.size };
     }
     audioLogger.warn(`[audioStorage] Audio file not found or has no size: path=${filePath}`);
     return null;
@@ -69,4 +78,45 @@ export const formatDuration = (ms: number): string => {
   const formatted = `${minutes}:${seconds.toString().padStart(2, '0')}`;
   audioLogger.debug(`[audioStorage] formatDuration: ${ms}ms => ${formatted}`);
   return formatted;
+};
+
+export const persistAudioFile = async (
+  tempUri: string,
+  recordingId: string
+): Promise<string> => {
+  try {
+    audioLogger.debug(`[audioStorage] Persisting audio file: tempUri=${tempUri}, recordingId=${recordingId}`);
+
+    await ensureAudioDirectory();
+
+    const destinationUri = getAudioPathForRecording(recordingId);
+
+    const sourceInfo = await FileSystem.getInfoAsync(tempUri);
+    if (!sourceInfo.exists) {
+      throw new Error(`Source audio file does not exist: ${tempUri}`);
+    }
+
+    const sourceSize = (sourceInfo as { size: number }).size ?? 0;
+    audioLogger.debug(`[audioStorage] Source file exists, size=${sourceSize} bytes`);
+
+    await FileSystem.copyAsync({
+      from: tempUri,
+      to: destinationUri,
+    });
+
+    audioLogger.info(`[audioStorage] Successfully persisted audio file to: ${destinationUri}`);
+
+    try {
+      await FileSystem.deleteAsync(tempUri, { idempotent: true });
+      audioLogger.debug(`[audioStorage] Cleaned up temp file: ${tempUri}`);
+    } catch (cleanupError) {
+      audioLogger.warn(`[audioStorage] Failed to cleanup temp file: ${tempUri}`, cleanupError);
+    }
+
+    return destinationUri;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    audioLogger.error(`[audioStorage] Failed to persist audio file: tempUri=${tempUri}, error=${errorMessage}`);
+    throw new Error(`Failed to persist audio file: ${errorMessage}`);
+  }
 };

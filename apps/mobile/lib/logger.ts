@@ -14,14 +14,31 @@ const formatTimestamp = (): string => {
   return new Date().toISOString();
 };
 
+const formatMessage = (msg: unknown): string => {
+  if (typeof msg === 'string') {
+    return msg;
+  }
+  if (msg instanceof Error) {
+    return `${msg.name}: ${msg.message}${msg.stack ? `\n${msg.stack}` : ''}`;
+  }
+  if (typeof msg === 'object' && msg !== null) {
+    try {
+      return JSON.stringify(msg, Object.getOwnPropertyNames(msg));
+    } catch {
+      return String(msg);
+    }
+  }
+  return String(msg);
+};
+
 const customTransport: transportFunctionType<Record<string, never>> = (props) => {
   const { rawMsg, level, extension } = props;
   const timestamp = formatTimestamp();
   const namespace = extension?.toUpperCase() || 'DEFAULT';
-  
-  const formattedMsg = typeof rawMsg === 'string' ? rawMsg : JSON.stringify(rawMsg);
+
+  const formattedMsg = formatMessage(rawMsg);
   const output = `[${timestamp}] [${namespace}] ${formattedMsg}`;
-  
+
   switch (level.text) {
     case 'debug':
       console.debug(output);

@@ -6,6 +6,7 @@ import { createNamespacedLogger } from '@/lib/loggers';
 const hooksLogger = createNamespacedLogger('hooks');
 
 interface CreateAudioRecordingData {
+  id?: string;
   joke_id: string;
   file_path: string;
   duration: number;
@@ -37,6 +38,9 @@ export function useCreateAudioRecording(): UseCreateAudioRecordingReturn {
         const newRecording = await database.write(async () => {
           hooksLogger.debug('[useCreateAudioRecording] Beginning database write transaction');
           return await audioRecordingsCollection.create((recording) => {
+            if (data.id) {
+              recording._raw.id = data.id;
+            }
             recording.jokeId = data.joke_id;
             recording.filePath = data.file_path;
             recording.duration = data.duration;

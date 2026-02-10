@@ -14,7 +14,7 @@ const RecordingListBottomSheet = () => {
     const router = useRouter();
     const { jokeId } = useLocalSearchParams<{ jokeId: string; }>();
     const { recordings, isLoading, error } = useAudioRecordingsQuery(jokeId);
-    const { isPlaying, isLoading: isAudioLoading, activeRecordingId, toggle } = useRecordingPlayer();
+    const { isPlaying, isLoading: isAudioLoading, loadError, activeRecordingId, toggle, clearError } = useRecordingPlayer();
 
     // Log when bottom sheet is opened and closed
     useEffect(() => {
@@ -79,6 +79,15 @@ const RecordingListBottomSheet = () => {
                     </Pressable>
                 </View>
             </View>
+
+            {loadError && (
+                <View className="mb-4 p-3 bg-danger/10 rounded-lg flex-row items-center justify-between">
+                    <Text className="text-danger text-sm flex-1">{loadError}</Text>
+                    <Pressable onPress={clearError} hitSlop={8}>
+                        <StyledIonicons name="close-circle" size={20} className="text-danger" />
+                    </Pressable>
+                </View>
+            )}
 
             {recordings.length === 0 ? (
                 <View className="py-8 items-center">

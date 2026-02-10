@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useCreateJoke } from './jokes/useCreateJoke';
 import { useCreateAudioRecording } from './useCreateAudioRecording';
+import { persistAudioFile } from '@/lib/audioStorage';
 import { hooksLogger } from '@/lib/loggers';
 
 export interface RecordingData {
@@ -58,9 +59,16 @@ export function useRecordingSubmit(jokeId?: string): UseRecordingSubmitReturn {
           targetJokeId = created.id;
         }
 
+        const recordingId = `${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+        hooksLogger.debug(`[useRecordingSubmit] Generated recording ID: ${recordingId}`);
+
+        const persistentPath = await persistAudioFile(recordingData.filePath, recordingId);
+        hooksLogger.debug(`[useRecordingSubmit] File persisted to: ${persistentPath}`);
+
         await createAudioRecording({
+          id: recordingId,
           joke_id: targetJokeId,
-          file_path: recordingData.filePath,
+          file_path: persistentPath,
           duration: recordingData.duration,
           size: recordingData.size,
           description: description.trim(),
