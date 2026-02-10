@@ -1,6 +1,5 @@
 import { AudioRecorderButton } from '@/components/audio/AudioRecorderButton';
 import { AnimatedSearchBar } from '@/components/jokes/AnimatedSearchBar';
-import { useHeaderTitleWidth } from './_layout';
 import { JokeCard } from '@/components/jokes/JokeCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
@@ -14,6 +13,7 @@ import { Button, Input } from 'heroui-native';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { withUniwind } from 'uniwind';
+import { useHeaderTitleWidth } from './_layout';
 
 const StyledIonicons = withUniwind(Ionicons);
 
@@ -30,6 +30,7 @@ export default function JokesScreen() {
   const { jokes, isLoading, error, refetch } = useJokesQuery(searchQuery);
   const { createJoke, isLoading: isCreating } = useCreateJoke();
   const { deleteJoke } = useDeleteJoke();
+
 
   useEffect(() => {
     logVerbose(uiLogger, '[JokesScreen] MOUNTED, jokes count:', jokes.length);
@@ -161,7 +162,7 @@ export default function JokesScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
+      keyboardVerticalOffset={Platform.select({ ios: 120, android: 20 })}
       className="flex-1 bg-background"
     >
       <View className="flex-1 bg-background">

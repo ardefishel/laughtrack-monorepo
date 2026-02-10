@@ -195,7 +195,7 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
+      keyboardVerticalOffset={Platform.select({ ios: 100, android: 20 })}
       className="flex-1 bg-background"
     >
       <View className="flex-1 bg-background">

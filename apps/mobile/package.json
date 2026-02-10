@@ -6,6 +6,7 @@
     "start": "bunx expo start",
     "android": "bunx expo run:android",
     "ios": "bunx expo run:ios",
+    "ios:device": "bunx expo run:ios --device",
     "lint": "bunx expo lint",
     "test": "jest",
     "test:watch": "jest --watch"

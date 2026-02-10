@@ -61,12 +61,6 @@ function ThemedStack() {
       />
 
       <Stack.Screen name="auth" options={{ headerShown: false }} />
-      <Stack.Screen name="auth/index" options={{ headerShown: false }} />
-      <Stack.Screen name="auth/sign-up" options={{ headerShown: false }} />
-      <Stack.Screen name="auth/sign-in" options={{ headerShown: false }} />
-      <Stack.Screen name="auth/forgot-password" options={{ headerShown: false }} />
-      <Stack.Screen name="auth/change-password" options={{ headerShown: false }} />
-      <Stack.Screen name="auth/verify-forgot-password" options={{ headerShown: false }} />
     </Stack>
   );
 }

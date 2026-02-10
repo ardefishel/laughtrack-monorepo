@@ -40,7 +40,7 @@ export function JokeEditorToolbar({
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
+      keyboardVerticalOffset={Platform.select({ ios: 100, android: 20 })}
     >
       <View className="flex-row items-center gap-2 p-3 border-t border-default bg-surface">
         <StyledPressable
