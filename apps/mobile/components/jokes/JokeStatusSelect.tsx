@@ -1,9 +1,9 @@
-import { Select } from 'heroui-native';
-import { Pressable, View, Text } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { withUniwind } from 'uniwind';
 import { getJokeStatusDotClass } from '@/lib/status';
 import { JokeStatus } from '@/lib/types';
+import { Ionicons } from '@expo/vector-icons';
+import { Select } from 'heroui-native';
+import { Pressable, Text, View } from 'react-native';
+import { withUniwind } from 'uniwind';
 
 const StyledIonicons = withUniwind(Ionicons);
 
@@ -36,7 +36,7 @@ export function JokeStatusSelect({ status, onStatusChange }: JokeStatusSelectPro
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`Joke status: ${status}`}
-          className="flex-row items-center gap-1 px-3 py-1.5 rounded-full bg-surface border border-default active:opacity-70 min-h-[44px]"
+          className="flex-row items-center gap-1 px-3 py-1 rounded-full bg-surface border border-default active:opacity-70"
         >
           <View className={`w-2 h-2 rounded-full ${getJokeStatusDotClass(status)}`} />
           <Text className="text-foreground text-sm font-medium capitalize ml-1">
@@ -47,7 +47,7 @@ export function JokeStatusSelect({ status, onStatusChange }: JokeStatusSelectPro
       </Select.Trigger>
       <Select.Portal>
         <Select.Overlay />
-        <Select.Content presentation="popover" className='' >
+        <Select.Content presentation="popover" >
           {STATUS_OPTIONS.map((option) => (
             <Select.Item key={option.value} value={option.value} label={option.label}>
               {({ value }) => (

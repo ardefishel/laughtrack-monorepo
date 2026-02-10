@@ -3,6 +3,7 @@ import { cors } from 'hono/cors'
 import { connectDatabase, disconnectDatabase } from './db'
 import { authRoutes } from './routes/auth-routes'
 import { syncRoutes } from './routes/sync-routes'
+import { audioRoutes } from './routes/audio-routes'
 import { errorMiddleware } from './middlewares/error'
 import { loggerMiddleware } from './middlewares/logger'
 
@@ -37,6 +38,7 @@ app.get('/health', (c) => {
 // Mount route modules
 app.route('/api/auth', authRoutes)
 app.route('/api/sync', syncRoutes)
+app.route('/api/audio', audioRoutes)
 
 // 404 handler
 app.notFound((c) => {

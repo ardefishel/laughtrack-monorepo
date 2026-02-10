@@ -106,6 +106,17 @@ syncRoutes.get('/pull', requireAuth, async (c) => {
     changes[name] = results[i]
   })
 
+  if (changes.audio_recordings) {
+    const stripFilePath = (records: unknown[]) =>
+      records.map((r) => {
+        const copy = { ...(r as Record<string, unknown>) }
+        delete copy.file_path
+        return copy
+      })
+    changes.audio_recordings.created = stripFilePath(changes.audio_recordings.created)
+    changes.audio_recordings.updated = stripFilePath(changes.audio_recordings.updated)
+  }
+
   return c.json({
     changes,
     timestamp: Date.now(),
@@ -185,13 +196,25 @@ syncRoutes.post('/push', requireAuth, async (c) => {
               }
             }
 
+            const values = {
+              id,
+              ...mapped,
+              userId: user.id,
+              serverCreatedAt: now,
+              lastModified: now,
+              isDeleted: false,
+            }
             await tx
-              .update(table)
-              .set({
-                ...mapped,
-                lastModified: now,
-              } as Record<string, unknown>)
-              .where(and(eq(table.id, id), eq(table.userId, user.id)))
+              .insert(table)
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              .values(values as any)
+              .onConflictDoUpdate({
+                target: table.id,
+                set: {
+                  ...mapped,
+                  lastModified: now,
+                } as Record<string, unknown>,
+              })
           }
         }
 

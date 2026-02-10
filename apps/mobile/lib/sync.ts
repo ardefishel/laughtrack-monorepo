@@ -4,6 +4,7 @@ import type { Database } from '@nozbe/watermelondb';
 import * as SecureStore from 'expo-secure-store';
 
 import { networkLogger } from '@/lib/loggers';
+import { uploadPendingRecordings, downloadMissingRecordings, fixLocalFilePaths } from '@/lib/audioSync';
 
 const SYNC_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL ?? (Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000');
@@ -84,6 +85,27 @@ export async function performSync(database: Database): Promise<{ success: boolea
         networkLogger.debug('[Sync] Push complete');
       }
     });
+
+    try {
+      networkLogger.info('[Sync] Starting audio file sync...');
+      await fixLocalFilePaths(database);
+      const [uploadResult, downloadResult] = await Promise.allSettled([
+        uploadPendingRecordings(database),
+        downloadMissingRecordings(database)
+      ]);
+      if (uploadResult.status === 'fulfilled') {
+        networkLogger.info(
+          `[Sync] Audio uploads: ${uploadResult.value.uploaded} uploaded, ${uploadResult.value.failed} failed`
+        );
+      }
+      if (downloadResult.status === 'fulfilled') {
+        networkLogger.info(
+          `[Sync] Audio downloads: ${downloadResult.value.downloaded} downloaded, ${downloadResult.value.failed} failed, ${downloadResult.value.skipped} skipped`
+        );
+      }
+    } catch (audioError) {
+      networkLogger.error('[Sync] Audio file sync failed (DB sync was successful):', audioError);
+    }
 
     const duration = Date.now() - startTime;
     networkLogger.info(`[Sync] Sync completed successfully in ${duration}ms`);
