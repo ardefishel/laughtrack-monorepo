@@ -1,11 +1,11 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { connectDatabase, disconnectDatabase } from './db'
-import { authRoutes } from './routes/auth-routes'
-import { syncRoutes } from './routes/sync-routes'
-import { audioRoutes } from './routes/audio-routes'
 import { errorMiddleware } from './middlewares/error'
 import { loggerMiddleware } from './middlewares/logger'
+import { authRoutes } from './routes/auth-routes'
+import { audioRoutes } from './routes/audio-routes'
+import { detect } from './routes/runtime-routes'
+import { syncRoutes } from './routes/sync-routes'
 
 const app = new Hono()
 
@@ -40,33 +40,13 @@ app.route('/api/auth', authRoutes)
 app.route('/api/sync', syncRoutes)
 app.route('/api/audio', audioRoutes)
 
+if (process.env.NODE_ENV === 'development') {
+  app.route('/api/detect', detect)
+}
+
 // 404 handler
 app.notFound((c) => {
   return c.json({ error: 'Not found' }, 404)
 })
 
-// Server startup
-const PORT = Number(process.env.PORT) ?? 3000
-
-async function startServer() {
-  await connectDatabase()
-
-  console.log(`Server starting on port ${PORT}...`)
-  console.log(`Environment: ${process.env.NODE_ENV ?? 'development'}`)
-
-  Bun.serve({
-    port: PORT,
-    fetch: app.fetch,
-  })
-
-  console.log(`Server running at http://localhost:${PORT}`)
-}
-
-// Graceful shutdown
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM received, shutting down gracefully...')
-  await disconnectDatabase()
-  process.exit(0)
-})
-
-startServer()
+export default app
