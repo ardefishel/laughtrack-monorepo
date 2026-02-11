@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAudioRecorder as useExpoAudioRecorder, setAudioModeAsync } from 'expo-audio';
 import { useAudio } from '@/context/AudioContext';
 import { hooksLogger } from '@/lib/loggers';
+import { resetAudioRouteToSpeaker } from '@/lib/audioMode';
 
 const MAX_DURATION_MS = 120000;
 
@@ -121,13 +122,15 @@ export function useAudioRecorder(recordingOptions: any): UseAudioRecorderReturn 
         setRecordedUri(uri);
         hooksLogger.info(`[useAudioRecorder] Recording stopped: duration=${elapsedTime}ms`);
       }
+
+      await resetAudioRouteToSpeaker();
     } catch (err) {
       hooksLogger.error('[useAudioRecorder] Failed to stop recording:', err);
       setError(err instanceof Error ? err : new Error('Failed to stop recording'));
     }
   }, [recorder, elapsedTime]);
 
-  const cancelRecording = useCallback(() => {
+  const cancelRecording = useCallback(async () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
@@ -138,6 +141,8 @@ export function useAudioRecorder(recordingOptions: any): UseAudioRecorderReturn 
     setError(null);
     setRecordingData(null);
     hooksLogger.debug('[useAudioRecorder] Recording cancelled');
+
+    await resetAudioRouteToSpeaker();
   }, []);
 
   return {

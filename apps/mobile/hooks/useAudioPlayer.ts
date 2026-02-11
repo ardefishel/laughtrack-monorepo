@@ -4,6 +4,7 @@ import * as FileSystem from 'expo-file-system';
 import { AudioRecording } from '@/models/AudioRecording';
 import { getAudioPathForRecording } from '@/lib/audioStorage';
 import { hooksLogger, logVerbose } from '@/lib/loggers';
+import { configurePlaybackAudioMode } from '@/lib/audioMode';
 
 interface UseRecordingPlayerReturn {
     isPlaying: boolean;
@@ -38,6 +39,10 @@ async function resolveLocalUri(recording: AudioRecording): Promise<string | null
 export function useRecordingPlayer(): UseRecordingPlayerReturn {
     const player = useExpoAudioPlayer(null);
     const playerStatus = useAudioPlayerStatus(player);
+
+    useEffect(() => {
+        configurePlaybackAudioMode();
+    }, []);
 
     logVerbose(hooksLogger, `[useRecordingPlayer] Status: isLoaded=${playerStatus?.isLoaded}, playing=${playerStatus?.playing}`);
 

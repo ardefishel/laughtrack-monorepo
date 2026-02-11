@@ -16,6 +16,14 @@ audioRoutes.post('/upload-url', requireAuth, async (c) => {
   const { recordingId } = await c.req.json<{ recordingId: string }>()
   if (!recordingId) return c.json({ error: 'recordingId is required' }, 400)
 
+  // Security: Verify recording exists and belongs to the user before generating upload URL
+  const [recording] = await db
+    .select()
+    .from(audioRecordings)
+    .where(and(eq(audioRecordings.id, recordingId), eq(audioRecordings.userId, user.id)))
+
+  if (!recording) return c.json({ error: 'Recording not found' }, 404)
+
   const objectKey = getAudioObjectKey(user.id, recordingId)
   const command = new PutObjectCommand({
     Bucket: R2_BUCKET_NAME,
@@ -60,9 +68,12 @@ audioRoutes.post('/download-url', requireAuth, async (c) => {
 
   if (!recording || !recording.remoteUrl) return c.json({ error: 'Recording not found' }, 404)
 
+  // Security: Reconstruct the key from user.id and recordingId instead of trusting recording.remoteUrl
+  // This prevents IDOR attacks where a malicious user could manipulate remoteUrl to access other users' files
+  const objectKey = getAudioObjectKey(user.id, recordingId)
   const command = new GetObjectCommand({
     Bucket: R2_BUCKET_NAME,
-    Key: recording.remoteUrl,
+    Key: objectKey,
   })
 
   const url = await getSignedUrl(r2Client, command, { expiresIn: 600 })

@@ -2,39 +2,16 @@ import { Platform } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import type { Database } from '@nozbe/watermelondb';
 import { Q } from '@nozbe/watermelondb';
-import * as SecureStore from 'expo-secure-store';
 
 import { AudioRecording, AUDIO_RECORDINGS_TABLE } from '@/models/AudioRecording';
 import { getAudioPathForRecording, ensureAudioDirectory } from '@/lib/audioStorage';
 import { createNamespacedLogger } from '@/lib/loggers';
+import { getAuthCookieHeader } from '@/lib/auth-client';
 
 const syncLogger = createNamespacedLogger('network');
 
 const SYNC_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL ?? (Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000');
-
-const COOKIE_STORE_KEY = 'laughtrack_cookie';
-
-async function getAuthCookieHeader(): Promise<string> {
-  const raw = await SecureStore.getItemAsync(COOKIE_STORE_KEY);
-  if (!raw) {
-    throw new Error('No session found. Please sign in first.');
-  }
-  let parsed: Record<string, { value: string; expires: string | null }> = {};
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    throw new Error('Invalid session data. Please sign in again.');
-  }
-  const cookie = Object.entries(parsed)
-    .filter(([, v]) => !v.expires || new Date(v.expires) > new Date())
-    .map(([key, v]) => `${key}=${v.value}`)
-    .join('; ');
-  if (!cookie) {
-    throw new Error('Session expired. Please sign in again.');
-  }
-  return cookie;
-}
 
 export async function uploadPendingRecordings(
   database: Database
@@ -92,6 +69,8 @@ export async function uploadPendingRecordings(
           if (!confirmResponse.ok) {
             const confirmText = await confirmResponse.text();
             syncLogger.error(`[AudioSync] Failed to confirm upload for ${recording.id}: ${confirmText}`);
+            failed++;
+            continue;
           }
 
           await database.write(async () => {
@@ -209,6 +188,19 @@ export async function fixLocalFilePaths(database: Database): Promise<number> {
     for (const recording of recordings) {
       const expectedPath = getAudioPathForRecording(recording.id);
       if (!recording.filePath || recording.filePath !== expectedPath) {
+        // Check if file exists at the current path before updating
+        if (recording.filePath) {
+          const currentFileInfo = await FileSystem.getInfoAsync(recording.filePath);
+          if (currentFileInfo.exists) {
+            // File exists at old path, move it to canonical path first
+            try {
+              await FileSystem.moveAsync({ from: recording.filePath, to: expectedPath });
+            } catch (moveError) {
+              syncLogger.warn(`[AudioSync] Failed to move file from ${recording.filePath} to ${expectedPath}:`, moveError);
+              // Continue to update DB anyway - the file might already be moved or corrupted
+            }
+          }
+        }
         await database.write(async () => {
           await recording.update((r) => {
             r.filePath = expectedPath;
