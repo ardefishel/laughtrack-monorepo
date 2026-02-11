@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAudioPlayer as useExpoAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
+import * as FileSystem from 'expo-file-system';
 import { AudioRecording } from '@/models/AudioRecording';
+import { getAudioPathForRecording } from '@/lib/audioStorage';
 import { hooksLogger, logVerbose } from '@/lib/loggers';
 
 interface UseRecordingPlayerReturn {
@@ -15,6 +17,23 @@ interface UseRecordingPlayerReturn {
 }
 
 const LOADING_TIMEOUT_MS = 10000;
+
+async function resolveLocalUri(recording: AudioRecording): Promise<string | null> {
+    const canonicalPath = getAudioPathForRecording(recording.id);
+    try {
+        const info = await FileSystem.getInfoAsync(canonicalPath);
+        if (info.exists) return canonicalPath;
+    } catch {}
+
+    if (recording.filePath && recording.filePath !== canonicalPath) {
+        try {
+            const info = await FileSystem.getInfoAsync(recording.filePath);
+            if (info.exists) return recording.filePath;
+        } catch {}
+    }
+
+    return null;
+}
 
 export function useRecordingPlayer(): UseRecordingPlayerReturn {
     const player = useExpoAudioPlayer(null);
@@ -65,18 +84,29 @@ export function useRecordingPlayer(): UseRecordingPlayerReturn {
     const play = useCallback((recording: AudioRecording) => {
         hooksLogger.debug(`[useRecordingPlayer] Playing recording: ${recording.id}, uri: ${recording.filePath}`);
         setLoadError(null);
-        player.replace({ uri: recording.filePath });
-        setActiveRecordingId(recording.id);
-        setPendingPlay(true);
         setIsLoading(true);
+        setActiveRecordingId(recording.id);
 
-        clearLoadingTimeout();
-        loadingTimeoutRef.current = setTimeout(() => {
-            hooksLogger.error('[useRecordingPlayer] Audio loading timeout - file may not exist');
-            setLoadError('Audio file not found or inaccessible');
-            setIsLoading(false);
-            setPendingPlay(false);
-        }, LOADING_TIMEOUT_MS);
+        resolveLocalUri(recording).then((uri) => {
+            if (!uri) {
+                hooksLogger.error(`[useRecordingPlayer] Audio file not found locally for recording: ${recording.id}`);
+                setLoadError('Audio file not available. Please sync to download recordings from the server.');
+                setIsLoading(false);
+                return;
+            }
+
+            hooksLogger.debug(`[useRecordingPlayer] Loading local file: ${uri}`);
+            player.replace({ uri });
+            setPendingPlay(true);
+
+            clearLoadingTimeout();
+            loadingTimeoutRef.current = setTimeout(() => {
+                hooksLogger.error('[useRecordingPlayer] Audio loading timeout - file may be corrupted');
+                setLoadError('Audio file could not be loaded. The file may be corrupted.');
+                setIsLoading(false);
+                setPendingPlay(false);
+            }, LOADING_TIMEOUT_MS);
+        });
     }, [player, clearLoadingTimeout]);
 
     const pause = useCallback(() => {

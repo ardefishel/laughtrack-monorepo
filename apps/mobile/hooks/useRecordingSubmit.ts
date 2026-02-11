@@ -44,11 +44,9 @@ export function useRecordingSubmit(jokeId?: string): UseRecordingSubmitReturn {
         let targetJokeId: string;
 
         if (jokeId) {
-          // Add to existing joke
           hooksLogger.debug(`[useRecordingSubmit] Adding to existing joke: ${jokeId}`);
           targetJokeId = jokeId;
         } else {
-          // Create new joke
           hooksLogger.debug('[useRecordingSubmit] Creating new joke');
           const created = await createJoke({
             content_html: description.trim(),
