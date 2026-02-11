@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
+    "dev:vercel": "vercel dev",
     "build": "tsc",
     "start": "bun run dist/index.js",
     "db:generate": "drizzle-kit generate",
