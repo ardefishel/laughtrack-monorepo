@@ -17,7 +17,7 @@ detect.get("/runtime", (c) => {
         isNodejs: process.env.NEXT_RUNTIME === "nodejs",
 
         inBunContext:
-            typeof globalThis.Bun !== "undefined",
+            typeof (globalThis as Record<string, unknown>).Bun !== 'undefined',
 
         // If we’re on Node.js until `process` is present and node‑specific features exist
         hasProcess: typeof process !== "undefined",
