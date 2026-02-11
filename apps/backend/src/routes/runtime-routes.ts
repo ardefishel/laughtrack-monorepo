@@ -9,16 +9,13 @@ detect.get("/runtime", (c) => {
         // Some Edge‑specific built‑in globals
         isGlobalFetch: typeof globalThis.fetch !== "undefined",
         isWebCrypto: typeof globalThis.crypto !== "undefined",
-        isDurableObjectWorker:
-            typeof globalThis.workerd !== "undefined",
+
         isNextRuntime: process.env.NEXT_RUNTIME,
         isVercel: !!process.env.VERCEL,
         isVercelRegion: process.env.VERCEL_REGION,
         isEdge: process.env.NEXT_RUNTIME === "edge",
         isNodejs: process.env.NEXT_RUNTIME === "nodejs",
-        inDenoContext:
-            typeof Deno !== "undefined" &&
-            typeof Deno.version !== "undefined",
+
         inBunContext:
             typeof globalThis.Bun !== "undefined",
 
