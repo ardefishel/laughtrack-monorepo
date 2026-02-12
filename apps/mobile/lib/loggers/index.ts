@@ -1,3 +1,4 @@
+// Re-export from @laughtrack/logger for React Native
 export {
   createNamespacedLogger,
   defaultLogger,
@@ -7,7 +8,7 @@ export {
   networkLogger,
   type LogLevel,
   type LogNamespace,
-} from '../logger';
+} from '@laughtrack/logger/react-native';
 
 const isVerboseLoggingEnabled = (): boolean => {
   return __DEV__ && process.env.EXPO_PUBLIC_VERBOSE_LOGS === 'true';
