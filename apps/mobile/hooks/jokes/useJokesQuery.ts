@@ -5,7 +5,7 @@ import { useDatabase } from '@/context/DatabaseContext';
 import { Joke, JOKES_TABLE } from '@/models/Joke';
 import { Tag, TAGS_TABLE } from '@/models/Tag';
 import { JokeTag, JOKE_TAGS_TABLE } from '@/models/JokeTag';
-import { RawJoke } from '@/lib/types';
+import { RawJoke } from '@laughtrack/shared-types';
 import { jokeToPlain, fetchRecordingCounts, fetchTagsForJokes } from './transformers';
 import { normalizeTag } from '@/lib/tagUtils';
 import { hooksLogger, logVerbose } from '@/lib/loggers';

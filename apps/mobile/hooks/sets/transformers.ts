@@ -1,6 +1,6 @@
 import { JokeSet, JOKE_SETS_TABLE } from '@/models/JokeSet';
 import { JokeSetItem, JOKE_SET_ITEMS_TABLE } from '@/models/JokeSetItem';
-import type { RawJokeSet, RawJokeSetItem } from '@/lib/types';
+import type { RawJokeSet, RawJokeSetItem } from '@laughtrack/shared-types';
 
 /**
  * Transforms a WatermelonDB JokeSet model to a plain RawJokeSet object

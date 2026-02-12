@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Observable } from 'rxjs';
 import { useDatabase } from '@/context/DatabaseContext';
 import { JokeSet, JOKE_SETS_TABLE } from '@/models/JokeSet';
-import type { RawJokeSet } from '@/lib/types';
+import type { RawJokeSet } from '@laughtrack/shared-types';
 import { jokeSetToPlain } from './transformers';
 import { hooksLogger } from '@/lib/loggers';
 

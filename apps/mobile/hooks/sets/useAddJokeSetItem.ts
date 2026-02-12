@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { Q } from '@nozbe/watermelondb';
 import { useDatabase } from '@/context/DatabaseContext';
 import { JokeSetItem, JOKE_SET_ITEMS_TABLE } from '@/models/JokeSetItem';
-import type { RawJokeSetItem, JokeSetItemType } from '@/lib/types';
+import type { RawJokeSetItem, JokeSetItemType } from '@laughtrack/shared-types';
 import { jokeSetItemToPlain } from './transformers';
 import { hooksLogger } from '@/lib/loggers';
 

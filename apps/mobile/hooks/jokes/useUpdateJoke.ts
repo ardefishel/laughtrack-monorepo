@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useDatabase } from '@/context/DatabaseContext';
 import { Joke, JOKES_TABLE } from '@/models/Joke';
-import { JokeStatus } from '@/lib/types';
+import { JokeStatus } from '@laughtrack/shared-types';
 import { hooksLogger } from '@/lib/loggers';
 
 export function useUpdateJoke(): {

@@ -5,7 +5,7 @@ import { Pressable, Text, View } from 'react-native';
 import { withUniwind } from 'uniwind';
 
 import { getJokeSetStatusDotClass } from '@/lib/status';
-import type { JokeSetStatus } from '@/lib/types';
+import type { JokeSetStatus } from '@laughtrack/shared-types';
 
 const StyledIonicons = withUniwind(Ionicons);
 

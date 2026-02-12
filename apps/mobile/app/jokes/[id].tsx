@@ -21,7 +21,7 @@ import { useDatabase } from '@/context/DatabaseContext';
 import { useDeleteJoke, useJoke, useJokeTags, useUpdateJoke } from '@/hooks/jokes';
 import { extractTextFromHtml } from '@/lib/htmlParser';
 import { logVerbose, uiLogger } from '@/lib/loggers';
-import { JokeStatus } from '@/lib/types';
+import { JokeStatus } from '@laughtrack/shared-types';
 import { AUDIO_RECORDINGS_TABLE, AudioRecording } from '@/models/AudioRecording';
 import { TagEditor } from '@/components/jokes/TagEditor';
 

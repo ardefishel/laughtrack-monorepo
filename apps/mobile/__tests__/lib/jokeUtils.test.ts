@@ -1,5 +1,5 @@
 import { filterJokesBySearch, isValidJokeStatus, getStatusColor } from '@/lib/jokeUtils';
-import type { Joke, JokeStatus } from '@/lib/types';
+import type { Joke, JokeStatus } from '@laughtrack/shared-types';
 
 const mockJokes: Joke[] = [
   {

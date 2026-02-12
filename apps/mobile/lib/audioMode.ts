@@ -1,6 +1,6 @@
 import { setAudioModeAsync, AudioMode } from 'expo-audio';
 import { Platform } from 'react-native';
-import { createNamespacedLogger } from '@/lib/logger';
+import { createNamespacedLogger } from '@/lib/loggers';
 
 const audioModeLogger = createNamespacedLogger('audio');
 

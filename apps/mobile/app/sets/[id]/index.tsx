@@ -1,6 +1,6 @@
 import { SortableJokeList } from '@/components/sets';
 import { useDatabase } from '@/context/DatabaseContext';
-import { RawJokeSetItem, RawJoke } from '@/lib/types';
+import { RawJokeSetItem, RawJoke } from '@laughtrack/shared-types';
 import { useJokeSet, useJokeSetItems, useAddJokeSetItem, useRemoveJokeSetItem } from '@/hooks/sets';
 import { SetJokeItem } from '@/lib/mocks';
 import { useSetEditing } from '@/context/SetEditingContext';

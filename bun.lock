@@ -16,6 +16,8 @@
         "@aws-sdk/client-s3": "^3.986.0",
         "@aws-sdk/s3-request-presigner": "^3.986.0",
         "@better-auth/expo": "^1.4.18",
+        "@laughtrack/logger": "*",
+        "@laughtrack/shared-types": "*",
         "better-auth": "^1.1.0",
         "dotenv": "^16.0.0",
         "drizzle-kit": "^0.30.0",
@@ -40,6 +42,8 @@
         "@better-auth/expo": "^1.4.18",
         "@expo/vector-icons": "15.0.3",
         "@gorhom/bottom-sheet": "5.2.8",
+        "@laughtrack/logger": "*",
+        "@laughtrack/shared-types": "*",
         "@nozbe/watermelondb": "0.28.0",
         "@react-native-async-storage/async-storage": "2.2.0",
         "@react-navigation/bottom-tabs": "7.4.0",
@@ -98,6 +102,25 @@
         "tailwindcss": "4.1.18",
         "typescript": "5.9.2",
         "uniwind": "1.2.7",
+      },
+    },
+    "packages/logger": {
+      "name": "@laughtrack/logger",
+      "version": "0.1.0",
+      "devDependencies": {
+        "@types/node": "^20.0.0",
+        "react-native-logs": "^5.5.0",
+        "typescript": "^5.9.0",
+      },
+      "optionalDependencies": {
+        "react-native-logs": ">=5.0.0",
+      },
+    },
+    "packages/shared-types": {
+      "name": "@laughtrack/shared-types",
+      "version": "0.1.0",
+      "devDependencies": {
+        "typescript": "^5.9.0",
       },
     },
   },
@@ -597,6 +620,10 @@
     "@jsamr/counter-style": ["@jsamr/counter-style@2.0.2", "", {}, "sha512-2mXudGVtSzVxWEA7B9jZLKjoXUeUFYDDtFrQoC0IFX9/Dszz4t1vZOmafi3JSw/FxD+udMQ+4TAFR8Qs0J3URQ=="],
 
     "@jsamr/react-native-li": ["@jsamr/react-native-li@2.3.1", "", { "peerDependencies": { "@jsamr/counter-style": "^1.0.0 || ^2.0.0", "react": "*", "react-native": "*" } }, "sha512-Qbo4NEj48SQ4k8FZJHFE2fgZDKTWaUGmVxcIQh3msg5JezLdTMMHuRRDYctfdHI6L0FZGObmEv3haWbIvmol8w=="],
+
+    "@laughtrack/logger": ["@laughtrack/logger@workspace:packages/logger"],
+
+    "@laughtrack/shared-types": ["@laughtrack/shared-types@workspace:packages/shared-types"],
 
     "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@0.2.12", "", { "dependencies": { "@emnapi/core": "^1.4.3", "@emnapi/runtime": "^1.4.3", "@tybys/wasm-util": "^0.10.0" } }, "sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ=="],
 

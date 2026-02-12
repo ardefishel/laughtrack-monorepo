@@ -2,7 +2,7 @@ import { AudioIndicator } from '@/components/audio/AudioIndicator';
 import { MinimalStatusIndicator } from '@/components/ui/MinimalStatusIndicator';
 import { formatTimeAgo } from '@/lib/dateUtils';
 import { extractTitleAndDescription } from '@/lib/htmlParser';
-import { Joke as JokeType } from '@/lib/types';
+import { Joke as JokeType } from '@laughtrack/shared-types';
 import { Card, Separator } from 'heroui-native';
 import React, { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';

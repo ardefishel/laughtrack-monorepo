@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react-native';
 import { SetCard } from '@/components/sets/SetCard';
-import type { RawJokeSet } from '@/lib/types';
+import type { RawJokeSet } from '@laughtrack/shared-types';
 
 const mockJokeSet: RawJokeSet = {
   id: '1',

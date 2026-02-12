@@ -1,7 +1,7 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, date, writer, relation } from '@nozbe/watermelondb/decorators';
 import { JokeSet } from './JokeSet';
-import type { JokeSetItemType } from '@/lib/types';
+import type { JokeSetItemType } from '@laughtrack/shared-types';
 
 export const JOKE_SET_ITEMS_TABLE = 'joke_set_items';
 

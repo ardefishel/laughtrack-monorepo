@@ -1,4 +1,4 @@
-import { Joke, JokeStatus } from './types';
+import { Joke, JokeStatus } from '@laughtrack/shared-types';
 
 /**
  * Filters jokes by search query (matches content or tags)

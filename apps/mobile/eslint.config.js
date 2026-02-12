@@ -7,4 +7,12 @@ module.exports = defineConfig([
   {
     ignores: ['dist/*', 'android/*', 'ios/*'],
   },
+  {
+    settings: {
+      'import/ignore': ['@laughtrack/'],
+    },
+    rules: {
+      'import/no-unresolved': ['error', { ignore: ['^@laughtrack/'] }],
+    },
+  },
 ]);

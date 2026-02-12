@@ -3,7 +3,7 @@ import { Q } from '@nozbe/watermelondb';
 import { Observable } from 'rxjs';
 import { useDatabase } from '@/context/DatabaseContext';
 import { JokeSet, JOKE_SETS_TABLE } from '@/models/JokeSet';
-import type { RawJokeSet } from '@/lib/types';
+import type { RawJokeSet } from '@laughtrack/shared-types';
 import { jokeSetToPlain } from './transformers';
 import { hooksLogger, logVerbose } from '@/lib/loggers';
 

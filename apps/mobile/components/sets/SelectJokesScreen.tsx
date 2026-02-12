@@ -4,7 +4,7 @@ import { useAddJokeSetItem, useJokeSetItems } from '@/hooks/sets';
 import { extractTitleAndDescription } from '@/lib/htmlParser';
 import { uiLogger } from '@/lib/loggers';
 import { SetJokeItem } from '@/lib/mocks';
-import { RawJoke, RawJokeSetItem } from '@/lib/types';
+import { RawJoke, RawJokeSetItem } from '@laughtrack/shared-types';
 import { Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import { useLocalSearchParams, useRouter } from 'expo-router';

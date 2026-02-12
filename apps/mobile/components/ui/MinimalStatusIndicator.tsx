@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { View, Text } from 'react-native';
 import { getJokeStatusDotClass } from '@/lib/status';
-import { JokeStatus } from '@/lib/types';
+import { JokeStatus } from '@laughtrack/shared-types';
 
 interface MinimalStatusIndicatorProps {
   status: JokeStatus;

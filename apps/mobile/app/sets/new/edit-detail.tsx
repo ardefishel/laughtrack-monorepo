@@ -1,6 +1,6 @@
 import { SetDetailsForm } from '@/components/sets';
 import { useSetEditing } from '@/context/SetEditingContext';
-import type { JokeSetStatus } from '@/lib/types';
+import type { JokeSetStatus } from '@laughtrack/shared-types';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRouter } from 'expo-router';
 import { useCallback, useLayoutEffect, useState } from 'react';

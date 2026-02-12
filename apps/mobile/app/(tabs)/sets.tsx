@@ -8,7 +8,7 @@ import { SwipeableRow } from '@/components/ui/SwipeableRow';
 import { useDeleteJokeSet } from '@/hooks/sets/useDeleteJokeSet';
 import { useJokeSetsQuery } from '@/hooks/sets/useJokeSetsQuery';
 import { logVerbose, uiLogger } from '@/lib/loggers';
-import type { RawJokeSet } from '@/lib/types';
+import type { RawJokeSet } from '@laughtrack/shared-types';
 import { Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';

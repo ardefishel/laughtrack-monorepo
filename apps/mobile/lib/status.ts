@@ -1,4 +1,4 @@
-import type { JokeSetStatus, JokeStatus } from '@/lib/types';
+import type { JokeSetStatus, JokeStatus } from '@laughtrack/shared-types';
 
 const JOKE_SET_STATUSES: readonly string[] = ['performed', 'bombed', 'killed'];
 

@@ -20,4 +20,4 @@ export type {
   JokeSetItem,
   RawJokeSetItem,
   JokeSetItemType,
-} from '@/lib/types';
+} from '@laughtrack/shared-types';

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Observable } from 'rxjs';
 import { useDatabase } from '@/context/DatabaseContext';
 import { Joke, JOKES_TABLE } from '@/models/Joke';
-import { RawJoke } from '@/lib/types';
+import { RawJoke } from '@laughtrack/shared-types';
 import { jokeToPlain, fetchRecordingCounts } from './transformers';
 import { hooksLogger } from '@/lib/loggers';
 

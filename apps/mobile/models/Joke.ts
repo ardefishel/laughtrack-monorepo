@@ -2,7 +2,7 @@ import { Model, Query } from '@nozbe/watermelondb';
 import { field, date, writer, children } from '@nozbe/watermelondb/decorators';
 import { AudioRecording } from './AudioRecording';
 import type { JokeTag } from './JokeTag';
-import { JokeStatus } from '@/lib/types';
+import { JokeStatus } from '@laughtrack/shared-types';
 
 export { JokeStatus };
 

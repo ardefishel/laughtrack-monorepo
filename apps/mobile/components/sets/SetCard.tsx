@@ -3,7 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { Card } from 'heroui-native';
 import { Ionicons } from '@expo/vector-icons';
 import { withUniwind } from 'uniwind';
-import type { RawJokeSet } from '@/lib/types';
+import type { RawJokeSet } from '@laughtrack/shared-types';
 import { formatTimeAgo } from '@/lib/dateUtils';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 

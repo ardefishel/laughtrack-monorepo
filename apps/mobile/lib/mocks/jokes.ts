@@ -1,4 +1,4 @@
-import { Joke } from '../types';
+import { Joke } from '@laughtrack/shared-types';
 import { filterJokesBySearch } from '../jokeUtils';
 
 export { filterJokesBySearch } from '../jokeUtils';
@@ -10,6 +10,7 @@ export const mockJokes: Joke[] = [
     status: 'published',
     created_at: '2024-01-15T10:30:00Z',
     updated_at: '2024-01-15T10:30:00Z',
+    recordings_count: 0,
     tags: ['programming', 'tech', 'puns'],
   },
   {
@@ -18,6 +19,7 @@ export const mockJokes: Joke[] = [
     status: 'published',
     created_at: '2024-01-20T14:45:00Z',
     updated_at: '2024-01-20T14:45:00Z',
+    recordings_count: 0,
     tags: ['technology', 'humor'],
   },
   {
@@ -26,6 +28,7 @@ export const mockJokes: Joke[] = [
     status: 'published',
     created_at: '2024-02-01T09:15:00Z',
     updated_at: '2024-02-01T09:15:00Z',
+    recordings_count: 0,
     tags: ['programming', 'money', 'tech'],
   },
   {
@@ -34,6 +37,7 @@ export const mockJokes: Joke[] = [
     status: 'published',
     created_at: '2024-02-10T16:20:00Z',
     updated_at: '2024-02-10T16:20:00Z',
+    recordings_count: 0,
     tags: ['math', 'nerdy', 'classic'],
   },
   {
@@ -42,6 +46,7 @@ export const mockJokes: Joke[] = [
     status: 'published',
     created_at: '2024-02-15T11:00:00Z',
     updated_at: '2024-02-15T11:00:00Z',
+    recordings_count: 0,
     tags: ['programming', 'java', 'puns'],
   },
   {
@@ -50,6 +55,7 @@ export const mockJokes: Joke[] = [
     status: 'published',
     created_at: '2024-02-20T13:30:00Z',
     updated_at: '2024-02-20T13:30:00Z',
+    recordings_count: 0,
     tags: ['programming', 'sql', 'database'],
   },
   {
@@ -58,6 +64,7 @@ export const mockJokes: Joke[] = [
     status: 'draft',
     created_at: '2024-02-25T08:45:00Z',
     updated_at: '2024-02-25T08:45:00Z',
+    recordings_count: 0,
     tags: ['programming', 'javascript', 'puns'],
   },
   {
@@ -66,6 +73,7 @@ export const mockJokes: Joke[] = [
     status: 'published',
     created_at: '2024-03-01T15:10:00Z',
     updated_at: '2024-03-01T15:10:00Z',
+    recordings_count: 0,
     tags: ['wordplay', 'classic'],
   },
   {
@@ -74,6 +82,7 @@ export const mockJokes: Joke[] = [
     status: 'published',
     created_at: '2024-03-05T12:00:00Z',
     updated_at: '2024-03-05T12:00:00Z',
+    recordings_count: 0,
     tags: ['classic', 'puns', 'work'],
   },
   {
@@ -82,6 +91,7 @@ export const mockJokes: Joke[] = [
     status: 'published',
     created_at: '2024-03-10T10:20:00Z',
     updated_at: '2024-03-10T10:20:00Z',
+    recordings_count: 0,
     tags: ['food', 'puns', 'dad-jokes'],
   },
 ];

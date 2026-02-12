@@ -3,7 +3,7 @@ import { Joke } from '@/models/Joke';
 import { AudioRecording, AUDIO_RECORDINGS_TABLE } from '@/models/AudioRecording';
 import { Tag, TAGS_TABLE } from '@/models/Tag';
 import { JokeTag, JOKE_TAGS_TABLE } from '@/models/JokeTag';
-import { RawJoke } from '@/lib/types';
+import { RawJoke } from '@laughtrack/shared-types';
 
 export function jokeToPlain(joke: Joke, recordingsCount: number = 0, tags?: string[]): RawJoke {
   return {

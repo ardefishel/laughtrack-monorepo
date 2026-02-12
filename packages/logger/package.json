@@ -2,29 +2,16 @@
   "name": "@laughtrack/logger",
   "version": "0.1.0",
   "description": "Cross-platform logging utilities for Laughtrack",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    },
-    "./react-native": {
-      "types": "./dist/react-native/index.d.ts",
-      "import": "./dist/react-native/index.mjs",
-      "require": "./dist/react-native/index.js"
-    },
-    "./node": {
-      "types": "./dist/node/index.d.ts",
-      "import": "./dist/node/index.mjs",
-      "require": "./dist/node/index.js"
-    },
+    ".": "./src/index.ts",
+    "./react-native": "./src/react-native/index.ts",
+    "./node": "./src/node/index.ts",
     "./package.json": "./package.json"
   },
   "files": [
-    "dist"
+    "src"
   ],
   "scripts": {
     "build": "tsc",

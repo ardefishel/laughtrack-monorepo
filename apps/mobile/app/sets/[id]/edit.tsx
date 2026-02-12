@@ -1,7 +1,7 @@
 import { SetDetailsForm } from '@/components/sets';
 import { useJokeSet, useUpdateJokeSet } from '@/hooks/sets';
 import { uiLogger } from '@/lib/loggers';
-import type { JokeSetStatus } from '@/lib/types';
+import type { JokeSetStatus } from '@laughtrack/shared-types';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';

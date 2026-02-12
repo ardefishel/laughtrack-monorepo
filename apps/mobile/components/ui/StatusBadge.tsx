@@ -1,6 +1,6 @@
 import { getStatusColor } from '@/lib/jokeUtils';
 import { getStatusDotClass } from '@/lib/status';
-import { JokeSetStatus, JokeStatus } from '@/lib/types';
+import { JokeSetStatus, JokeStatus } from '@laughtrack/shared-types';
 import { Chip } from 'heroui-native';
 import { Text, View } from 'react-native';
 

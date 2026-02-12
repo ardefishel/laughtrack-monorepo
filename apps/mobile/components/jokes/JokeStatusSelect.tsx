@@ -1,5 +1,5 @@
 import { getJokeStatusDotClass } from '@/lib/status';
-import { JokeStatus } from '@/lib/types';
+import { JokeStatus } from '@laughtrack/shared-types';
 import { Ionicons } from '@expo/vector-icons';
 import { Select } from 'heroui-native';
 import { Pressable, Text, View } from 'react-native';
