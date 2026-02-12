@@ -1,2 +1,2 @@
-// Barrel export for shared types
-// Type definitions will be added in subsequent tasks
+export * from './joke';
+export * from './joke-set';
