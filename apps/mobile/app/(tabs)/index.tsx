@@ -1,10 +1,12 @@
 import { AudioRecorderButton } from '@/components/audio/AudioRecorderButton';
 import { AnimatedSearchBar } from '@/components/jokes/AnimatedSearchBar';
 import { JokeCard } from '@/components/jokes/JokeCard';
+import { TagFilterBar } from '@/components/jokes/TagFilterBar';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { SwipeableRow } from '@/components/ui/SwipeableRow';
 import { RawJoke, useCreateJoke, useDeleteJoke, useJokesQuery } from '@/hooks/jokes';
+import { useAllTags } from '@/hooks/jokes/useAllTags';
 import { logVerbose, uiLogger } from '@/lib/loggers';
 import { Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
@@ -27,9 +29,23 @@ export default function JokesScreen() {
   const [newJokeText, setNewJokeText] = useState('');
   const [shouldScrollToTop, setShouldScrollToTop] = useState(false);
   const [isQuickCapture, setIsQuickCapture] = useState(true);
-  const { jokes, isLoading, error, refetch } = useJokesQuery(searchQuery);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const { tags: allTags } = useAllTags();
+  const { jokes, isLoading, error, refetch } = useJokesQuery(searchQuery, selectedTags);
   const { createJoke, isLoading: isCreating } = useCreateJoke();
   const { deleteJoke } = useDeleteJoke();
+
+  const hasActiveFilters = searchQuery.length > 0 || selectedTags.length > 0;
+
+  const handleToggleTag = useCallback((tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  }, []);
+
+  const handleClearTags = useCallback(() => {
+    setSelectedTags([]);
+  }, []);
 
 
   useEffect(() => {
@@ -173,6 +189,16 @@ export default function JokesScreen() {
           keyExtractor={(item) => item.id}
           extraData={jokes}
           contentContainerStyle={{ paddingVertical: 12, paddingBottom: 100 }}
+          ListHeaderComponent={
+            allTags.length > 0 ? (
+              <TagFilterBar
+                tags={allTags}
+                selectedTags={selectedTags}
+                onToggleTag={handleToggleTag}
+                onClearAll={handleClearTags}
+              />
+            ) : null
+          }
           ListEmptyComponent={
             <View className="flex-1 justify-center items-center py-20">
               {isLoading ? (
@@ -181,10 +207,10 @@ export default function JokesScreen() {
                 <>
                   <StyledIonicons name="chatbubble-ellipses-outline" size={48} className="text-muted mb-4" />
                   <Text className="text-foreground text-lg font-medium">
-                    {searchQuery ? 'No jokes found' : 'No jokes yet'}
+                    {hasActiveFilters ? 'No jokes found' : 'No jokes yet'}
                   </Text>
                   <Text className="text-muted text-sm mt-1">
-                    {searchQuery ? 'Try a different search' : 'Add your first joke to get started'}
+                    {hasActiveFilters ? 'Try a different search or filter' : 'Add your first joke to get started'}
                   </Text>
                 </>
               )}

@@ -89,7 +89,7 @@ async function fetchFilteredJokes(
   return records.map(joke => jokeToPlain(joke, recordingCounts.get(joke.id) || 0, tagsMap.get(joke.id) || []));
 }
 
-export function useJokesQuery(searchQuery?: string): {
+export function useJokesQuery(searchQuery?: string, chipTagFilters?: string[]): {
   jokes: RawJoke[];
   isLoading: boolean;
   error: Error | null;
@@ -103,7 +103,8 @@ export function useJokesQuery(searchQuery?: string): {
   const fetchJokes = useCallback(async () => {
     logVerbose(hooksLogger, '[useJokesQuery] MANUAL FETCH triggered');
     try {
-      const { textQuery, tagFilters } = parseSearchInput(searchQuery ?? '');
+      const { textQuery, tagFilters: searchTagFilters } = parseSearchInput(searchQuery ?? '');
+      const tagFilters = [...new Set([...searchTagFilters, ...(chipTagFilters ?? [])])];
       const plainJokes = await fetchFilteredJokes(database, textQuery, tagFilters);
       logVerbose(hooksLogger, `[useJokesQuery] MANUAL FETCH got ${plainJokes.length} records`);
       setJokes(plainJokes);
@@ -114,12 +115,13 @@ export function useJokesQuery(searchQuery?: string): {
       setError(err instanceof Error ? err : new Error('Failed to fetch jokes'));
       setIsLoading(false);
     }
-  }, [database, searchQuery]);
+  }, [database, searchQuery, chipTagFilters]);
 
   useEffect(() => {
     setIsLoading(true);
 
-    const { textQuery, tagFilters } = parseSearchInput(searchQuery ?? '');
+    const { textQuery, tagFilters: searchTagFilters } = parseSearchInput(searchQuery ?? '');
+    const tagFilters = [...new Set([...searchTagFilters, ...(chipTagFilters ?? [])])];
     const hasTagFilters = tagFilters.length > 0;
 
     const resolve = async () => {
@@ -168,7 +170,7 @@ export function useJokesQuery(searchQuery?: string): {
       jokeSub.unsubscribe();
       jokeTagSub?.unsubscribe();
     };
-  }, [database, searchQuery]);
+  }, [database, searchQuery, chipTagFilters]);
 
   return { jokes, isLoading, error, refetch: fetchJokes };
 }

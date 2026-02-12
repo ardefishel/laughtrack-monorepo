@@ -8,6 +8,7 @@ export { useCreateJoke } from './useCreateJoke';
 export { useUpdateJoke } from './useUpdateJoke';
 export { useDeleteJoke } from './useDeleteJoke';
 export { useJokeTags } from './useJokeTags';
+export { useAllTags } from './useAllTags';
 
 // Re-export types from lib/types for convenience
 export type { RawJoke, Joke, JokeStatus, JokeWithUnifiedDates } from '@/lib/types';
