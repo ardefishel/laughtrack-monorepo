@@ -1,7 +1,12 @@
 # AGENTS.md - Laughtrack
 
-Build/lint/test: `npm install`, `npm start`, `npm run android`, `npm run ios`, `npm run lint`, `npm run reset-project`.
-Single test: no test framework configured; add Jest + `@testing-library/react-native` if needed.
+Monorepo: Bun workspaces (`apps/mobile`, `apps/backend`). Run from root.
+Scripts (root): `bun run dev` (both apps), `bun run check` (lint all), `bun run lint` (lint all), `bun run clean` (nuke all).
+Mobile: `bun run mobile`, `bun run mobile:ios`, `bun run mobile:android`, `bun run mobile:lint`, `bun run mobile:test`.
+Backend: `bun run backend`, `bun run backend:build`, `bun run backend:check`, `bun run backend:format`.
+DB: `bun run db:generate`, `bun run db:migrate`, `bun run db:push`, `bun run db:studio`.
+Docker: `bun run docker:up`, `bun run docker:down`, `bun run docker:logs`.
+Single test: Jest + `@testing-library/react-native` configured in mobile.
 Architecture: Expo Router pages in `app/` (tabs, jokes, sets, learn); reusable UI in `components/`; state in `context/` + `contexts/`.
 Data: WatermelonDB models in `models/`, database wiring in `db/`; utilities/types/logging in `lib/`.
 Styling: Tailwind v4 + Uniwind with HeroUI Native semantic colors (e.g. `bg-background`, `text-foreground`). Prefer `-accent` semantic colors (e.g. `bg-accent`, `text-accent-foreground`) over `-primary` for theming consistency. Prefer HeroUI Native components for UI before reaching for custom or React Native primitives.

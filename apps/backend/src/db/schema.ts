@@ -128,6 +128,39 @@ export const audioRecordings = pgTable('audio_recordings', {
   isDeleted: boolean('is_deleted').notNull().default(false),
 })
 
+// Tags table
+export const tags = pgTable('tags', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  createdAt: bigint('created_at', { mode: 'number' }),
+  updatedAt: bigint('updated_at', { mode: 'number' }),
+  serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
+  lastModified: timestamp('last_modified').notNull().defaultNow(),
+  isDeleted: boolean('is_deleted').notNull().default(false),
+})
+
+// Joke tags table
+export const jokeTags = pgTable('joke_tags', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  jokeId: text('joke_id')
+    .notNull()
+    .references(() => jokes.id, { onDelete: 'cascade' }),
+  tagId: text('tag_id')
+    .notNull()
+    .references(() => tags.id, { onDelete: 'cascade' }),
+  createdAt: bigint('created_at', { mode: 'number' }),
+  updatedAt: bigint('updated_at', { mode: 'number' }),
+  serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
+  lastModified: timestamp('last_modified').notNull().defaultNow(),
+  isDeleted: boolean('is_deleted').notNull().default(false),
+})
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
@@ -136,6 +169,8 @@ export const usersRelations = relations(users, ({ many }) => ({
   jokeSets: many(jokeSets),
   jokeSetItems: many(jokeSetItems),
   audioRecordings: many(audioRecordings),
+  tags: many(tags),
+  jokeTags: many(jokeTags),
 }))
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -158,6 +193,7 @@ export const jokesRelations = relations(jokes, ({ one, many }) => ({
     references: [users.id],
   }),
   audioRecordings: many(audioRecordings),
+  jokeTags: many(jokeTags),
 }))
 
 export const jokeSetsRelations = relations(jokeSets, ({ one, many }) => ({
@@ -190,6 +226,29 @@ export const audioRecordingsRelations = relations(audioRecordings, ({ one }) => 
   }),
 }))
 
+export const tagsRelations = relations(tags, ({ one, many }) => ({
+  user: one(users, {
+    fields: [tags.userId],
+    references: [users.id],
+  }),
+  jokeTags: many(jokeTags),
+}))
+
+export const jokeTagsRelations = relations(jokeTags, ({ one }) => ({
+  user: one(users, {
+    fields: [jokeTags.userId],
+    references: [users.id],
+  }),
+  joke: one(jokes, {
+    fields: [jokeTags.jokeId],
+    references: [jokes.id],
+  }),
+  tag: one(tags, {
+    fields: [jokeTags.tagId],
+    references: [tags.id],
+  }),
+}))
+
 // Type exports
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
@@ -205,3 +264,7 @@ export type JokeSetItem = typeof jokeSetItems.$inferSelect
 export type NewJokeSetItem = typeof jokeSetItems.$inferInsert
 export type AudioRecording = typeof audioRecordings.$inferSelect
 export type NewAudioRecording = typeof audioRecordings.$inferInsert
+export type Tag = typeof tags.$inferSelect
+export type NewTag = typeof tags.$inferInsert
+export type JokeTag = typeof jokeTags.$inferSelect
+export type NewJokeTag = typeof jokeTags.$inferInsert

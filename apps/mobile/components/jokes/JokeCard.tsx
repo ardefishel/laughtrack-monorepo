@@ -48,6 +48,21 @@ function JokeCardComponent({ joke, onPress }: JokeCardProps) {
           </Text>
         )}
 
+        {joke.tags && joke.tags.length > 0 && (
+          <View className="flex-row flex-wrap mt-1.5">
+            {joke.tags.slice(0, 3).map((tag) => (
+              <View key={tag} className="bg-accent/10 rounded-full px-2 py-0.5 mr-1 mb-0.5">
+                <Text className="text-xs text-accent">#{tag}</Text>
+              </View>
+            ))}
+            {joke.tags.length > 3 && (
+              <View className="bg-accent/10 rounded-full px-2 py-0.5">
+                <Text className="text-xs text-accent">+{joke.tags.length - 3}</Text>
+              </View>
+            )}
+          </View>
+        )}
+
         <Separator className='my-2 bg-default/70' thickness={1} />
 
         <View className="flex-row items-center justify-between">
@@ -73,6 +88,7 @@ export const JokeCard = memo(JokeCardComponent, (prevProps, nextProps) => {
     prevProps.joke.status === nextProps.joke.status &&
     prevProps.joke.updated_at === nextProps.joke.updated_at &&
     prevProps.joke.draft_updated_at === nextProps.joke.draft_updated_at &&
-    prevProps.joke.recordings_count === nextProps.joke.recordings_count
+    prevProps.joke.recordings_count === nextProps.joke.recordings_count &&
+    prevProps.joke.tags === nextProps.joke.tags
   );
 });

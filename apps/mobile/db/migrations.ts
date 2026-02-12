@@ -80,5 +80,27 @@ export const migrations = schemaMigrations({
         }),
       ],
     },
+    {
+      toVersion: 7,
+      steps: [
+        createTable({
+          name: 'tags',
+          columns: [
+            { name: 'name', type: 'string', isIndexed: true },
+            { name: 'created_at', type: 'number' },
+            { name: 'updated_at', type: 'number' },
+          ],
+        }),
+        createTable({
+          name: 'joke_tags',
+          columns: [
+            { name: 'joke_id', type: 'string', isIndexed: true },
+            { name: 'tag_id', type: 'string', isIndexed: true },
+            { name: 'created_at', type: 'number' },
+            { name: 'updated_at', type: 'number' },
+          ],
+        }),
+      ],
+    },
   ],
 });

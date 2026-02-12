@@ -8,6 +8,8 @@
     "ios": "bunx expo run:ios",
     "ios:device": "bunx expo run:ios --device",
     "lint": "bunx expo lint",
+    "check": "bunx expo lint",
+    "clean": "rm -rf node_modules .expo ios android dist",
     "test": "jest",
     "test:watch": "jest --watch"
   },

@@ -1,6 +1,7 @@
 import { Model, Query } from '@nozbe/watermelondb';
 import { field, date, writer, children } from '@nozbe/watermelondb/decorators';
 import { AudioRecording } from './AudioRecording';
+import type { JokeTag } from './JokeTag';
 import { JokeStatus } from '@/lib/types';
 
 export { JokeStatus };
@@ -12,6 +13,7 @@ export class Joke extends Model {
 
   static associations = {
     audio_recordings: { type: 'has_many' as const, foreignKey: 'joke_id' },
+    joke_tags: { type: 'has_many' as const, foreignKey: 'joke_id' },
   };
 
   @field('content_html') content_html!: string;
@@ -23,6 +25,7 @@ export class Joke extends Model {
   @field('tags') tags!: string[];
 
   @children('audio_recordings') audioRecordings!: Query<AudioRecording>;
+  @children('joke_tags') jokeTags!: Query<JokeTag>;
 
   @writer async saveDraft(bodyText: string): Promise<void> {
     const now = new Date();

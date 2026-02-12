@@ -8,6 +8,8 @@ import { Joke } from '../models/Joke';
 import { AudioRecording } from '../models/AudioRecording';
 import { JokeSet } from '../models/JokeSet';
 import { JokeSetItem } from '../models/JokeSetItem';
+import { Tag } from '../models/Tag';
+import { JokeTag } from '../models/JokeTag';
 import { dbLogger } from '@/lib/loggers';
 
 const adapter = new SQLiteAdapter({
@@ -21,7 +23,7 @@ const adapter = new SQLiteAdapter({
 
 export const database = new Database({
   adapter,
-  modelClasses: [Joke, AudioRecording, JokeSet, JokeSetItem],
+  modelClasses: [Joke, AudioRecording, JokeSet, JokeSetItem, Tag, JokeTag],
 });
 
 dbLogger.info('[WatermelonDB] Database initialized successfully');

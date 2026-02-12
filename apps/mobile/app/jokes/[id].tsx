@@ -18,11 +18,12 @@ import { JokeStatusSelect } from '@/components/jokes/JokeStatusSelect';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { useDatabase } from '@/context/DatabaseContext';
-import { useDeleteJoke, useJoke, useUpdateJoke } from '@/hooks/jokes';
+import { useDeleteJoke, useJoke, useJokeTags, useUpdateJoke } from '@/hooks/jokes';
 import { extractTextFromHtml } from '@/lib/htmlParser';
 import { logVerbose, uiLogger } from '@/lib/loggers';
 import { JokeStatus } from '@/lib/types';
 import { AUDIO_RECORDINGS_TABLE, AudioRecording } from '@/models/AudioRecording';
+import { TagEditor } from '@/components/jokes/TagEditor';
 
 const DRAFT_DELAY = 400;
 const COMMIT_DELAY = 1200;
@@ -38,6 +39,7 @@ export default function JokeDetailScreen() {
   const { joke, isLoading, error } = useJoke(id as string);
   const { updateJoke } = useUpdateJoke();
   const { deleteJoke } = useDeleteJoke();
+  const { tags, addTag, removeTag } = useJokeTags(id as string);
   const [status, setStatus] = useState<JokeStatus>('draft');
   const [audioCount, setAudioCount] = useState(0);
 
@@ -287,6 +289,7 @@ export default function JokeDetailScreen() {
         />
       </View>
 
+      <TagEditor tags={tags} onAddTag={addTag} onRemoveTag={removeTag} />
       <JokeEditorToolbar {...toolbarProps} />
     </View>
   );
