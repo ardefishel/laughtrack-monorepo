@@ -1,5 +1,6 @@
 import { createMiddleware } from 'hono/factory'
 import { ulid } from 'ulid'
+import { defaultLogger } from '@laughtrack/logger/node'
 
 type LoggerEnv = {
   Variables: {
@@ -19,7 +20,7 @@ export const loggerMiddleware = () => {
     await next()
 
     const duration = Date.now() - startTime
-    const log = {
+    const logEntry = {
       requestId,
       method: c.req.method,
       url: c.req.url,
@@ -29,10 +30,10 @@ export const loggerMiddleware = () => {
     }
 
     try {
-      console.log(JSON.stringify(log))
+      defaultLogger.info(JSON.stringify(logEntry))
     } catch {
       // Fallback logging if JSON.stringify fails
-      console.log(`[${requestId}] ${c.req.method} ${c.req.url} ${c.res.status} ${duration}ms`)
+      defaultLogger.info(`[${requestId}] ${c.req.method} ${c.req.url} ${c.res.status} ${duration}ms`)
     }
   })
 }
