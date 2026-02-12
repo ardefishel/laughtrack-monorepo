@@ -2,7 +2,8 @@
   "name": "laughtrack-monorepo",
   "private": true,
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
     "start": "bun run --cwd apps/mobile start",
@@ -22,7 +23,9 @@
     "be:db:studio": "bun run --cwd apps/backend db:studio",
     "be:docker:up": "bun run --cwd apps/backend docker:up",
     "be:docker:down": "bun run --cwd apps/backend docker:down",
-    "be:docker:logs": "bun run --cwd apps/backend docker:logs"
+    "be:docker:logs": "bun run --cwd apps/backend docker:logs",
+    "build:packages": "bun run --filter '@laughtrack/*' build",
+    "clean": "rm -rf packages/*/dist packages/*/tsconfig.tsbuildinfo"
   },
   "devDependencies": {
     "babel-jest": "^30.2.0",
