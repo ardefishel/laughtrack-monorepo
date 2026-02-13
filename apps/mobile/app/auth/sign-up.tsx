@@ -12,12 +12,13 @@ const StyledIonicons = withUniwind(Ionicons);
 
 export default function SignUpScreen() {
   const router = useRouter();
-  const { signUp } = useAuth();
+  const { signUp, signInWithGoogle } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleSignUp = async () => {
     if (!name || !email || !password || !confirmPassword) {
@@ -41,6 +42,17 @@ export default function SignUpScreen() {
       ]);
     } else {
       Alert.alert('Sign Up Failed', result.error ?? 'An unexpected error occurred');
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    const result = await signInWithGoogle();
+    setGoogleLoading(false);
+    if (result.success) {
+      router.back();
+    } else {
+      Alert.alert('Google Sign In Failed', result.error ?? 'An unexpected error occurred');
     }
   };
 
@@ -111,7 +123,8 @@ export default function SignUpScreen() {
 
         <Button
           variant="outline"
-          onPress={() => console.log('Google Sign Up pressed')}
+          onPress={handleGoogleSignIn}
+          isDisabled={googleLoading}
           className="w-full"
         >
           <StyledIonicons
@@ -119,7 +132,7 @@ export default function SignUpScreen() {
             size={20}
             className="text-foreground mr-2"
           />
-          <Button.Label>Google</Button.Label>
+          <Button.Label>{googleLoading ? 'Signing In...' : 'Google'}</Button.Label>
         </Button>
 
         <View className="flex-row justify-center gap-1 mt-4">

@@ -12,10 +12,11 @@ const StyledIonicons = withUniwind(Ionicons);
 
 export default function SignInScreen() {
   const router = useRouter();
-  const { signIn } = useAuth();
+  const { signIn, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleSignIn = async () => {
     if (!email || !password) {
@@ -29,6 +30,17 @@ export default function SignInScreen() {
       router.back();
     } else {
       Alert.alert('Sign In Failed', result.error ?? 'An unexpected error occurred');
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    const result = await signInWithGoogle();
+    setGoogleLoading(false);
+    if (result.success) {
+      router.back();
+    } else {
+      Alert.alert('Google Sign In Failed', result.error ?? 'An unexpected error occurred');
     }
   };
 
@@ -84,7 +96,8 @@ export default function SignInScreen() {
 
         <Button
           variant="outline"
-          onPress={() => console.log('Google Sign In pressed')}
+          onPress={handleGoogleSignIn}
+          isDisabled={googleLoading}
           className="w-full"
         >
           <StyledIonicons
@@ -92,7 +105,7 @@ export default function SignInScreen() {
             size={20}
             className="text-foreground mr-2"
           />
-          <Button.Label>Google</Button.Label>
+          <Button.Label>{googleLoading ? 'Signing In...' : 'Google'}</Button.Label>
         </Button>
 
         <View className="flex-row justify-center gap-1 mt-4">
