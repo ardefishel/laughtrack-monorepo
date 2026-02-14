@@ -1,51 +1,92 @@
-# Welcome to your Expo app 👋
+# Laughtrack
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-The app lives in `apps/mobile`.
+A comedian's toolkit for writing, organizing, and performing jokes. Mobile-first app with cloud sync.
 
-## Get started
+## Monorepo Structure
 
-1. Install dependencies
-
-   ```bash
-   bun install
-   ```
-
-2. Start the app
-
-   ```bash
-   bunx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside `apps/mobile/app`. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-bun run reset-project
+```
+apps/
+  mobile/       — Expo Router + WatermelonDB (local-first React Native app)
+  backend/      — Hono + Drizzle + PostgreSQL API (Bun runtime)
+packages/
+  shared-types/ — Shared TypeScript type definitions (@laughtrack/shared-types)
+  logger/       — Cross-platform structured logger (@laughtrack/logger)
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Getting Started
 
-## Learn more
+### Prerequisites
 
-To learn more about developing your project with Expo, look at the following resources:
+- [Bun](https://bun.sh/) (v1.1+)
+- [Docker](https://www.docker.com/) (for PostgreSQL)
+- Xcode (for iOS simulator) or Android Studio (for Android emulator)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Setup
 
-## Join the community
+```bash
+# Install dependencies
+bun install
 
-Join our community of developers creating universal apps.
+# Start PostgreSQL
+bun run docker:up
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+# Copy env files and fill in values
+cp apps/backend/.env.example apps/backend/.env
+cp apps/mobile/.env.example apps/mobile/.env
+
+# Run database migrations
+bun run db:migrate
+
+# Start both apps
+bun run dev
+```
+
+### Backend Env Vars
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `AUTH_SECRET` | better-auth secret key |
+| `AUTH_URL` | Auth base URL (e.g., `http://localhost:3000`) |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
+| `R2_ACCOUNT_ID` | Cloudflare R2 account ID |
+| `R2_ACCESS_KEY_ID` | R2 access key |
+| `R2_SECRET_ACCESS_KEY` | R2 secret key |
+| `R2_BUCKET_NAME` | R2 bucket name for audio storage |
+| `PORT` | Server port (default: 3000) |
+| `NODE_ENV` | `development` or `production` |
+
+### Mobile Env Vars
+
+| Variable | Description |
+|----------|-------------|
+| `EXPO_PUBLIC_API_URL` | Backend API URL (e.g., `http://localhost:3000`) |
+| `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` | Google OAuth web client ID |
+| `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` | Google OAuth iOS client ID |
+| `EXPO_PUBLIC_VERBOSE_LOGS` | Enable verbose logging (`true`/`false`) |
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `bun run dev` | Start both apps |
+| `bun run check` | Lint all workspaces |
+| `bun run mobile` | Start Expo dev server |
+| `bun run mobile:ios` | Run on iOS simulator |
+| `bun run mobile:android` | Run on Android emulator |
+| `bun run mobile:test` | Run mobile tests |
+| `bun run backend` | Start backend dev server |
+| `bun run db:generate` | Generate Drizzle migration |
+| `bun run db:migrate` | Run migrations |
+| `bun run db:push` | Push schema to DB |
+| `bun run db:studio` | Open Drizzle Studio |
+| `bun run docker:up` | Start PostgreSQL container |
+| `bun run docker:down` | Stop PostgreSQL container |
+
+## Documentation
+
+- [API Routes](apps/backend/ROUTES.md) — Backend endpoint reference
+- [Data Model](.docs/data-model.md) — Entity relationships and schema
+- [Design System](.agents/design-system-baseline.md) — UI tokens and component patterns
+- [Code Review Plan](.docs/plan/mobile-code-review-plan.md) — Prioritized refactoring items
