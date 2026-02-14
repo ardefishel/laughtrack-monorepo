@@ -12,7 +12,14 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.rtvcl.laughtrack",
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "LaughTrack needs access to your microphone to record audio jokes."
+        "NSMicrophoneUsageDescription": "LaughTrack needs access to your microphone to record audio jokes.",
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.412652372816-kakt932m0s4gosqdsg7vobdbg6n9lpj9"
+            ]
+          }
+        ]
       }
     },
     "android": {
@@ -53,7 +60,8 @@
         {
           "microphonePermission": "LaughTrack needs access to your microphone to record audio jokes."
         }
-      ]
+      ],
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true,
