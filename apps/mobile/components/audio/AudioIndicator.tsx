@@ -1,12 +1,10 @@
 import React, { memo, useEffect } from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { withUniwind } from 'uniwind';
 import { createNamespacedLogger } from '@/lib/loggers';
 
-const uiLogger = createNamespacedLogger('ui');
+import { Icon } from '@/components/ui/Icon';
 
-const StyledIonicons = withUniwind(Ionicons);
+const uiLogger = createNamespacedLogger('ui');
 
 interface AudioIndicatorProps {
   recordingCount: number;
@@ -26,7 +24,7 @@ function AudioIndicatorComponent({ recordingCount, onPress }: AudioIndicatorProp
 
   const content = (
     <View className="flex-row items-center gap-1 px-2 py-0.5 rounded-full bg-warning/10">
-      <StyledIonicons name="mic" size={12} className="text-warning" />
+      <Icon name="mic" size={12} className="text-warning" />
       <Text className="text-xs font-medium text-warning">{recordingCount}</Text>
     </View>
   );

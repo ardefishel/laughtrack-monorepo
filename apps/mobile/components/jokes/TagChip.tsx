@@ -1,10 +1,10 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { withUniwind } from 'uniwind';
 
+import { Icon } from '@/components/ui/Icon';
+
 const StyledPressable = withUniwind(Pressable);
-const StyledIonicons = withUniwind(Ionicons);
 
 interface TagChipProps {
   name: string;
@@ -23,7 +23,7 @@ export function TagChip({ name, onRemove }: TagChipProps) {
           accessibilityLabel={`Remove tag ${name}`}
           hitSlop={8}
         >
-          <StyledIonicons name="close-circle" size={14} className="text-accent/60" />
+          <Icon name="close-circle" size={14} className="text-accent/60" />
         </StyledPressable>
       )}
     </View>

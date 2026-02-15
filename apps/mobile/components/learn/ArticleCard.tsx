@@ -1,11 +1,9 @@
 import { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Card, useThemeColor } from 'heroui-native';
-import { Ionicons } from '@expo/vector-icons';
-import { withUniwind } from 'uniwind';
 import type { LearnArticle, ArticleDifficulty } from '@/lib/types/learn';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 interface ArticleCardProps {
   article: LearnArticle;
@@ -45,7 +43,7 @@ function ArticleCardComponent({ article, onPress }: ArticleCardProps) {
                 className="px-2 py-0.5 rounded-full flex-row items-center gap-1"
                 style={{ backgroundColor: `${difficultyColor}20` }}
               >
-                <StyledIonicons name={difficulty.icon as any} size={12} style={{ color: difficultyColor }} />
+                <Icon name={difficulty.icon as any} size={12} style={{ color: difficultyColor }} />
                 <Text className="text-xs font-medium" style={{ color: difficultyColor }}>
                   {difficulty.label}
                 </Text>
@@ -53,7 +51,7 @@ function ArticleCardComponent({ article, onPress }: ArticleCardProps) {
 
               {article.isPremium && (
                 <View className="flex-row items-center gap-1">
-                  <StyledIonicons name="lock-closed" size={12} className="text-warning" />
+                  <Icon name="lock-closed" size={12} className="text-warning" />
                   <Text className="text-warning text-xs font-medium">Premium</Text>
                 </View>
               )}
@@ -69,13 +67,13 @@ function ArticleCardComponent({ article, onPress }: ArticleCardProps) {
 
             <View className="flex-row items-center gap-3 mt-2">
               <View className="flex-row items-center gap-1">
-                <StyledIonicons name="time-outline" size={14} className="text-muted/60" />
+                <Icon name="time-outline" size={14} className="text-muted/60" />
                 <Text className="text-xs text-muted/70">{article.readingTime} min read</Text>
               </View>
 
               {article.author && (
                 <View className="flex-row items-center gap-1">
-                  <StyledIonicons name="person-outline" size={14} className="text-muted/60" />
+                  <Icon name="person-outline" size={14} className="text-muted/60" />
                   <Text className="text-xs text-muted/70" numberOfLines={1}>
                     {article.author}
                   </Text>
@@ -84,7 +82,7 @@ function ArticleCardComponent({ article, onPress }: ArticleCardProps) {
 
               {premiumSectionsCount > 0 && article.isPremium && (
                 <View className="flex-row items-center gap-1">
-                  <StyledIonicons name="star-outline" size={14} className="text-warning/60" />
+                  <Icon name="star-outline" size={14} className="text-warning/60" />
                   <Text className="text-xs text-warning/70">{premiumSectionsCount} premium sections</Text>
                 </View>
               )}
@@ -92,7 +90,7 @@ function ArticleCardComponent({ article, onPress }: ArticleCardProps) {
           </View>
 
           <View className="items-end">
-            <StyledIonicons name="chevron-forward" size={20} className="text-muted/40" />
+            <Icon name="chevron-forward" size={20} className="text-muted/40" />
           </View>
         </View>
       </Card>

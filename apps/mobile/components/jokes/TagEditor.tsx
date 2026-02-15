@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { withUniwind } from 'uniwind';
 import { TagChip } from './TagChip';
+import { Icon } from '@/components/ui/Icon';
 import { normalizeTag } from '@/lib/tagUtils';
 
 const StyledTextInput = withUniwind(TextInput);
 const StyledPressable = withUniwind(Pressable);
-const StyledIonicons = withUniwind(Ionicons);
 
 interface TagEditorProps {
   tags: string[];
@@ -52,7 +51,7 @@ export function TagEditor({ tags, onAddTag, onRemoveTag }: TagEditorProps) {
             accessibilityRole="button"
             accessibilityLabel="Add tag"
           >
-            <StyledIonicons name="add-circle" size={22} className="text-accent" />
+            <Icon name="add-circle" size={22} className="text-accent" />
           </StyledPressable>
         )}
       </View>

@@ -1,11 +1,9 @@
 import { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Card } from 'heroui-native';
-import { Ionicons } from '@expo/vector-icons';
-import { withUniwind } from 'uniwind';
 import type { LearnCollection } from '@/lib/types/learn';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 interface CollectionCardProps {
   collection: LearnCollection;
@@ -29,7 +27,7 @@ function CollectionCardComponent({ collection, onPress }: CollectionCardProps) {
           className="w-12 h-12 rounded-xl items-center justify-center"
           style={{ backgroundColor: `${collection.color}25` }}
         >
-          <StyledIonicons name={collection.icon as any} size={24} style={{ color: collection.color }} />
+          <Icon name={collection.icon as any} size={24} style={{ color: collection.color }} />
         </View>
 
         <View className="gap-1">
@@ -47,7 +45,7 @@ function CollectionCardComponent({ collection, onPress }: CollectionCardProps) {
 
           {collection.isPremium && (
             <View className="flex-row items-center gap-1 mt-1">
-              <StyledIonicons name="lock-closed" size={12} className="text-warning" />
+              <Icon name="lock-closed" size={12} className="text-warning" />
               <Text className="text-warning text-xs font-medium">Premium</Text>
             </View>
           )}

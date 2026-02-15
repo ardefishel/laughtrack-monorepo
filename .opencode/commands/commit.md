@@ -1,7 +1,7 @@
 ---
 description: Commit current changes with an appropriate message
 agent: sisyphus
-model: minimax/MiniMax-M2.1
+model: opencode/minimax-m2.5-free
 ---
 
 Analyze the current repository state and create an appropriate git commit.

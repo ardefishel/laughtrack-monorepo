@@ -2,13 +2,11 @@ import { SetDetailsForm } from '@/components/sets';
 import { useJokeSet, useUpdateJokeSet } from '@/hooks/sets';
 import { uiLogger } from '@/lib/loggers';
 import type { JokeSetStatus } from '@laughtrack/shared-types';
-import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 export default function EditSetScreen() {
   const { id } = useLocalSearchParams();
@@ -62,7 +60,7 @@ export default function EditSetScreen() {
           accessibilityRole="button"
           accessibilityLabel="Go back"
         >
-          <StyledIonicons name="chevron-back" size={24} className="text-foreground" />
+          <Icon name="chevron-back" size={24} className="text-foreground" />
         </Pressable>
       ),
       headerTitle: "Edit Set",

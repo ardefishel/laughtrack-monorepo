@@ -1,13 +1,10 @@
 import { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Card } from 'heroui-native';
-import { Ionicons } from '@expo/vector-icons';
-import { withUniwind } from 'uniwind';
 import type { RawJokeSet } from '@laughtrack/shared-types';
 import { formatTimeAgo } from '@/lib/dateUtils';
+import { Icon } from '@/components/ui/Icon';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-
-const StyledIonicons = withUniwind(Ionicons);
 
 interface SetCardProps {
   jokeSet: RawJokeSet;
@@ -48,14 +45,14 @@ function SetCardComponent({ jokeSet, onPress }: SetCardProps) {
             
             {duration && (
               <View className="flex-row items-center gap-1">
-                <StyledIonicons name="time-outline" size={12} className="text-muted/60" />
+                <Icon name="time-outline" size={12} className="text-muted/60" />
                 <Text className="text-xs text-muted/70">{duration}</Text>
               </View>
             )}
 
             {jokeSet.place && jokeSet.place.length > 0 && (
               <View className="flex-row items-center gap-1">
-                <StyledIonicons name="location-outline" size={12} className="text-muted/60" />
+                <Icon name="location-outline" size={12} className="text-muted/60" />
                 <Text className="text-xs text-muted/70" numberOfLines={1}>
                   {jokeSet.place}
                 </Text>

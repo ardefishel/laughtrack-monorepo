@@ -5,14 +5,12 @@ import { extractTitleAndDescription } from '@/lib/htmlParser';
 import { uiLogger } from '@/lib/loggers';
 import { SetJokeItem } from '@/lib/mocks';
 import { RawJoke, RawJokeSetItem } from '@laughtrack/shared-types';
-import { Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 const generateTempId = () => `temp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
@@ -170,15 +168,15 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
               )}
               {isInSet && (
                 <View className="flex-row items-center mt-2">
-                  <StyledIonicons name="checkmark-circle" size={14} className="text-success mr-1" />
+                  <Icon name="checkmark-circle" size={14} className="text-success mr-1" />
                   <Text className="text-success text-xs">In set</Text>
                 </View>
               )}
             </View>
             {isInSet ? (
-              <StyledIonicons name="checkmark-circle" size={24} className="text-success" />
+              <Icon name="checkmark-circle" size={24} className="text-success" />
             ) : (
-              <StyledIonicons
+              <Icon
                 name={isSelected ? 'checkmark-circle' : 'ellipse-outline'}
                 size={24}
                 className={isSelected ? 'text-accent' : 'text-muted'}
@@ -201,7 +199,7 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
       <View className="flex-1 bg-background">
         <View className="px-4 py-3 border-b border-default">
           <View className="flex-row items-center bg-field-background rounded-lg px-3 py-2" accessibilityRole="search">
-            <StyledIonicons name="search" size={18} className="text-muted mr-2" />
+            <Icon name="search" size={18} className="text-muted mr-2" />
             <TextInput
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -213,7 +211,7 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
             />
             {searchQuery.length > 0 ? (
               <Pressable onPress={() => setSearchQuery('')} accessibilityRole="button" accessibilityLabel="Clear search">
-                <StyledIonicons name="close-circle" size={18} className="text-muted" />
+                <Icon name="close-circle" size={18} className="text-muted" />
               </Pressable>
             ) : selectedCount > 0 ? (
               <Pressable onPress={handleConfirm} accessibilityRole="button" accessibilityLabel={`Add ${selectedCount} jokes`}>
@@ -237,7 +235,7 @@ export function SelectJokesScreen({ mode, setId: propSetId, onItemsConfirmed }: 
                 <Text className="text-danger">Error loading jokes</Text>
               ) : (
                 <>
-                  <StyledIonicons name="chatbubble-ellipses-outline" size={48} className="text-muted mb-4" />
+                  <Icon name="chatbubble-ellipses-outline" size={48} className="text-muted mb-4" />
                   <Text className="text-foreground text-lg font-medium">
                     {searchQuery ? 'No jokes found' : 'No jokes yet'}
                   </Text>

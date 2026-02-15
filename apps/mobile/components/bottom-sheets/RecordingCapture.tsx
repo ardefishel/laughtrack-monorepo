@@ -4,14 +4,12 @@ import { useMultiStepForm } from '@/hooks/useMultiStepForm';
 import { useRecordingSubmit } from '@/hooks/useRecordingSubmit';
 import { formatDuration, getAudioFileInfo } from '@/lib/audioStorage';
 import { hooksLogger } from '@/lib/loggers';
-import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Button, Input, TextField } from 'heroui-native';
 import React, { useCallback, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 const MAX_DURATION_MS = 120000;
 
@@ -134,7 +132,7 @@ export default function RecordingCaptureBottomSheet() {
             accessibilityLabel="Start recording"
             accessibilityRole="button"
           >
-            <StyledIonicons name="mic" size={32} className="text-danger-foreground" />
+            <Icon name="mic" size={32} className="text-danger-foreground" />
           </Pressable>
         )}
 
@@ -176,13 +174,13 @@ export default function RecordingCaptureBottomSheet() {
           accessibilityLabel="Go back to recording"
           className="min-h-[44px] min-w-[44px] justify-center items-center"
         >
-          <StyledIonicons name="chevron-back" size={24} className="text-muted" />
+          <Icon name="chevron-back" size={24} className="text-muted" />
         </Pressable>
       </View>
 
       <View className="items-center mb-6">
         <View className="w-16 h-16 rounded-full bg-success/20 items-center justify-center mb-4">
-          <StyledIonicons name="checkmark-circle" size={40} className="text-success" />
+          <Icon name="checkmark-circle" size={40} className="text-success" />
         </View>
         <Text className="text-foreground text-xl font-semibold mb-1">
           Recording Complete!
@@ -231,7 +229,7 @@ export default function RecordingCaptureBottomSheet() {
           onPress={() => handleDescriptionSubmit(description)}
         >
           {isSubmitting ? (
-            <StyledIonicons name="refresh-outline" size={16} className="text-accent-foreground animate-spin" />
+            <Icon name="refresh-outline" size={16} className="text-accent-foreground animate-spin" />
           ) : (
             <Button.Label>{jokeId ? 'Add Recording' : 'Create Joke'}</Button.Label>
           )}

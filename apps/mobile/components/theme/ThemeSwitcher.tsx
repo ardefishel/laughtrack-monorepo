@@ -1,5 +1,7 @@
-import React from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { ControlField, Description, Label } from 'heroui-native';
+import { View } from 'react-native';
+
+import { Icon } from '@/components/ui/Icon';
 import { useTheme } from '@/context/ThemeContext';
 
 export function ThemeSwitcher() {
@@ -8,28 +10,17 @@ export function ThemeSwitcher() {
   const isDark = theme === 'dark';
 
   return (
-    <View className="flex-row items-center justify-between p-4 bg-surface rounded-lg">
-      <View className="flex-row items-center gap-2">
-        <Text className="text-2xl">{isDark ? '🌙' : '☀️'}</Text>
-        <View>
-          <Text className="text-base font-semibold text-foreground">
-            {isDark ? 'Dark Mode' : 'Light Mode'}
-          </Text>
-          <Text className="text-sm text-muted">
-            {isDark ? 'Easier on the eyes at night' : 'Classic bright appearance'}
-          </Text>
-        </View>
+    <ControlField isSelected={isDark} onSelectedChange={toggleTheme} className="py-3 px-1">
+      <View className="w-8 h-8 rounded-lg items-center justify-center mr-3 bg-accent/10">
+        <Icon name={isDark ? 'moon-outline' : 'sunny-outline'} size={18} className="text-accent" />
       </View>
-
-      <Pressable
-        onPress={toggleTheme}
-        className={`w-14 h-8 rounded-full p-1 ${isDark ? 'bg-accent' : 'bg-default'}`}
-        accessibilityLabel={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-        accessibilityRole="switch"
-        accessibilityState={{ checked: isDark }}
-      >
-        <View className={`w-6 h-6 rounded-full bg-surface shadow-sm ${isDark ? 'translate-x-6' : 'translate-x-0'}`} />
-      </Pressable>
-    </View>
+      <View className="flex-1">
+        <Label className="text-base text-foreground">{isDark ? 'Dark Mode' : 'Light Mode'}</Label>
+        <Description className="text-xs text-muted">
+          {isDark ? 'Easier on the eyes at night' : 'Classic bright appearance'}
+        </Description>
+      </View>
+      <ControlField.Indicator />
+    </ControlField>
   );
 }

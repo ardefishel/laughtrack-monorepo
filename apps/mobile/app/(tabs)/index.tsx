@@ -8,16 +8,14 @@ import { SwipeableRow } from '@/components/ui/SwipeableRow';
 import { RawJoke, useCreateJoke, useDeleteJoke, useJokesQuery } from '@/hooks/jokes';
 import { useAllTags } from '@/hooks/jokes/useAllTags';
 import { logVerbose, uiLogger } from '@/lib/loggers';
-import { Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { Button, Input } from 'heroui-native';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
-import { withUniwind } from 'uniwind';
 import { useHeaderTitleWidth } from './_layout';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 export default function JokesScreen() {
   const router = useRouter();
@@ -205,7 +203,7 @@ export default function JokesScreen() {
                 <LoadingState />
               ) : (
                 <>
-                  <StyledIonicons name="chatbubble-ellipses-outline" size={48} className="text-muted mb-4" />
+                  <Icon name="chatbubble-ellipses-outline" size={48} className="text-muted mb-4" />
                   <Text className="text-foreground text-lg font-medium">
                     {hasActiveFilters ? 'No jokes found' : 'No jokes yet'}
                   </Text>
@@ -221,7 +219,7 @@ export default function JokesScreen() {
         <View className="absolute bottom-0 left-0 right-0 bg-background px-4 py-3">
           <View className="flex-row items-center relative">
             <Button isIconOnly variant='ghost' className='absolute z-20' onPress={() => setIsQuickCapture(!isQuickCapture)}>
-              <StyledIonicons name={isQuickCapture ? 'flash' : 'flash-outline'} size={18} className={isQuickCapture ? 'text-warning/80' : 'text-muted/40'} />
+              <Icon name={isQuickCapture ? 'flash' : 'flash-outline'} size={18} className={isQuickCapture ? 'text-warning/80' : 'text-muted/40'} />
             </Button>
             <Input
               placeholder="Add a new joke..."
@@ -241,9 +239,9 @@ export default function JokesScreen() {
               isDisabled={!newJokeText.trim() || isCreating}
             >
               {isCreating ? (
-                <StyledIonicons name="refresh-outline" size={18} className="text-accent animate-spin" />
+                <Icon name="refresh-outline" size={18} className="text-accent animate-spin" />
               ) : (
-                <StyledIonicons
+                <Icon
                   name="send-outline"
                   size={18}
                   className={newJokeText.trim() ? 'text-accent' : 'text-muted'}

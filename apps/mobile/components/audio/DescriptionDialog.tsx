@@ -1,14 +1,12 @@
 import { formatDuration } from '@/lib/audioStorage';
 import { createNamespacedLogger } from '@/lib/loggers';
-import { Ionicons } from '@expo/vector-icons';
 import { Button, Dialog, Input, TextField } from 'heroui-native';
 import React, { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
-import { withUniwind } from 'uniwind';
+
+import { Icon } from '@/components/ui/Icon';
 
 const uiLogger = createNamespacedLogger('ui');
-
-const StyledIonicons = withUniwind(Ionicons);
 
 interface RecordingData {
   filePath: string;
@@ -73,7 +71,7 @@ export function DescriptionDialog({ isOpen, onClose, recordingData, onSubmit }: 
         <View className="p-6">
           <View className="items-center mb-6">
             <View className="w-16 h-16 rounded-full bg-success/20 items-center justify-center mb-4">
-              <StyledIonicons name="checkmark-circle" size={40} className="text-success" />
+              <Icon name="checkmark-circle" size={40} className="text-success" />
             </View>
             <Text className="text-foreground text-xl font-semibold mb-1">
               Recording Complete!

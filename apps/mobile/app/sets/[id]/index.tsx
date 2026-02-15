@@ -9,14 +9,12 @@ import { extractTitleAndDescription } from '@/lib/htmlParser';
 import { hooksLogger } from '@/lib/loggers';
 import { Joke, JOKES_TABLE } from '@/models/Joke';
 import { JokeSetItem, JOKE_SET_ITEMS_TABLE } from '@/models/JokeSetItem';
-import { Ionicons } from '@expo/vector-icons';
 import { Q } from '@nozbe/watermelondb';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 export default function SetDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -162,7 +160,7 @@ export default function SetDetailScreen() {
           accessibilityRole="button"
           accessibilityLabel="Open set reader"
         >
-          <StyledIonicons name="book-outline" size={22} className="text-foreground" />
+          <Icon name="book-outline" size={22} className="text-foreground" />
         </Pressable>
       ),
     });

@@ -1,11 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Input, TextField } from 'heroui-native';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, TextInput, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 interface AnimatedSearchBarProps {
   searchQuery: string;
@@ -82,14 +80,14 @@ function AnimatedSearchBarComponent({
             />
             <View className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
               <Pressable onPress={toggleSearch} accessibilityRole="button" accessibilityLabel="Close search">
-                <StyledIonicons name="search" size={20} className="text-muted" />
+                <Icon name="search" size={20} className="text-muted" />
               </Pressable>
             </View>
           </TextField>
         </View>
       ) : (
         <Pressable onPress={toggleSearch} accessibilityRole="button" accessibilityLabel="Open search" className="h-full flex-1 justify-center items-center">
-          <StyledIonicons name="search" size={20} className="text-muted" />
+          <Icon name="search" size={20} className="text-muted" />
         </Pressable>
       )}
     </Animated.View>

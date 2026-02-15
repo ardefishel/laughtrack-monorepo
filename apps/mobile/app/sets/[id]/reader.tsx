@@ -1,14 +1,13 @@
 import { useJokeSet } from '@/hooks/sets';
 import { useJokeSetItemsWithHtml } from '@/hooks/useJokeSetItemsWithHtml';
 import { RENDER_HTML_TAGS_STYLES } from '@/constants/htmlStyles';
-import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useLayoutEffect } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import RenderHtml, { MixedStyleDeclaration } from 'react-native-render-html';
-import { useResolveClassNames, withUniwind } from 'uniwind';
+import { useResolveClassNames } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 export default function ReaderScreen() {
   const { id } = useLocalSearchParams();
@@ -33,7 +32,7 @@ export default function ReaderScreen() {
           accessibilityRole="button"
           accessibilityLabel="Go back"
         >
-          <StyledIonicons name="chevron-back" size={24} className="text-foreground" />
+          <Icon name="chevron-back" size={24} className="text-foreground" />
         </Pressable>
       ),
     });

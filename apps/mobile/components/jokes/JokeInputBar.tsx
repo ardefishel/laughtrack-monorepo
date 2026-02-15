@@ -1,10 +1,8 @@
 import { AudioRecorderButton } from '@/components/audio/AudioRecorderButton';
-import { Ionicons } from '@expo/vector-icons';
 import { Input, TextField } from 'heroui-native';
 import { Pressable, View } from 'react-native';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 interface JokeInputBarProps {
   newJokeText: string;
@@ -43,7 +41,7 @@ function JokeInputBarComponent({
             accessibilityRole="button"
             accessibilityLabel={isQuickCapture ? 'Disable quick capture' : 'Enable quick capture'}
           >
-            <StyledIonicons
+            <Icon
               name={isQuickCapture ? 'flash' : 'flash-outline'}
               size={16}
               className={isQuickCapture ? 'text-warning/80' : 'text-muted/40'}
@@ -61,9 +59,9 @@ function JokeInputBarComponent({
         accessibilityState={{ disabled: !newJokeText.trim() || isCreating }}
       >
         {isCreating ? (
-          <StyledIonicons name="refresh-outline" size={18} className="text-accent animate-spin" />
+          <Icon name="refresh-outline" size={18} className="text-accent animate-spin" />
         ) : (
-          <StyledIonicons
+          <Icon
             name="send-outline"
             size={18}
             className={newJokeText.trim() ? 'text-accent' : 'text-muted'}

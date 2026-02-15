@@ -1,13 +1,11 @@
 import { getArticleById, getCollectionById } from '@/lib/mocks/learn';
 import type { ArticleSection } from '@/lib/types/learn';
-import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { Card } from 'heroui-native';
 import { useLayoutEffect, useMemo } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 const difficultyConfig = {
   beginner: { label: 'Beginner', color: '#10B981', icon: 'leaf' },
@@ -19,7 +17,7 @@ function PremiumSectionOverlay() {
   return (
     <View className="py-8 px-4">
       <Card className="p-6 items-center border-2 border-warning/30" style={{ backgroundColor: 'rgba(251, 191, 36, 0.1)' }}>
-        <StyledIonicons name="lock-closed" size={48} className="text-warning mb-4" />
+        <Icon name="lock-closed" size={48} className="text-warning mb-4" />
         <Text className="text-foreground text-lg font-bold text-center mb-2">
           Premium Content
         </Text>
@@ -27,7 +25,7 @@ function PremiumSectionOverlay() {
           Subscribe to unlock this section and access all premium learning materials
         </Text>
         <View className="flex-row items-center gap-2 px-4 py-2 rounded-lg bg-warning">
-          <StyledIonicons name="sparkles" size={16} className="text-warning-foreground" />
+          <Icon name="sparkles" size={16} className="text-warning-foreground" />
           <Text className="text-warning-foreground font-semibold">Unlock Premium</Text>
         </View>
       </Card>
@@ -113,14 +111,14 @@ export default function LearnArticleDetailScreen() {
               className="px-2 py-0.5 rounded-full flex-row items-center gap-1"
               style={{ backgroundColor: `${difficulty?.color}20` }}
             >
-              <StyledIonicons name={difficulty?.icon as any} size={12} style={{ color: difficulty?.color }} />
+              <Icon name={difficulty?.icon as any} size={12} style={{ color: difficulty?.color }} />
               <Text className="text-xs font-medium" style={{ color: difficulty?.color }}>
                 {difficulty?.label}
               </Text>
             </View>
             {article.isPremium && (
               <View className="flex-row items-center gap-1">
-                <StyledIonicons name="lock-closed" size={12} className="text-warning" />
+                <Icon name="lock-closed" size={12} className="text-warning" />
                 <Text className="text-warning text-xs font-medium">Premium</Text>
               </View>
             )}
@@ -130,17 +128,17 @@ export default function LearnArticleDetailScreen() {
 
           <View className="flex-row items-center gap-4 pt-3 border-t border-default/20">
             <View className="flex-row items-center gap-1">
-              <StyledIonicons name="time-outline" size={14} className="text-muted/60" />
+              <Icon name="time-outline" size={14} className="text-muted/60" />
               <Text className="text-xs text-muted/70">{article.readingTime} min read</Text>
             </View>
             {article.author && (
               <View className="flex-row items-center gap-1">
-                <StyledIonicons name="person-outline" size={14} className="text-muted/60" />
+                <Icon name="person-outline" size={14} className="text-muted/60" />
                 <Text className="text-xs text-muted/70">{article.author}</Text>
               </View>
             )}
             <View className="flex-row items-center gap-1">
-              <StyledIonicons name="layers-outline" size={14} className="text-muted/60" />
+              <Icon name="layers-outline" size={14} className="text-muted/60" />
               <Text className="text-xs text-muted/70">{article.sections.length} sections</Text>
             </View>
           </View>
@@ -167,7 +165,7 @@ export default function LearnArticleDetailScreen() {
         {premiumSections.length > 0 && (
           <View>
             <View className="flex-row items-center gap-2 px-1 mb-2">
-              <StyledIonicons name="star" size={16} className="text-warning" />
+              <Icon name="star" size={16} className="text-warning" />
               <Text className="text-warning font-semibold">Premium Sections</Text>
             </View>
             {premiumSections.map((section, index) => (
@@ -179,7 +177,7 @@ export default function LearnArticleDetailScreen() {
                   <Text className="text-foreground font-semibold text-lg flex-1">
                     {section.title}
                   </Text>
-                  <StyledIonicons name="lock-closed" size={16} className="text-warning" />
+                  <Icon name="lock-closed" size={16} className="text-warning" />
                 </View>
                 <PremiumSectionOverlay />
               </Card>

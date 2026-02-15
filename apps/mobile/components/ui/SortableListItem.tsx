@@ -1,10 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
 import React, { ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 import { ScaleDecorator } from 'react-native-draggable-flatlist';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from './Icon';
 
 export interface SortableListItemProps {
   isActive: boolean;
@@ -35,7 +33,7 @@ export function SortableListItem({
         accessibilityState={{ disabled: isPressDisabled }}
         className={`flex-row items-center px-4 py-3 min-h-[44px] ${isActive ? 'bg-surface rounded-lg mx-1' : ''}`}
       >
-        <StyledIonicons
+        <Icon
           name="menu"
           size={18}
           className={isActive ? 'text-accent' : 'text-muted-dim'}

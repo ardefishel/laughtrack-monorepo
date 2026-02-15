@@ -1,15 +1,13 @@
 import { ArticleCard } from '@/components/learn/ArticleCard';
 import { getArticlesByCollection, getCollectionById } from '@/lib/mocks/learn';
 import type { LearnArticle } from '@/lib/types/learn';
-import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { Card } from 'heroui-native';
 import { useCallback, useLayoutEffect } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { Pressable, Text, View } from 'react-native';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 export default function LearnArticleListScreen() {
   const { collectionId } = useLocalSearchParams<{ collectionId: string }>();
@@ -70,14 +68,14 @@ export default function LearnArticleListScreen() {
                   className="w-10 h-10 rounded-lg items-center justify-center"
                   style={{ backgroundColor: `${collection.color}25` }}
                 >
-                  <StyledIonicons name={collection.icon as any} size={20} style={{ color: collection.color }} />
+                  <Icon name={collection.icon as any} size={20} style={{ color: collection.color }} />
                 </View>
                 <Text className="text-foreground text-lg flex-1">
                   {collection.title}
                 </Text>
                 {collection.isPremium && (
                   <View className="flex-row items-center gap-1 px-2 py-1 rounded-full bg-warning/20">
-                    <StyledIonicons name="lock-closed" size={12} className="text-warning" />
+                    <Icon name="lock-closed" size={12} className="text-warning" />
                     <Text className="text-warning text-xs font-medium">Premium</Text>
                   </View>
                 )}
@@ -87,13 +85,13 @@ export default function LearnArticleListScreen() {
               </Text>
               <View className="flex-row items-center gap-3 mt-3 pt-3 border-t border-default/20">
                 <View className="flex-row items-center gap-1">
-                  <StyledIonicons name="document-text-outline" size={14} className="text-muted/60" />
+                  <Icon name="document-text-outline" size={14} className="text-muted/60" />
                   <Text className="text-xs text-muted/70">
                     {articles.length} {articles.length === 1 ? 'article' : 'articles'}
                   </Text>
                 </View>
                 <View className="flex-row items-center gap-1">
-                  <StyledIonicons name="time-outline" size={14} className="text-muted/60" />
+                  <Icon name="time-outline" size={14} className="text-muted/60" />
                   <Text className="text-xs text-muted/70">
                     {collection.totalReadingTime} min total
                   </Text>
@@ -104,7 +102,7 @@ export default function LearnArticleListScreen() {
         }
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-20">
-            <StyledIonicons name="book-outline" size={48} className="text-muted/40 mb-4" />
+            <Icon name="book-outline" size={48} className="text-muted/40 mb-4" />
             <Text className="text-foreground text-lg font-medium">No articles yet</Text>
             <Text className="text-muted text-sm mt-1">Check back soon for new content</Text>
           </View>

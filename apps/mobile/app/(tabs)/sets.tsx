@@ -9,15 +9,13 @@ import { useDeleteJokeSet } from '@/hooks/sets/useDeleteJokeSet';
 import { useJokeSetsQuery } from '@/hooks/sets/useJokeSetsQuery';
 import { logVerbose, uiLogger } from '@/lib/loggers';
 import type { RawJokeSet } from '@laughtrack/shared-types';
-import { Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { Button } from 'heroui-native';
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 export default function SetsScreen() {
   const router = useRouter();
@@ -157,7 +155,7 @@ export default function SetsScreen() {
                   logVerbose(uiLogger, '[SetsScreen] ListEmptyComponent rendered - jokeSets empty');
                   return null;
                 })()}
-                <StyledIonicons name="albums-outline" size={48} className="text-muted mb-4" />
+                <Icon name="albums-outline" size={48} className="text-muted mb-4" />
                 <Text className="text-foreground text-lg font-medium">
                   {searchQuery ? 'No sets found' : 'No sets yet'}
                 </Text>
@@ -174,7 +172,7 @@ export default function SetsScreen() {
         onPress={handleAddPress}
         className="absolute bottom-6 right-6"
       >
-        <StyledIonicons name="add" size={28} />
+        <Icon name="add" size={28} />
       </Button>
     </View>
     </ErrorBoundary>

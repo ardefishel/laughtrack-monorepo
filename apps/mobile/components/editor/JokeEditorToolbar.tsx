@@ -1,9 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
 import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
 import { withUniwind } from 'uniwind';
 
+import { Icon } from '@/components/ui/Icon';
+
 const StyledPressable = withUniwind(Pressable);
-const StyledIonicons = withUniwind(Ionicons);
 
 interface EditorToolbarProps {
   onH1: () => void;
@@ -151,7 +151,7 @@ export function JokeEditorToolbar({
               className={`px-3 py-1.5 rounded-md flex-row items-center gap-1 min-h-[44px] ${audioCount > 0 ? 'bg-warning/20' : 'bg-field-background'
                 }`}
             >
-              <StyledIonicons
+              <Icon
                 name="mic"
                 size={14}
                 className={audioCount > 0 ? 'text-warning' : 'text-muted'}

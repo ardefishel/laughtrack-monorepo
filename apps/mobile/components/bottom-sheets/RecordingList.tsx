@@ -2,13 +2,11 @@ import RecordingListItem from '@/components/audio/RecordingListItem';
 import { useRecordingPlayer } from '@/hooks/useAudioPlayer';
 import { useAudioRecordingsQuery } from '@/hooks/useAudioRecordingsQuery';
 import { uiLogger } from '@/lib/loggers';
-import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 const RecordingListBottomSheet = () => {
     const router = useRouter();
@@ -63,7 +61,7 @@ const RecordingListBottomSheet = () => {
                         accessibilityLabel="Add recording"
                         className="min-h-[44px] min-w-[44px] justify-center items-center"
                     >
-                        <StyledIonicons name="add" size={24} className="text-accent" />
+                        <Icon name="add" size={24} className="text-accent" />
                     </Pressable>
                     <Pressable
                         onPress={() => {
@@ -75,7 +73,7 @@ const RecordingListBottomSheet = () => {
                         accessibilityLabel="Close recordings"
                         className="min-h-[44px] min-w-[44px] justify-center items-center"
                     >
-                        <StyledIonicons name="close" size={24} className="text-muted" />
+                        <Icon name="close" size={24} className="text-muted" />
                     </Pressable>
                 </View>
             </View>
@@ -84,14 +82,14 @@ const RecordingListBottomSheet = () => {
                 <View className="mb-4 p-3 bg-danger/10 rounded-lg flex-row items-center justify-between">
                     <Text className="text-danger text-sm flex-1">{loadError}</Text>
                     <Pressable onPress={clearError} hitSlop={8}>
-                        <StyledIonicons name="close-circle" size={20} className="text-danger" />
+                        <Icon name="close-circle" size={20} className="text-danger" />
                     </Pressable>
                 </View>
             )}
 
             {recordings.length === 0 ? (
                 <View className="py-8 items-center">
-                    <StyledIonicons name="mic-off-outline" size={48} className="text-muted mb-4" />
+                    <Icon name="mic-off-outline" size={48} className="text-muted mb-4" />
                     <Text className="text-muted text-sm">No recordings yet</Text>
                 </View>
             ) : (

@@ -1,11 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable, Text } from 'react-native';
-import { withUniwind } from 'uniwind';
 
 import { AddItemOptions } from './AddItemOptions';
-
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from './Icon';
 
 export interface AddItemButtonProps {
   position: 'top' | 'bottom';
@@ -28,7 +25,7 @@ export function AddItemButton({
 
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel="Add set item" className="flex-row items-center px-4 py-3">
-      <StyledIonicons name="add" size={18} className="text-muted mr-2" />
+      <Icon name="add" size={18} className="text-muted mr-2" />
       <Text className="text-muted text-base">Add Set Item</Text>
     </Pressable>
   );

@@ -1,8 +1,6 @@
 import { Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 interface JokeDeleteButtonProps {
   onDelete: () => void;
@@ -16,7 +14,7 @@ export function JokeDeleteButton({ onDelete }: JokeDeleteButtonProps) {
       accessibilityLabel="Delete joke"
       accessibilityRole="button"
     >
-      <StyledIonicons name="trash-outline" size={22} className="text-danger" />
+      <Icon name="trash-outline" size={22} className="text-danger" />
     </Pressable>
   );
 }

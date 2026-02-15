@@ -1,13 +1,11 @@
 import { SetDetailsForm } from '@/components/sets';
 import { useSetEditing } from '@/context/SetEditingContext';
 import type { JokeSetStatus } from '@laughtrack/shared-types';
-import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRouter } from 'expo-router';
 import { useCallback, useLayoutEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, Text } from 'react-native';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 export default function EditSetDetailScreen() {
   const router = useRouter();
@@ -40,7 +38,7 @@ export default function EditSetDetailScreen() {
           accessibilityRole="button"
           accessibilityLabel="Go back"
         >
-          <StyledIonicons name="chevron-back" size={24} className="text-foreground" />
+          <Icon name="chevron-back" size={24} className="text-foreground" />
         </Pressable>
       ),
       headerTitle: "Set Details",

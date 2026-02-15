@@ -1,13 +1,11 @@
 import { formatDuration } from '@/lib/audioStorage';
 import { logVerbose, uiLogger } from '@/lib/loggers';
 import { AudioRecording } from '@/models/AudioRecording';
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { useThemeColor } from 'heroui-native';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 interface RecordingListItemProp {
     recording: AudioRecording;
@@ -32,7 +30,7 @@ const RecordingListItem = ({ recording, isPlaying, isLoading, onPlay, onDelete }
                     {isLoading ? (
                         <ActivityIndicator size="small" color={accentColor} />
                     ) : (
-                        <StyledIonicons
+                        <Icon
                             name={isPlaying ? 'pause' : 'play'}
                             size={20}
                             className={isPlaying ? 'text-accent' : 'text-muted'}
@@ -59,7 +57,7 @@ const RecordingListItem = ({ recording, isPlaying, isLoading, onPlay, onDelete }
                 accessibilityLabel="Delete recording"
                 accessibilityState={{ disabled: !onDelete }}
             >
-                <StyledIonicons name="trash-outline" size={20} className="text-danger" />
+                <Icon name="trash-outline" size={20} className="text-danger" />
             </Pressable>
         </View>
     );

@@ -6,14 +6,12 @@ import { JokeSetItem, JOKE_SET_ITEMS_TABLE } from '@/models/JokeSetItem';
 import { useSetItemsHandlers } from '@/hooks/useSetItemsHandlers';
 import { uiLogger } from '@/lib/loggers';
 import { SetJokeItem } from '@/lib/mocks';
-import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRouter } from 'expo-router';
 import { Button } from 'heroui-native';
 import { useCallback, useLayoutEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 const TEMP_ID_PREFIX = 'temp_';
 
@@ -148,7 +146,7 @@ export default function NewSetScreen() {
             <Text className="text-lg font-semibold text-foreground" numberOfLines={1}>
               {setDetails.title || 'Untitled Set'}
             </Text>
-            <StyledIonicons name="chevron-down" size={16} className="ml-1 text-muted" />
+            <Icon name="chevron-down" size={16} className="ml-1 text-muted" />
           </View>
         </Pressable>
       ),
@@ -162,7 +160,7 @@ export default function NewSetScreen() {
         >
           {isCreatingSet ? (
             <View className="text-muted">
-              <StyledIonicons name="sync-outline" size={18} className="animate-spin text-muted" />
+              <Icon name="sync-outline" size={18} className="animate-spin text-muted" />
             </View>
           ) : (
             <Button.Label>Save</Button.Label>
@@ -177,7 +175,7 @@ export default function NewSetScreen() {
       <View className="flex-1 bg-background items-center justify-center px-6">
         <View className="items-center max-w-sm w-full">
           <View className="w-16 h-16 rounded-2xl bg-default items-center justify-center mb-4">
-            <StyledIonicons name="albums-outline" size={32} className="text-muted" />
+            <Icon name="albums-outline" size={32} className="text-muted" />
           </View>
           <Text className="text-xl font-semibold text-foreground">Create Your First Set</Text>
           <Text className="text-muted text-center mt-2">

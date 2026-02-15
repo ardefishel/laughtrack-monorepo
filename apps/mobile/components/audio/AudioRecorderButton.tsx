@@ -1,11 +1,9 @@
 import { logVerbose, uiLogger } from '@/lib/loggers';
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Button } from 'heroui-native';
 import React from 'react';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 export function AudioRecorderButton() {
   const router = useRouter();
@@ -25,7 +23,7 @@ export function AudioRecorderButton() {
       accessibilityLabel="Record audio"
       accessibilityRole="button"
     >
-      <StyledIonicons name="mic" size={18} className="text-warning" />
+      <Icon name="mic" size={18} className="text-warning" />
     </Button>
   );
 }

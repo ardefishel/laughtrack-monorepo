@@ -1,13 +1,10 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Button, Input, Select, TextField } from 'heroui-native';
 import { useMemo } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { withUniwind } from 'uniwind';
 
+import { Icon } from '@/components/ui/Icon';
 import { getJokeSetStatusDotClass } from '@/lib/status';
 import type { JokeSetStatus } from '@laughtrack/shared-types';
-
-const StyledIonicons = withUniwind(Ionicons);
 
 const STATUS_OPTIONS = [
   { value: 'draft', label: 'Draft' },
@@ -112,7 +109,7 @@ export function SetDetailsForm({
                   {status}
                 </Text>
               </View>
-              <StyledIonicons name="chevron-down" size={16} className="text-muted" />
+              <Icon name="chevron-down" size={16} className="text-muted" />
             </Pressable>
           </Select.Trigger>
           <Select.Portal>

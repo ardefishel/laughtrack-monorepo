@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import debounce from 'lodash.debounce';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -11,6 +10,7 @@ import {
 } from 'react-native-enriched';
 import { withUniwind } from 'uniwind';
 
+import { Icon } from '@/components/ui/Icon';
 import { JokeEditorToolbar } from '@/components/editor/JokeEditorToolbar';
 import { ENRICHED_HTML_STYLE, HTML_FONT_SIZE } from '@/constants/htmlStyles';
 import { JokeDeleteButton } from '@/components/jokes/JokeDeleteButton';
@@ -28,7 +28,6 @@ import { TagEditor } from '@/components/jokes/TagEditor';
 const DRAFT_DELAY = 400;
 const COMMIT_DELAY = 1200;
 
-const StyledIonicons = withUniwind(Ionicons);
 const StyledEnrichedTextInput = withUniwind(EnrichedTextInput);
 
 export default function JokeDetailScreen() {
@@ -210,12 +209,12 @@ export default function JokeDetailScreen() {
           <View className="flex-row items-center gap-2">
             {saveState === 'saving' && (
               <View className="p-2">
-                <StyledIonicons name="sync-outline" size={18} className="text-muted animate-spin" />
+                <Icon name="sync-outline" size={18} className="text-muted animate-spin" />
               </View>
             )}
             {saveState === 'saved' && (
               <View className="p-2">
-                <StyledIonicons name="checkmark" size={18} className="text-success" />
+                <Icon name="checkmark" size={18} className="text-success" />
               </View>
             )}
             <JokeDeleteButton onDelete={handleDelete} />

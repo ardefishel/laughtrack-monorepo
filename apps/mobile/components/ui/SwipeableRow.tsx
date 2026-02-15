@@ -1,10 +1,8 @@
 import React, { useRef } from 'react';
 import { Text, Pressable, Animated } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
-import { Ionicons } from '@expo/vector-icons';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from './Icon';
 
 interface SwipeableRowProps {
   children: React.ReactNode;
@@ -51,7 +49,7 @@ export function SwipeableRow({ children, onDelete, enabled = true, onSwipeStart,
           accessibilityLabel="Delete"
           className="bg-danger h-full justify-center items-center px-6"
         >
-          <StyledIonicons name="trash-outline" size={24} className="text-danger-foreground" />
+          <Icon name="trash-outline" size={24} className="text-danger-foreground" />
           <Text className="text-danger-foreground text-xs mt-1">Delete</Text>
         </Pressable>
       </Animated.View>

@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect } from 'react';
 import { Pressable, View } from 'react-native';
 import Animated, {
@@ -7,11 +6,9 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { withUniwind } from 'uniwind';
 
 import { AddItemOptions } from './AddItemOptions';
-
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from './Icon';
 
 export interface AddItemSeparatorProps {
   isVisible: boolean;
@@ -55,7 +52,7 @@ export function AddItemSeparator({
         >
           <View className="absolute w-full h-px bg-default" />
           <View className="bg-background px-1">
-            <StyledIonicons name="add-circle-outline" size={16} className="text-muted-dim" />
+            <Icon name="add-circle-outline" size={16} className="text-muted-dim" />
           </View>
         </Pressable>
       )}

@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { Button, Input, TextField } from 'heroui-native';
-import { withUniwind } from 'uniwind';
 
 import { AuthContainer } from '@/components/auth/AuthContainer';
+import { Icon } from '@/components/ui/Icon';
 import { useAuth } from '@/context/AuthContext';
-
-const StyledIonicons = withUniwind(Ionicons);
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -127,7 +124,7 @@ export default function SignUpScreen() {
           isDisabled={googleLoading}
           className="w-full"
         >
-          <StyledIonicons
+          <Icon
             name="logo-google"
             size={20}
             className="text-foreground mr-2"

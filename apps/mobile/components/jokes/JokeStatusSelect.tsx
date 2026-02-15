@@ -1,11 +1,9 @@
 import { getJokeStatusDotClass } from '@/lib/status';
 import { JokeStatus } from '@laughtrack/shared-types';
-import { Ionicons } from '@expo/vector-icons';
 import { Select } from 'heroui-native';
 import { Pressable, Text, View } from 'react-native';
-import { withUniwind } from 'uniwind';
 
-const StyledIonicons = withUniwind(Ionicons);
+import { Icon } from '@/components/ui/Icon';
 
 const STATUS_OPTIONS: { value: JokeStatus; label: string }[] = [
   { value: 'draft', label: 'Draft' },
@@ -42,7 +40,7 @@ export function JokeStatusSelect({ status, onStatusChange }: JokeStatusSelectPro
           <Text className="text-foreground text-sm font-medium capitalize ml-1">
             {status}
           </Text>
-          <StyledIonicons name="chevron-down" size={14} className="text-muted ml-1" />
+          <Icon name="chevron-down" size={14} className="text-muted ml-1" />
         </Pressable>
       </Select.Trigger>
       <Select.Portal>
