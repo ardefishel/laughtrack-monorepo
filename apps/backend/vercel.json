@@ -3,8 +3,8 @@
     "functions": {
         "src/index.ts": {
             "includeFiles": [
-                "../../packages/logger/src/**",
-                "../../packages/shared-types/src/**"
+                "../../packages/logger/dist/**",
+                "../../packages/shared-types/dist/**"
             ]
         }
     }
