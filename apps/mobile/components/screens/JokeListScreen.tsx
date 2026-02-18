@@ -7,12 +7,11 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { SwipeableRow } from '@/components/ui/SwipeableRow';
 import { RawJoke, useCreateJoke, useDeleteJoke, useJokesQuery } from '@/hooks/jokes';
-import { useAllTags } from '@/hooks/jokes/useAllTags';
 import { logVerbose, uiLogger } from '@/lib/loggers';
 import { FlashList } from '@shopify/flash-list';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { Button, Input } from 'heroui-native';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 
 import { Icon } from '@/components/ui/Icon';
@@ -28,12 +27,31 @@ export default function JokeListScreen() {
     const [shouldScrollToTop, setShouldScrollToTop] = useState(false);
     const [isQuickCapture, setIsQuickCapture] = useState(true);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const { tags: allTags } = useAllTags();
+    const [availableTags, setAvailableTags] = useState<string[]>([]);
     const { jokes, isLoading, error, refetch } = useJokesQuery(searchQuery, selectedTags);
     const { createJoke, isLoading: isCreating } = useCreateJoke();
     const { deleteJoke } = useDeleteJoke();
 
     const hasActiveFilters = searchQuery.length > 0 || selectedTags.length > 0;
+
+    // Derive unique tags from the user's jokes
+    const jokeTags = useMemo(() => {
+        const tagSet = new Set<string>();
+        for (const joke of jokes) {
+            for (const tag of joke.tags) {
+                tagSet.add(tag);
+            }
+        }
+        return [...tagSet].sort((a, b) => a.localeCompare(b));
+    }, [jokes]);
+
+    // Only update the displayed tags when no tag filter is active,
+    // so the tag bar stays stable while filtering
+    useEffect(() => {
+        if (selectedTags.length === 0) {
+            setAvailableTags(jokeTags);
+        }
+    }, [jokeTags, selectedTags.length]);
 
     const handleToggleTag = useCallback((tag: string) => {
         setSelectedTags((prev) =>
@@ -188,9 +206,9 @@ export default function JokeListScreen() {
                     extraData={jokes}
                     contentContainerStyle={{ paddingVertical: 12, paddingBottom: 100 }}
                     ListHeaderComponent={
-                        allTags.length > 0 ? (
+                        availableTags.length > 0 ? (
                             <TagFilterBar
-                                tags={allTags}
+                                tags={availableTags}
                                 selectedTags={selectedTags}
                                 onToggleTag={handleToggleTag}
                                 onClearAll={handleClearTags}
