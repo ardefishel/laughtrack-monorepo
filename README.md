@@ -41,6 +41,15 @@ bun run db:migrate
 bun run dev
 ```
 
+### Google Sign-In (Android)
+
+Android Google Sign-In requires a `google-services.json` file (not committed to git):
+
+1. Go to [Firebase Console](https://console.firebase.google.com/) → your project → **Project Settings**
+2. Under **Your apps**, add an Android app with package name `com.rtvcl.laughtrack`
+3. Download `google-services.json` and place it at `apps/mobile/google-services.json`
+4. Rebuild with `bun run mobile:android`
+
 ### Backend Env Vars
 
 | Variable | Description |
