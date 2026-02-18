@@ -5,6 +5,7 @@
     "dev": "bun run --watch src/index.ts",
     "dev:vercel": "vercel dev",
     "build": "tsc",
+    "build:vercel": "vercel build",
     "start": "bun run dist/index.js",
     "check": "bunx tsc --noEmit",
     "lint": "bunx tsc --noEmit",
