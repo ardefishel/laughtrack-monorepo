@@ -41,6 +41,32 @@ const columns: Column<AdminUser>[] = [
         ),
     },
     {
+        key: 'role',
+        label: 'Role',
+        render: (user) => (
+            <span
+                className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${
+                    user.role === 'admin' ? 'bg-warning/20 text-warning' : 'bg-surface-secondary text-muted'
+                }`}
+            >
+                {user.role}
+            </span>
+        ),
+    },
+    {
+        key: 'banned',
+        label: 'Status',
+        render: (user) => (
+            <span
+                className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${
+                    user.banned ? 'bg-danger/20 text-danger' : 'bg-success/20 text-success'
+                }`}
+            >
+                {user.banned ? 'Banned' : 'Active'}
+            </span>
+        ),
+    },
+    {
         key: 'emailVerified',
         label: 'Verified',
         render: (user) => (

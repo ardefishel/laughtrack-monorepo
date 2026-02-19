@@ -45,6 +45,8 @@ adminRoutes.get('/users', async (c) => {
             email: users.email,
             name: users.name,
             image: users.image,
+            role: users.role,
+            banned: users.banned,
             emailVerified: users.emailVerified,
             createdAt: users.createdAt
         })
@@ -65,6 +67,9 @@ adminRoutes.get('/users/:id', async (c) => {
             email: users.email,
             name: users.name,
             image: users.image,
+            role: users.role,
+            banned: users.banned,
+            banReason: users.banReason,
             emailVerified: users.emailVerified,
             createdAt: users.createdAt
         })
@@ -99,6 +104,56 @@ adminRoutes.get('/users/:id', async (c) => {
             tagsCount: tagCount.count
         })
     )
+})
+
+// PUT /users/:id — update user details
+adminRoutes.put('/users/:id', async (c) => {
+    const userId = c.req.param('id')
+    const body = await c.req.json<{
+        name?: string
+        email?: string
+        role?: string
+        banned?: boolean
+        banReason?: string | null
+    }>()
+
+    // Validate role if provided
+    const validRoles = ['user', 'admin']
+    if (body.role !== undefined && !validRoles.includes(body.role)) {
+        return c.json(errorResponse('Invalid role. Must be one of: user, admin', 400), 400)
+    }
+
+    // Check user exists
+    const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.id, userId))
+    if (!existing) return c.json(errorResponse('User not found', 404), 404)
+
+    // Build update object with only provided fields
+    const updates: Record<string, unknown> = { updatedAt: new Date() }
+    if (body.name !== undefined) updates.name = body.name
+    if (body.email !== undefined) updates.email = body.email
+    if (body.role !== undefined) updates.role = body.role
+    if (body.banned !== undefined) updates.banned = body.banned
+    if (body.banReason !== undefined) updates.banReason = body.banReason
+
+    await db.update(users).set(updates).where(eq(users.id, userId))
+
+    // Return the updated user
+    const [updated] = await db
+        .select({
+            id: users.id,
+            email: users.email,
+            name: users.name,
+            image: users.image,
+            role: users.role,
+            banned: users.banned,
+            banReason: users.banReason,
+            emailVerified: users.emailVerified,
+            createdAt: users.createdAt
+        })
+        .from(users)
+        .where(eq(users.id, userId))
+
+    return c.json(successResponse(updated))
 })
 
 // GET /jokes — list all jokes

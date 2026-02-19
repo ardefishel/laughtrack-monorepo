@@ -42,15 +42,26 @@ export interface AdminUser {
   email: string
   name: string
   image: string | null
+  role: string
+  banned: boolean
   emailVerified: boolean
   createdAt: string
 }
 
 export interface AdminUserDetail extends AdminUser {
+  banReason: string | null
   jokesCount: number
   setsCount: number
   audioRecordingsCount: number
   tagsCount: number
+}
+
+export interface UpdateUserPayload {
+  name?: string
+  email?: string
+  role?: string
+  banned?: boolean
+  banReason?: string | null
 }
 
 export interface AdminJoke {
@@ -118,6 +129,13 @@ export async function getUsers(page = 1, limit = 20, search?: string) {
 
 export async function getUser(id: string) {
   return fetchApi<ApiResponse<AdminUserDetail>>(`/api/admin/users/${id}`)
+}
+
+export async function updateUser(id: string, data: UpdateUserPayload) {
+  return fetchApi<ApiResponse<AdminUserDetail>>(`/api/admin/users/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  })
 }
 
 export async function getJokes(
