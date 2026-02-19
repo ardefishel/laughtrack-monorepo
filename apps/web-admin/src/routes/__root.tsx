@@ -1,7 +1,10 @@
 /// <reference types="vite/client" />
 import type { ReactNode } from 'react'
-import { Outlet, createRootRoute, HeadContent, Scripts, Link, useRouterState } from '@tanstack/react-router'
+import { Outlet, createRootRoute, HeadContent, Scripts, Link, useRouterState, useRouter } from '@tanstack/react-router'
+import { useSession, authClient } from '@/lib/auth-client'
 import '@/styles.css'
+
+const ALLOWED_ROLES = ['admin']
 
 export const Route = createRootRoute({
   head: () => ({
@@ -34,22 +37,77 @@ const navItems = [
 function RootComponent() {
   return (
     <RootDocument>
-      <div
-        className="flex min-h-screen bg-[#111116] text-[#e4e4e7]"
-        style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
-      >
-        <Sidebar />
-        <main className="ml-64 flex-1 p-8">
-          <Outlet />
-        </main>
-      </div>
+      <AuthGate />
     </RootDocument>
   )
 }
 
-function Sidebar() {
+function AuthGate() {
+  const { data: session, isPending } = useSession()
   const routerState = useRouterState()
+  const router = useRouter()
   const currentPath = routerState.location.pathname
+  const isLoginPage = currentPath === '/login'
+
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#111116]">
+        <div className="text-[#71717a] text-sm">Loading...</div>
+      </div>
+    )
+  }
+
+  const user = session?.user
+  const role = (user as { role?: string } | undefined)?.role
+  const isAuthed = !!user && !!role && ALLOWED_ROLES.includes(role)
+
+  if (isLoginPage) {
+    if (isAuthed) {
+      router.navigate({ to: '/' })
+      return null
+    }
+    return (
+      <div
+        className="min-h-screen bg-[#111116] text-[#e4e4e7]"
+        style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+      >
+        <Outlet />
+      </div>
+    )
+  }
+
+  if (!isAuthed) {
+    router.navigate({ to: '/login' })
+    return null
+  }
+
+  return (
+    <div
+      className="flex min-h-screen bg-[#111116] text-[#e4e4e7]"
+      style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+    >
+      <Sidebar userName={user?.name} userEmail={user?.email} />
+      <main className="ml-64 flex-1 p-8">
+        <Outlet />
+      </main>
+    </div>
+  )
+}
+
+function Sidebar({ userName, userEmail }: { userName?: string; userEmail?: string }) {
+  const routerState = useRouterState()
+  const router = useRouter()
+  const currentPath = routerState.location.pathname
+
+  const handleSignOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.navigate({ to: '/login' })
+        },
+      },
+    })
+  }
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-64 bg-[#0f0f13] border-r border-[#1e1e24] flex flex-col">
@@ -80,12 +138,19 @@ function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-[#1e1e24]">
-        <Link
-          to="/login"
-          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-[#71717a] hover:text-[#e4e4e7] hover:bg-[#1e1e24] transition-colors"
+        {userName && (
+          <div className="px-3 py-2 mb-2">
+            <p className="text-sm text-[#e4e4e7] font-medium truncate">{userName}</p>
+            {userEmail && <p className="text-xs text-[#71717a] truncate">{userEmail}</p>}
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-[#71717a] hover:text-[#e4e4e7] hover:bg-[#1e1e24] transition-colors"
         >
-          ⬡ Login
-        </Link>
+          ⬡ Sign out
+        </button>
       </div>
     </aside>
   )

@@ -3,8 +3,11 @@ import { eq, and, count, inArray } from 'drizzle-orm'
 import { db } from '../db'
 import { users, jokes, jokeSets, jokeSetItems, audioRecordings, tags } from '../db/schema'
 import { successResponse, paginatedResponse, errorResponse } from '../lib/response'
+import { requireAdmin } from '../middlewares/auth'
 
 const adminRoutes = new Hono()
+
+adminRoutes.use('*', requireAdmin)
 
 // GET /stats — dashboard summary
 adminRoutes.get('/stats', async (c) => {

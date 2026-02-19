@@ -11,8 +11,9 @@
     "clean": "rm -rf dist .output node_modules .vinxi"
   },
   "dependencies": {
-    "@tanstack/react-start": "^1",
     "@tanstack/react-router": "^1",
+    "@tanstack/react-start": "^1",
+    "better-auth": "^1.4.18",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
