@@ -1,4 +1,4 @@
-import { ExpoConfig, ConfigContext } from 'expo/config';
+import { ConfigContext, ExpoConfig } from 'expo/config';
 
 const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? '';
 
@@ -12,7 +12,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   slug: 'laughtrack',
   version: '1.0.0',
   orientation: 'portrait',
-  icon: './assets/images/icon.png',
+  icon: './assets/ios-light.png',
   scheme: 'laughtrack',
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
@@ -23,21 +23,24 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       NSMicrophoneUsageDescription: 'LaughTrack needs access to your microphone to record audio jokes.',
       ...(reversedClientId
         ? {
-            CFBundleURLTypes: [
-              {
-                CFBundleURLSchemes: [reversedClientId],
-              },
-            ],
-          }
+          CFBundleURLTypes: [
+            {
+              CFBundleURLSchemes: [reversedClientId],
+            },
+          ],
+        }
         : {}),
     },
+    icon: {
+      light: './assets/ios-light.png',
+      dark: './assets/ios-dark.png',
+      tinted: './assets/ios-tinted.png',
+    }
   },
   android: {
     adaptiveIcon: {
-      backgroundColor: '#E6F4FE',
-      foregroundImage: './assets/images/android-icon-foreground.png',
-      backgroundImage: './assets/images/android-icon-background.png',
-      monochromeImage: './assets/images/android-icon-monochrome.png',
+      backgroundColor: '#ffffff',
+      foregroundImage: './assets/adaptive-icon.png',
     },
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
@@ -53,12 +56,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-splash-screen',
       {
-        image: './assets/images/splash-icon.png',
+        image: './assets/splash-icon-light.png',
         imageWidth: 200,
         resizeMode: 'contain',
         backgroundColor: '#ffffff',
         dark: {
           backgroundColor: '#000000',
+          image: './assets/splash-icon-dark.png',
         },
       },
     ],
