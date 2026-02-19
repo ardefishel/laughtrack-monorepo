@@ -27,7 +27,10 @@
     "docker:up": "bun run --cwd apps/backend docker:up",
     "docker:down": "bun run --cwd apps/backend docker:down",
     "docker:logs": "bun run --cwd apps/backend docker:logs",
-    "build:packages": "bun run --filter '@laughtrack/*' build"
+    "build:packages": "bun run --filter '@laughtrack/*' build",
+    "web-admin": "bun run --cwd apps/web-admin dev",
+    "web-admin:build": "bun run --cwd apps/web-admin build",
+    "web-admin:check": "bun run --cwd apps/web-admin check"
   },
   "devDependencies": {
     "babel-jest": "^30.2.0",

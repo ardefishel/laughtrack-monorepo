@@ -52,6 +52,22 @@ Cloudflare R2 presigned URL management. All endpoints require `requireAuth`.
 | POST | `/api/audio/confirm-upload` | `requireAuth` | `{ recordingId, key }` | Confirms upload completed. Updates `remoteUrl` on the recording. Validates key matches expected format. Returns `{ ok: true }`. |
 | POST | `/api/audio/download-url` | `requireAuth` | `{ recordingId }` | Generates a presigned GET URL for downloading audio from R2. Reconstructs key from userId+recordingId (prevents IDOR). Returns `{ url, expiresIn: 600 }`. |
 
+## Admin — `/api/admin/*`
+
+Dashboard and management endpoints. Currently unprotected (placeholder auth).
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/api/admin/stats` | No | Dashboard summary. Returns counts for users, jokes, sets, audioRecordings, tags. |
+| GET | `/api/admin/users` | No | List all users (paginated). Query: `?page=1&limit=20`. Returns id, email, name, image, emailVerified, createdAt. |
+| GET | `/api/admin/users/:id` | No | User detail with content counts (jokes, sets, audioRecordings, tags). |
+| GET | `/api/admin/jokes` | No | List all jokes (paginated). Query: `?page=1&limit=20&userId=optional`. Returns jokes with user name/email joined, contentText truncated to 100 chars. |
+| GET | `/api/admin/jokes/:id` | No | Single joke detail with full content and user info. |
+| GET | `/api/admin/sets` | No | List all joke sets (paginated). Query: `?page=1&limit=20&userId=optional`. Returns sets with user name/email joined and itemCount. |
+| GET | `/api/admin/sets/:id` | No | Single set detail with all items and user info. |
+
+Soft-deleted records (`isDeleted: true`) are excluded from all admin queries.
+
 ## Runtime Detection — `/api/detect/*` (dev only)
 
 | Method | Path | Auth | Description |
@@ -62,7 +78,7 @@ Cloudflare R2 presigned URL management. All endpoints require `requireAuth`.
 
 1. Security headers: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection: 1; mode=block`
 2. Request logger
-3. CORS: origins `[CORS_ORIGIN, 'laughtrack://']`, credentials enabled
+3. CORS: origins `[CORS_ORIGIN, 'http://localhost:3001', 'laughtrack://']`, credentials enabled
 4. Error handler
 
 ## Auth Middleware Reference

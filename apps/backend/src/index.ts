@@ -4,6 +4,7 @@ import { errorMiddleware } from './middlewares/error'
 import { loggerMiddleware } from './middlewares/logger'
 import { authRoutes } from './routes/auth-routes'
 import { audioRoutes } from './routes/audio-routes'
+import { adminRoutes } from './routes/admin-routes'
 import { detect } from './routes/runtime-routes'
 import { syncRoutes } from './routes/sync-routes'
 
@@ -22,7 +23,7 @@ app.use('*', loggerMiddleware())
 app.use(
   '*',
   cors({
-    origin: [process.env.CORS_ORIGIN ?? 'http://localhost:3000', 'laughtrack://'],
+    origin: [process.env.CORS_ORIGIN ?? 'http://localhost:3000', 'http://localhost:3001', 'laughtrack://'],
     allowHeaders: ['Content-Type', 'Authorization'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
@@ -39,6 +40,7 @@ app.get('/health', (c) => {
 app.route('/api/auth', authRoutes)
 app.route('/api/sync', syncRoutes)
 app.route('/api/audio', audioRoutes)
+app.route('/api/admin', adminRoutes)
 
 if (process.env.NODE_ENV === 'development') {
   app.route('/api/detect', detect)
