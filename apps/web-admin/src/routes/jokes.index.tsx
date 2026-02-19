@@ -5,6 +5,7 @@ import { SearchBar } from '@/components/SearchBar'
 import { StatusBadge } from '@/components/StatusBadge'
 import type { AdminJoke } from '@/lib/api'
 import { getJokes } from '@/lib/api'
+import { extractTitleFromHtml } from '@/lib/htmlUtils'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 
 function formatDate(ts: number | null): string {
@@ -52,15 +53,16 @@ const columns: Column<AdminJoke>[] = [
         key: 'contentText',
         label: 'Content',
         sortable: true,
-        render: (joke) => (
-            <span className="text-foreground max-w-xs truncate block">
-                {joke.contentText
-                    ? joke.contentText.length > 80
-                        ? joke.contentText.slice(0, 80) + '…'
-                        : joke.contentText
-                    : '(empty)'}
-            </span>
-        ),
+        render: (joke) => {
+            const title = joke.contentText
+                ? joke.contentText
+                : extractTitleFromHtml(joke.contentHtml)
+            return (
+                <span className="text-foreground max-w-xs truncate block">
+                    {title.length > 80 ? title.slice(0, 80) + '…' : title}
+                </span>
+            )
+        },
     },
     {
         key: 'status',

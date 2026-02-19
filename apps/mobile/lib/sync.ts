@@ -1,10 +1,10 @@
-import { Platform } from 'react-native';
-import { synchronize, type SyncPullArgs, type SyncPushArgs } from '@nozbe/watermelondb/sync';
 import type { Database } from '@nozbe/watermelondb';
+import { synchronize, type SyncPullArgs, type SyncPushArgs } from '@nozbe/watermelondb/sync';
+import { Platform } from 'react-native';
 
-import { networkLogger } from '@/lib/loggers';
-import { uploadPendingRecordings, downloadMissingRecordings, fixLocalFilePaths } from '@/lib/audioSync';
+import { downloadMissingRecordings, fixLocalFilePaths, uploadPendingRecordings } from '@/lib/audioSync';
 import { getAuthCookieHeader } from '@/lib/auth-client';
+import { networkLogger } from '@/lib/loggers';
 
 const SYNC_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL ?? (Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000');
@@ -26,7 +26,7 @@ export async function performSync(database: Database): Promise<{ success: boolea
         params.set('schema_version', String(schemaVersion));
         if (migration) params.set('migration', JSON.stringify(migration));
 
-        const url = `${SYNC_BASE_URL}/api/sync/pull?${params.toString()}`;
+        const url = `${SYNC_BASE_URL}/api/mobile/sync/pull?${params.toString()}`;
         networkLogger.debug('[Sync] Pull request:', url);
 
         const response = await fetch(url, {
@@ -45,7 +45,7 @@ export async function performSync(database: Database): Promise<{ success: boolea
       pushChanges: async ({ changes, lastPulledAt }: SyncPushArgs) => {
         networkLogger.debug('[Sync] Pushing changes...');
 
-        const response = await fetch(`${SYNC_BASE_URL}/api/sync/push`, {
+        const response = await fetch(`${SYNC_BASE_URL}/api/mobile/sync/push`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

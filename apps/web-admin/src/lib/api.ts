@@ -90,6 +90,7 @@ export interface AdminSetDetail extends AdminSet {
     id: string
     itemType: string | null
     jokeId: string | null
+    jokeTitle: string | null
     content: string | null
     position: number | null
   }>

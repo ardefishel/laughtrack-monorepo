@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { getSet } from '@/lib/api'
 import { StatusBadge } from '@/components/StatusBadge'
+import { getSet } from '@/lib/api'
+import { createFileRoute, Link } from '@tanstack/react-router'
 
 function formatDate(ts: number | null): string {
   if (!ts) return '—'
@@ -91,15 +91,24 @@ function SetDetailPage() {
                     {item.position ?? index + 1}
                   </span>
                   <span
-                    className={`text-xs px-1.5 py-0.5 rounded ${
-                      item.itemType === 'joke' ? 'bg-[#f59e0b]/10 text-[#f59e0b]' : 'bg-[#3b3b3f] text-[#a1a1aa]'
-                    }`}
+                    className={`text-xs px-1.5 py-0.5 rounded ${item.itemType === 'joke' ? 'bg-[#f59e0b]/10 text-[#f59e0b]' : 'bg-[#3b3b3f] text-[#a1a1aa]'
+                      }`}
                   >
                     {item.itemType ?? 'unknown'}
                   </span>
-                  <span className="text-sm text-[#e4e4e7] flex-1 truncate">
-                    {item.content || (item.jokeId ? `Joke: ${item.jokeId}` : '(empty)')}
-                  </span>
+                  {item.itemType === 'joke' && item.jokeId ? (
+                    <Link
+                      to="/jokes/$id"
+                      params={{ id: item.jokeId }}
+                      className="text-sm text-[#e4e4e7] flex-1 truncate hover:text-[#f59e0b] transition-colors"
+                    >
+                      {item.jokeTitle || item.content || '(untitled joke)'}
+                    </Link>
+                  ) : (
+                    <span className="text-sm text-[#e4e4e7] flex-1 truncate">
+                      {item.content || '(empty)'}
+                    </span>
+                  )}
                 </div>
               ))}
             </div>

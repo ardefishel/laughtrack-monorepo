@@ -1,12 +1,12 @@
-import { Platform } from 'react-native';
-import * as FileSystem from 'expo-file-system';
 import type { Database } from '@nozbe/watermelondb';
 import { Q } from '@nozbe/watermelondb';
+import * as FileSystem from 'expo-file-system';
+import { Platform } from 'react-native';
 
-import { AudioRecording, AUDIO_RECORDINGS_TABLE } from '@/models/AudioRecording';
-import { getAudioPathForRecording, ensureAudioDirectory } from '@/lib/audioStorage';
-import { createNamespacedLogger } from '@/lib/loggers';
+import { ensureAudioDirectory, getAudioPathForRecording } from '@/lib/audioStorage';
 import { getAuthCookieHeader } from '@/lib/auth-client';
+import { createNamespacedLogger } from '@/lib/loggers';
+import { AUDIO_RECORDINGS_TABLE, AudioRecording } from '@/models/AudioRecording';
 
 const syncLogger = createNamespacedLogger('network');
 
@@ -38,7 +38,7 @@ export async function uploadPendingRecordings(
           continue;
         }
 
-        const response = await fetch(`${SYNC_BASE_URL}/api/audio/upload-url`, {
+        const response = await fetch(`${SYNC_BASE_URL}/api/mobile/audio/upload-url`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Cookie: cookie },
           body: JSON.stringify({ recordingId: recording.id })
@@ -60,7 +60,7 @@ export async function uploadPendingRecordings(
         });
 
         if (uploadResult.status >= 200 && uploadResult.status < 300) {
-          const confirmResponse = await fetch(`${SYNC_BASE_URL}/api/audio/confirm-upload`, {
+          const confirmResponse = await fetch(`${SYNC_BASE_URL}/api/mobile/audio/confirm-upload`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Cookie: cookie },
             body: JSON.stringify({ recordingId: recording.id, key })
@@ -133,7 +133,7 @@ export async function downloadMissingRecordings(
           continue;
         }
 
-        const response = await fetch(`${SYNC_BASE_URL}/api/audio/download-url`, {
+        const response = await fetch(`${SYNC_BASE_URL}/api/mobile/audio/download-url`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Cookie: cookie },
           body: JSON.stringify({ recordingId: recording.id })

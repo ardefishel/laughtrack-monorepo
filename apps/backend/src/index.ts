@@ -2,11 +2,10 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { errorMiddleware } from './middlewares/error'
 import { loggerMiddleware } from './middlewares/logger'
+import { adminApp } from './routes/admin'
 import { authRoutes } from './routes/auth-routes'
-import { audioRoutes } from './routes/audio-routes'
-import { adminRoutes } from './routes/admin-routes'
+import { mobileApp } from './routes/mobile'
 import { detect } from './routes/runtime-routes'
-import { syncRoutes } from './routes/sync-routes'
 
 const app = new Hono()
 
@@ -20,8 +19,11 @@ app.use('*', async (c, next) => {
 
 // Global middleware
 app.use('*', loggerMiddleware())
+app.use('*', errorMiddleware())
+
+// Auth routes need CORS for both mobile and web-admin (shared)
 app.use(
-  '*',
+  '/api/auth/*',
   cors({
     origin: [process.env.CORS_ORIGIN ?? 'http://localhost:3000', 'http://localhost:3001', 'laughtrack://'],
     allowHeaders: ['Content-Type', 'Authorization'],
@@ -29,7 +31,6 @@ app.use(
     credentials: true,
   })
 )
-app.use('*', errorMiddleware())
 
 // Health check
 app.get('/health', (c) => {
@@ -38,9 +39,8 @@ app.get('/health', (c) => {
 
 // Mount route modules
 app.route('/api/auth', authRoutes)
-app.route('/api/sync', syncRoutes)
-app.route('/api/audio', audioRoutes)
-app.route('/api/admin', adminRoutes)
+app.route('/api/mobile', mobileApp)
+app.route('/api/admin', adminApp)
 
 if (process.env.NODE_ENV === 'development') {
   app.route('/api/detect', detect)
