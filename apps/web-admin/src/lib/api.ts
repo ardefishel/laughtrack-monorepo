@@ -109,17 +109,31 @@ export async function getStats(): Promise<AdminStats> {
   return res.data
 }
 
-export async function getUsers(page = 1, limit = 20) {
-  return fetchApi<PaginatedApiResponse<AdminUser>>(`/api/admin/users?page=${page}&limit=${limit}`)
+export async function getUsers(page = 1, limit = 20, search?: string) {
+  const params = new URLSearchParams({ page: String(page), limit: String(limit) })
+  if (search) params.set('search', search)
+  return fetchApi<PaginatedApiResponse<AdminUser>>(`/api/admin/users?${params}`)
 }
 
 export async function getUser(id: string) {
   return fetchApi<ApiResponse<AdminUserDetail>>(`/api/admin/users/${id}`)
 }
 
-export async function getJokes(page = 1, limit = 20, userId?: string) {
+export async function getJokes(
+  page = 1,
+  limit = 20,
+  userId?: string,
+  search?: string,
+  status?: string,
+  sort?: string,
+  order?: 'asc' | 'desc'
+) {
   const params = new URLSearchParams({ page: String(page), limit: String(limit) })
   if (userId) params.set('userId', userId)
+  if (search) params.set('search', search)
+  if (status) params.set('status', status)
+  if (sort) params.set('sort', sort)
+  if (order) params.set('order', order)
   return fetchApi<PaginatedApiResponse<AdminJoke>>(`/api/admin/jokes?${params}`)
 }
 

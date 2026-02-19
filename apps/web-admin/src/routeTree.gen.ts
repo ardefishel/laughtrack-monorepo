@@ -14,6 +14,9 @@ import { Route as SetsRouteImport } from './routes/sets'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as JokesRouteImport } from './routes/jokes'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UsersIndexRouteImport } from './routes/users.index'
+import { Route as SetsIndexRouteImport } from './routes/sets.index'
+import { Route as JokesIndexRouteImport } from './routes/jokes.index'
 import { Route as UsersIdRouteImport } from './routes/users.$id'
 import { Route as SetsIdRouteImport } from './routes/sets.$id'
 import { Route as JokesIdRouteImport } from './routes/jokes.$id'
@@ -43,6 +46,21 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UsersIndexRoute = UsersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => UsersRoute,
+} as any)
+const SetsIndexRoute = SetsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SetsRoute,
+} as any)
+const JokesIndexRoute = JokesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => JokesRoute,
+} as any)
 const UsersIdRoute = UsersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -68,16 +86,19 @@ export interface FileRoutesByFullPath {
   '/jokes/$id': typeof JokesIdRoute
   '/sets/$id': typeof SetsIdRoute
   '/users/$id': typeof UsersIdRoute
+  '/jokes/': typeof JokesIndexRoute
+  '/sets/': typeof SetsIndexRoute
+  '/users/': typeof UsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/jokes': typeof JokesRouteWithChildren
   '/login': typeof LoginRoute
-  '/sets': typeof SetsRouteWithChildren
-  '/users': typeof UsersRouteWithChildren
   '/jokes/$id': typeof JokesIdRoute
   '/sets/$id': typeof SetsIdRoute
   '/users/$id': typeof UsersIdRoute
+  '/jokes': typeof JokesIndexRoute
+  '/sets': typeof SetsIndexRoute
+  '/users': typeof UsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +110,9 @@ export interface FileRoutesById {
   '/jokes/$id': typeof JokesIdRoute
   '/sets/$id': typeof SetsIdRoute
   '/users/$id': typeof UsersIdRoute
+  '/jokes/': typeof JokesIndexRoute
+  '/sets/': typeof SetsIndexRoute
+  '/users/': typeof UsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,16 +125,19 @@ export interface FileRouteTypes {
     | '/jokes/$id'
     | '/sets/$id'
     | '/users/$id'
+    | '/jokes/'
+    | '/sets/'
+    | '/users/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/jokes'
     | '/login'
-    | '/sets'
-    | '/users'
     | '/jokes/$id'
     | '/sets/$id'
     | '/users/$id'
+    | '/jokes'
+    | '/sets'
+    | '/users'
   id:
     | '__root__'
     | '/'
@@ -121,6 +148,9 @@ export interface FileRouteTypes {
     | '/jokes/$id'
     | '/sets/$id'
     | '/users/$id'
+    | '/jokes/'
+    | '/sets/'
+    | '/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -168,6 +198,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/users/': {
+      id: '/users/'
+      path: '/'
+      fullPath: '/users/'
+      preLoaderRoute: typeof UsersIndexRouteImport
+      parentRoute: typeof UsersRoute
+    }
+    '/sets/': {
+      id: '/sets/'
+      path: '/'
+      fullPath: '/sets/'
+      preLoaderRoute: typeof SetsIndexRouteImport
+      parentRoute: typeof SetsRoute
+    }
+    '/jokes/': {
+      id: '/jokes/'
+      path: '/'
+      fullPath: '/jokes/'
+      preLoaderRoute: typeof JokesIndexRouteImport
+      parentRoute: typeof JokesRoute
+    }
     '/users/$id': {
       id: '/users/$id'
       path: '/$id'
@@ -194,30 +245,36 @@ declare module '@tanstack/react-router' {
 
 interface JokesRouteChildren {
   JokesIdRoute: typeof JokesIdRoute
+  JokesIndexRoute: typeof JokesIndexRoute
 }
 
 const JokesRouteChildren: JokesRouteChildren = {
   JokesIdRoute: JokesIdRoute,
+  JokesIndexRoute: JokesIndexRoute,
 }
 
 const JokesRouteWithChildren = JokesRoute._addFileChildren(JokesRouteChildren)
 
 interface SetsRouteChildren {
   SetsIdRoute: typeof SetsIdRoute
+  SetsIndexRoute: typeof SetsIndexRoute
 }
 
 const SetsRouteChildren: SetsRouteChildren = {
   SetsIdRoute: SetsIdRoute,
+  SetsIndexRoute: SetsIndexRoute,
 }
 
 const SetsRouteWithChildren = SetsRoute._addFileChildren(SetsRouteChildren)
 
 interface UsersRouteChildren {
   UsersIdRoute: typeof UsersIdRoute
+  UsersIndexRoute: typeof UsersIndexRoute
 }
 
 const UsersRouteChildren: UsersRouteChildren = {
   UsersIdRoute: UsersIdRoute,
+  UsersIndexRoute: UsersIndexRoute,
 }
 
 const UsersRouteWithChildren = UsersRoute._addFileChildren(UsersRouteChildren)

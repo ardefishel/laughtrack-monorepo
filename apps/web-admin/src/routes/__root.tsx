@@ -1,8 +1,8 @@
 /// <reference types="vite/client" />
-import type { ReactNode } from 'react'
-import { Outlet, createRootRoute, HeadContent, Scripts, Link, useRouterState, useRouter } from '@tanstack/react-router'
-import { useSession, authClient } from '@/lib/auth-client'
+import { authClient, useSession } from '@/lib/auth-client'
 import '@/styles.css'
+import { createRootRoute, HeadContent, Link, Outlet, Scripts, useRouter, useRouterState } from '@tanstack/react-router'
+import type { ReactNode } from 'react'
 
 const ALLOWED_ROLES = ['admin']
 
@@ -51,8 +51,8 @@ function AuthGate() {
 
   if (isPending) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#111116]">
-        <div className="text-[#71717a] text-sm">Loading...</div>
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="text-muted text-sm">Loading...</div>
       </div>
     )
   }
@@ -68,8 +68,7 @@ function AuthGate() {
     }
     return (
       <div
-        className="min-h-screen bg-[#111116] text-[#e4e4e7]"
-        style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+        className="min-h-screen bg-background text-foreground font-sans"
       >
         <Outlet />
       </div>
@@ -83,8 +82,7 @@ function AuthGate() {
 
   return (
     <div
-      className="flex min-h-screen bg-[#111116] text-[#e4e4e7]"
-      style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+      className="flex min-h-screen bg-background text-foreground font-sans"
     >
       <Sidebar userName={user?.name} userEmail={user?.email} />
       <main className="ml-64 flex-1 p-8">
@@ -110,10 +108,10 @@ function Sidebar({ userName, userEmail }: { userName?: string; userEmail?: strin
   }
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-[#0f0f13] border-r border-[#1e1e24] flex flex-col">
-      <div className="p-6 border-b border-[#1e1e24]">
-        <h1 className="text-lg font-semibold tracking-tight text-[#f5f5f5]">
-          🎤 <span className="text-[#f59e0b]">Laughtrack</span> Admin
+    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-surface border-r border-border flex flex-col">
+      <div className="p-6 border-b border-border">
+        <h1 className="text-lg font-semibold tracking-tight text-foreground">
+          🎤 <span className="text-warning">Laughtrack</span> Admin
         </h1>
       </div>
 
@@ -124,11 +122,10 @@ function Sidebar({ userName, userEmail }: { userName?: string; userEmail?: strin
             <Link
               key={item.to}
               to={item.to}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-[#f59e0b]/10 text-[#f59e0b]'
-                  : 'text-[#a1a1aa] hover:text-[#e4e4e7] hover:bg-[#1e1e24]'
-              }`}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
+                  ? 'bg-accent/10 text-accent'
+                  : 'text-muted hover:text-foreground hover:bg-surface-secondary'
+                }`}
             >
               <span className="text-base">{item.icon}</span>
               {item.label}
@@ -137,17 +134,17 @@ function Sidebar({ userName, userEmail }: { userName?: string; userEmail?: strin
         })}
       </nav>
 
-      <div className="p-4 border-t border-[#1e1e24]">
+      <div className="p-4 border-t border-border">
         {userName && (
           <div className="px-3 py-2 mb-2">
-            <p className="text-sm text-[#e4e4e7] font-medium truncate">{userName}</p>
-            {userEmail && <p className="text-xs text-[#71717a] truncate">{userEmail}</p>}
+            <p className="text-sm text-foreground font-medium truncate">{userName}</p>
+            {userEmail && <p className="text-xs text-muted truncate">{userEmail}</p>}
           </div>
         )}
         <button
           type="button"
           onClick={handleSignOut}
-          className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-[#71717a] hover:text-[#e4e4e7] hover:bg-[#1e1e24] transition-colors"
+          className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-muted hover:text-foreground hover:bg-surface-secondary transition-colors"
         >
           ⬡ Sign out
         </button>
@@ -158,11 +155,11 @@ function Sidebar({ userName, userEmail }: { userName?: string; userEmail?: strin
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
       </head>
-      <body className="bg-[#111116] text-[#e4e4e7] antialiased">
+      <body className="bg-background text-foreground antialiased">
         {children}
         <Scripts />
       </body>
