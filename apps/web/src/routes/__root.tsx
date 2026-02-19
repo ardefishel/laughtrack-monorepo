@@ -4,14 +4,14 @@ import '@/styles.css'
 import { createRootRoute, HeadContent, Link, Outlet, Scripts, useRouter, useRouterState } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 
-const ALLOWED_ROLES = ['admin']
+
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'Laughtrack Admin' },
+      { title: 'Laughtrack' },
     ],
     links: [
       {
@@ -28,10 +28,10 @@ export const Route = createRootRoute({
 })
 
 const navItems = [
-  { to: '/', label: 'Dashboard', icon: '◉' },
-  { to: '/users', label: 'Users', icon: '◎' },
-  { to: '/jokes', label: 'Jokes', icon: '◈' },
-  { to: '/sets', label: 'Sets', icon: '◇' },
+  { to: '/', label: 'Dashboard', icon: '◉', adminOnly: false },
+  { to: '/users', label: 'Users', icon: '◎', adminOnly: true },
+  { to: '/jokes', label: 'Jokes', icon: '◈', adminOnly: false },
+  { to: '/sets', label: 'Sets', icon: '◇', adminOnly: false },
 ] as const
 
 function RootComponent() {
@@ -59,13 +59,15 @@ function AuthGate() {
 
   const user = session?.user
   const role = (user as { role?: string } | undefined)?.role
-  const isAuthed = !!user && !!role && ALLOWED_ROLES.includes(role)
+  const isAuthed = !!user
+  const isAdmin = !!role && role === 'admin'
 
-  if (isLoginPage) {
-    if (isAuthed) {
-      router.navigate({ to: '/' })
-      return null
-    }
+  if (!isAuthed && !isLoginPage) {
+    router.navigate({ to: '/login' })
+    return null
+  }
+
+  if (!isAuthed && isLoginPage) {
     return (
       <div
         className="min-h-screen bg-background text-foreground font-sans"
@@ -75,16 +77,18 @@ function AuthGate() {
     )
   }
 
-  if (!isAuthed) {
-    router.navigate({ to: '/login' })
+  // If authenticated, and on login page, redirect to dashboard
+  if (isAuthed && isLoginPage) {
+    router.navigate({ to: '/' })
     return null
   }
 
+  // If authenticated and not on login page, show main layout
   return (
     <div
       className="flex min-h-screen bg-background text-foreground font-sans"
     >
-      <Sidebar userName={user?.name} userEmail={user?.email} />
+      <Sidebar userName={user?.name} userEmail={user?.email} isAdmin={isAdmin} />
       <main className="ml-64 flex-1 p-8">
         <Outlet />
       </main>
@@ -92,7 +96,7 @@ function AuthGate() {
   )
 }
 
-function Sidebar({ userName, userEmail }: { userName?: string; userEmail?: string }) {
+function Sidebar({ userName, userEmail, isAdmin }: { userName?: string; userEmail?: string; isAdmin: boolean }) {
   const routerState = useRouterState()
   const router = useRouter()
   const currentPath = routerState.location.pathname
@@ -111,20 +115,21 @@ function Sidebar({ userName, userEmail }: { userName?: string; userEmail?: strin
     <aside className="fixed left-0 top-0 bottom-0 w-64 bg-surface border-r border-border flex flex-col">
       <div className="p-6 border-b border-border">
         <h1 className="text-lg font-semibold tracking-tight text-foreground">
-          🎤 <span className="text-warning">Laughtrack</span> Admin
+          🎤 <span className="text-warning">Laughtrack</span>
         </h1>
       </div>
 
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => {
+          if (item.adminOnly && !isAdmin) return null
           const isActive = item.to === '/' ? currentPath === '/' : currentPath.startsWith(item.to)
           return (
             <Link
               key={item.to}
               to={item.to}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
-                  ? 'bg-accent/10 text-accent'
-                  : 'text-muted hover:text-foreground hover:bg-surface-secondary'
+                ? 'bg-accent/10 text-accent'
+                : 'text-muted hover:text-foreground hover:bg-surface-secondary'
                 }`}
             >
               <span className="text-base">{item.icon}</span>

@@ -36,8 +36,8 @@ interface PaginatedApiResponse<T> {
   timestamp: string
 }
 
-// Domain types for admin API
-export interface AdminUser {
+// Domain types for web API
+export interface User {
   id: string
   email: string
   name: string
@@ -48,7 +48,7 @@ export interface AdminUser {
   createdAt: string
 }
 
-export interface AdminUserDetail extends AdminUser {
+export interface UserDetail extends User {
   banReason: string | null
   jokesCount: number
   setsCount: number
@@ -64,7 +64,7 @@ export interface UpdateUserPayload {
   banReason?: string | null
 }
 
-export interface AdminJoke {
+export interface Joke {
   id: string
   contentText: string | null
   contentHtml: string | null
@@ -76,12 +76,12 @@ export interface AdminJoke {
   updatedAt: number | null
 }
 
-export interface AdminJokeDetail extends AdminJoke {
+export interface JokeDetail extends Joke {
   draftUpdatedAt: number | null
   tags: string | null
 }
 
-export interface AdminSet {
+export interface JokeSet {
   id: string
   title: string | null
   description: string | null
@@ -96,7 +96,7 @@ export interface AdminSet {
   itemCount: number
 }
 
-export interface AdminSetDetail extends AdminSet {
+export interface JokeSetDetail extends JokeSet {
   items: Array<{
     id: string
     itemType: string | null
@@ -107,7 +107,7 @@ export interface AdminSetDetail extends AdminSet {
   }>
 }
 
-export interface AdminStats {
+export interface Stats {
   users: number
   jokes: number
   sets: number
@@ -116,23 +116,23 @@ export interface AdminStats {
 }
 
 // API functions
-export async function getStats(): Promise<AdminStats> {
-  const res = await fetchApi<ApiResponse<AdminStats>>('/api/admin/stats')
+export async function getStats(): Promise<Stats> {
+  const res = await fetchApi<ApiResponse<Stats>>('/api/web/stats')
   return res.data
 }
 
 export async function getUsers(page = 1, limit = 20, search?: string) {
   const params = new URLSearchParams({ page: String(page), limit: String(limit) })
   if (search) params.set('search', search)
-  return fetchApi<PaginatedApiResponse<AdminUser>>(`/api/admin/users?${params}`)
+  return fetchApi<PaginatedApiResponse<User>>(`/api/web/users?${params}`)
 }
 
 export async function getUser(id: string) {
-  return fetchApi<ApiResponse<AdminUserDetail>>(`/api/admin/users/${id}`)
+  return fetchApi<ApiResponse<UserDetail>>(`/api/web/users/${id}`)
 }
 
 export async function updateUser(id: string, data: UpdateUserPayload) {
-  return fetchApi<ApiResponse<AdminUserDetail>>(`/api/admin/users/${id}`, {
+  return fetchApi<ApiResponse<UserDetail>>(`/api/web/users/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data)
   })
@@ -153,19 +153,19 @@ export async function getJokes(
   if (status) params.set('status', status)
   if (sort) params.set('sort', sort)
   if (order) params.set('order', order)
-  return fetchApi<PaginatedApiResponse<AdminJoke>>(`/api/admin/jokes?${params}`)
+  return fetchApi<PaginatedApiResponse<Joke>>(`/api/web/jokes?${params}`)
 }
 
 export async function getJoke(id: string) {
-  return fetchApi<ApiResponse<AdminJokeDetail>>(`/api/admin/jokes/${id}`)
+  return fetchApi<ApiResponse<JokeDetail>>(`/api/web/jokes/${id}`)
 }
 
 export async function getSets(page = 1, limit = 20, userId?: string) {
   const params = new URLSearchParams({ page: String(page), limit: String(limit) })
   if (userId) params.set('userId', userId)
-  return fetchApi<PaginatedApiResponse<AdminSet>>(`/api/admin/sets?${params}`)
+  return fetchApi<PaginatedApiResponse<JokeSet>>(`/api/web/sets?${params}`)
 }
 
 export async function getSet(id: string) {
-  return fetchApi<ApiResponse<AdminSetDetail>>(`/api/admin/sets/${id}`)
+  return fetchApi<ApiResponse<JokeSetDetail>>(`/api/web/sets/${id}`)
 }

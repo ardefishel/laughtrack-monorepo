@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { errorMiddleware } from './middlewares/error'
 import { loggerMiddleware } from './middlewares/logger'
-import { adminApp } from './routes/admin'
+import { webApp } from './routes/admin'
 import { authRoutes } from './routes/auth-routes'
 import { mobileApp } from './routes/mobile'
 import { detect } from './routes/runtime-routes'
@@ -21,7 +21,7 @@ app.use('*', async (c, next) => {
 app.use('*', loggerMiddleware())
 app.use('*', errorMiddleware())
 
-// Auth routes need CORS for both mobile and web-admin (shared)
+// Auth routes need CORS for both mobile and web clients (shared)
 app.use(
   '/api/auth/*',
   cors({
@@ -40,7 +40,7 @@ app.get('/health', (c) => {
 // Mount route modules
 app.route('/api/auth', authRoutes)
 app.route('/api/mobile', mobileApp)
-app.route('/api/admin', adminApp)
+app.route('/api/web', webApp)
 
 if (process.env.NODE_ENV === 'development') {
   app.route('/api/detect', detect)

@@ -2,7 +2,7 @@ import type { Column } from '@/components/DataTable'
 import { DataTable } from '@/components/DataTable'
 import { Pagination } from '@/components/Pagination'
 import { StatusBadge } from '@/components/StatusBadge'
-import type { AdminSet } from '@/lib/api'
+import type { JokeSet } from '@/lib/api'
 import { getSets } from '@/lib/api'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 
@@ -34,7 +34,7 @@ export const Route = createFileRoute('/sets/')({
     component: SetsPage,
 })
 
-const columns: Column<AdminSet>[] = [
+const columns: Column<JokeSet>[] = [
     {
         key: 'title',
         label: 'Title',

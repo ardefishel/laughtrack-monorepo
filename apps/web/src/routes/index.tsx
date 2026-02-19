@@ -1,9 +1,9 @@
 import { StatsCard } from '@/components/StatsCard'
-import type { AdminStats } from '@/lib/api'
+import type { Stats } from '@/lib/api'
 import { getStats } from '@/lib/api'
 import { createFileRoute } from '@tanstack/react-router'
 
-const defaultStats: AdminStats = { users: 0, jokes: 0, sets: 0, audioRecordings: 0, tags: 0 }
+const defaultStats: Stats = { users: 0, jokes: 0, sets: 0, audioRecordings: 0, tags: 0 }
 
 export const Route = createFileRoute('/')({
   loader: async () => {

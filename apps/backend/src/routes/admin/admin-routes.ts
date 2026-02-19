@@ -3,14 +3,12 @@ import { Hono } from 'hono'
 import { db } from '../../db'
 import { audioRecordings, jokes, jokeSetItems, jokeSets, tags, users } from '../../db/schema'
 import { errorResponse, paginatedResponse, successResponse } from '../../lib/response'
-import { requireAdmin } from '../../middlewares/auth'
+import { requireAdmin, requireAuth } from '../../middlewares/auth'
 
-const adminRoutes = new Hono()
+const webRoutes = new Hono()
 
-adminRoutes.use('*', requireAdmin)
-
-// GET /stats — dashboard summary
-adminRoutes.get('/stats', async (c) => {
+// GET /stats — dashboard summary (any authenticated user)
+webRoutes.get('/stats', requireAuth, async (c) => {
     const [userCount] = await db.select({ count: count() }).from(users)
     const [jokeCount] = await db.select({ count: count() }).from(jokes).where(eq(jokes.isDeleted, false))
     const [setCount] = await db.select({ count: count() }).from(jokeSets).where(eq(jokeSets.isDeleted, false))
@@ -31,8 +29,8 @@ adminRoutes.get('/stats', async (c) => {
     )
 })
 
-// GET /users — list all users
-adminRoutes.get('/users', async (c) => {
+// GET /users — list all users (admin only)
+webRoutes.get('/users', requireAdmin, async (c) => {
     const page = Number(c.req.query('page') || '1')
     const limit = Number(c.req.query('limit') || '20')
     const offset = (page - 1) * limit
@@ -57,8 +55,8 @@ adminRoutes.get('/users', async (c) => {
     return c.json(paginatedResponse(rows, { page, limit, total: totalResult.count }))
 })
 
-// GET /users/:id — user detail with content counts
-adminRoutes.get('/users/:id', async (c) => {
+// GET /users/:id — user detail with content counts (admin only)
+webRoutes.get('/users/:id', requireAdmin, async (c) => {
     const userId = c.req.param('id')
 
     const [user] = await db
@@ -106,8 +104,8 @@ adminRoutes.get('/users/:id', async (c) => {
     )
 })
 
-// PUT /users/:id — update user details
-adminRoutes.put('/users/:id', async (c) => {
+// PUT /users/:id — update user details (admin only)
+webRoutes.put('/users/:id', requireAdmin, async (c) => {
     const userId = c.req.param('id')
     const body = await c.req.json<{
         name?: string
@@ -156,8 +154,8 @@ adminRoutes.put('/users/:id', async (c) => {
     return c.json(successResponse(updated))
 })
 
-// GET /jokes — list all jokes
-adminRoutes.get('/jokes', async (c) => {
+// GET /jokes — list all jokes (any authenticated user)
+webRoutes.get('/jokes', requireAuth, async (c) => {
     const page = Number(c.req.query('page') || '1')
     const limit = Number(c.req.query('limit') || '20')
     const userId = c.req.query('userId')
@@ -196,8 +194,8 @@ adminRoutes.get('/jokes', async (c) => {
     return c.json(paginatedResponse(mapped, { page, limit, total: totalResult.count }))
 })
 
-// GET /jokes/:id — single joke detail
-adminRoutes.get('/jokes/:id', async (c) => {
+// GET /jokes/:id — single joke detail (any authenticated user)
+webRoutes.get('/jokes/:id', requireAuth, async (c) => {
     const jokeId = c.req.param('id')
 
     const [row] = await db
@@ -223,8 +221,8 @@ adminRoutes.get('/jokes/:id', async (c) => {
     return c.json(successResponse(row))
 })
 
-// GET /sets — list all joke sets
-adminRoutes.get('/sets', async (c) => {
+// GET /sets — list all joke sets (any authenticated user)
+webRoutes.get('/sets', requireAuth, async (c) => {
     const page = Number(c.req.query('page') || '1')
     const limit = Number(c.req.query('limit') || '20')
     const userId = c.req.query('userId')
@@ -275,8 +273,8 @@ adminRoutes.get('/sets', async (c) => {
     return c.json(paginatedResponse(mapped, { page, limit, total: totalResult.count }))
 })
 
-// GET /sets/:id — single set detail with items
-adminRoutes.get('/sets/:id', async (c) => {
+// GET /sets/:id — single set detail with items (any authenticated user)
+webRoutes.get('/sets/:id', requireAuth, async (c) => {
     const setId = c.req.param('id')
 
     const [row] = await db
@@ -320,4 +318,4 @@ adminRoutes.get('/sets/:id', async (c) => {
     return c.json(successResponse({ ...row, items }))
 })
 
-export { adminRoutes }
+export { webRoutes }

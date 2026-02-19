@@ -3,7 +3,7 @@ import { DataTable } from '@/components/DataTable'
 import { Pagination } from '@/components/Pagination'
 import { SearchBar } from '@/components/SearchBar'
 import { StatusBadge } from '@/components/StatusBadge'
-import type { AdminJoke } from '@/lib/api'
+import type { Joke } from '@/lib/api'
 import { getJokes } from '@/lib/api'
 import { extractTitleFromHtml } from '@/lib/htmlUtils'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
@@ -48,7 +48,7 @@ export const Route = createFileRoute('/jokes/')({
     component: JokesPage,
 })
 
-const columns: Column<AdminJoke>[] = [
+const columns: Column<Joke>[] = [
     {
         key: 'contentText',
         label: 'Content',

@@ -1,12 +1,12 @@
-import { useState } from 'react'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { authClient } from '@/lib/auth-client'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { useState } from 'react'
 
 export const Route = createFileRoute('/login')({
   component: Login,
 })
 
-const ALLOWED_ROLES = ['admin']
+
 
 function Login() {
   const router = useRouter()
@@ -32,14 +32,6 @@ function Login() {
         return
       }
 
-      const role = (data?.user as { role?: string })?.role
-      if (!role || !ALLOWED_ROLES.includes(role)) {
-        await authClient.signOut()
-        setError('Access denied. Admin privileges required.')
-        setLoading(false)
-        return
-      }
-
       router.navigate({ to: '/' })
     } catch {
       setError('An unexpected error occurred')
@@ -52,7 +44,7 @@ function Login() {
       <div className="bg-[#18181b] border border-[#27272a] rounded-2xl p-8 w-full max-w-sm">
         <div className="text-center mb-8">
           <span className="text-4xl mb-4 block">🎤</span>
-          <h1 className="text-xl font-semibold text-[#f5f5f5] mb-1">Laughtrack Admin</h1>
+          <h1 className="text-xl font-semibold text-[#f5f5f5] mb-1">Laughtrack</h1>
           <p className="text-sm text-[#71717a]">Sign in to your account</p>
         </div>
 
@@ -69,7 +61,7 @@ function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@laughtrack.app"
+              placeholder="you@example.com"
               required
               className="w-full px-3 py-2 bg-[#111116] border border-[#27272a] rounded-lg text-sm text-[#e4e4e7] placeholder-[#52525b] focus:outline-none focus:border-[#f59e0b]/50 transition-colors"
             />

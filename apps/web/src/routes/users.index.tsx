@@ -2,7 +2,7 @@ import type { Column } from '@/components/DataTable'
 import { DataTable } from '@/components/DataTable'
 import { Pagination } from '@/components/Pagination'
 import { SearchBar } from '@/components/SearchBar'
-import type { AdminUser } from '@/lib/api'
+import type { User } from '@/lib/api'
 import { getUsers } from '@/lib/api'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
@@ -25,7 +25,7 @@ export const Route = createFileRoute('/users/')({
     component: UsersPage,
 })
 
-const columns: Column<AdminUser>[] = [
+const columns: Column<User>[] = [
     {
         key: 'name',
         label: 'Name',
@@ -45,9 +45,8 @@ const columns: Column<AdminUser>[] = [
         label: 'Role',
         render: (user) => (
             <span
-                className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${
-                    user.role === 'admin' ? 'bg-warning/20 text-warning' : 'bg-surface-secondary text-muted'
-                }`}
+                className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${user.role === 'admin' ? 'bg-warning/20 text-warning' : 'bg-surface-secondary text-muted'
+                    }`}
             >
                 {user.role}
             </span>
@@ -58,9 +57,8 @@ const columns: Column<AdminUser>[] = [
         label: 'Status',
         render: (user) => (
             <span
-                className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${
-                    user.banned ? 'bg-danger/20 text-danger' : 'bg-success/20 text-success'
-                }`}
+                className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${user.banned ? 'bg-danger/20 text-danger' : 'bg-success/20 text-success'
+                    }`}
             >
                 {user.banned ? 'Banned' : 'Active'}
             </span>
