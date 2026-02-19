@@ -1,17 +1,15 @@
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { HeaderTitleWidthContext, useHeaderTitleWidth } from '@/hooks/useHeaderTitleWidth';
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { createContext, useCallback, useContext, useState } from "react";
-import { Text, View } from "react-native";
+import { useCallback, useState } from "react";
 import type { LayoutChangeEvent } from "react-native";
+import { Text, View } from "react-native";
 import { useCSSVariable, useResolveClassNames, withUniwind } from "uniwind";
 
 const StyledView = withUniwind(View);
 
-const HeaderTitleWidthContext = createContext<number>(0);
-export function useHeaderTitleWidth() {
-  return useContext(HeaderTitleWidthContext);
-}
+export { useHeaderTitleWidth };
 
 function HeaderTitle({ onLayout }: { onLayout?: (e: LayoutChangeEvent) => void }) {
   return (
