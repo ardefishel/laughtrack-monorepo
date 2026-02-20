@@ -4,15 +4,18 @@ import { Card, useThemeColor } from 'heroui-native';
 import type { LearnArticle, ArticleDifficulty } from '@/lib/types/learn';
 
 import { Icon } from '@/components/ui/Icon';
+import type { ComponentProps } from 'react';
 
 interface ArticleCardProps {
   article: LearnArticle;
   onPress: (article: LearnArticle) => void;
 }
 
+type IconName = ComponentProps<typeof Icon>['name'];
+
 const difficultyConfig: Record<
   ArticleDifficulty,
-  { label: string; colorToken: 'success' | 'warning' | 'accent'; icon: string }
+  { label: string; colorToken: 'success' | 'warning' | 'accent'; icon: IconName }
 > = {
   beginner: { label: 'Beginner', colorToken: 'success', icon: 'leaf' },
   intermediate: { label: 'Intermediate', colorToken: 'warning', icon: 'flame' },
@@ -43,7 +46,7 @@ function ArticleCardComponent({ article, onPress }: ArticleCardProps) {
                 className="px-2 py-0.5 rounded-full flex-row items-center gap-1"
                 style={{ backgroundColor: `${difficultyColor}20` }}
               >
-                <Icon name={difficulty.icon as any} size={12} style={{ color: difficultyColor }} />
+                <Icon name={difficulty.icon} size={12} style={{ color: difficultyColor }} />
                 <Text className="text-xs font-medium" style={{ color: difficultyColor }}>
                   {difficulty.label}
                 </Text>

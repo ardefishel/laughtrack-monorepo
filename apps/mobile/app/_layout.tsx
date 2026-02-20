@@ -8,12 +8,13 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import '@/global.css';
 import { Stack } from 'expo-router';
 import { HeroUINativeProvider } from 'heroui-native';
+import { ViewStyle } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useCSSVariable, useResolveClassNames } from 'uniwind';
 
 function ThemedStack() {
   const [foregroundColor] = useCSSVariable(['--foreground']);
-  const headerStyle = useResolveClassNames('bg-background') as any;
+  const headerStyle = useResolveClassNames('bg-background') as ViewStyle;
   const contentStyle = useResolveClassNames('bg-background');
   return (
     <Stack
@@ -77,7 +78,7 @@ function ThemedStack() {
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView className="flex-1">
       <ErrorBoundary sectionName="Root">
         <HeroUINativeProvider>
           <DatabaseProvider>

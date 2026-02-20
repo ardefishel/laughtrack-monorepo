@@ -38,9 +38,9 @@ function LandingPage() {
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <img
-                            src="/logo-dark.png"
+                            src="/icon-dark.png"
                             alt="Laughtrack"
-                            className="w-8 h-8"
+                            className="w-6 h-6"
                         />
                         <span className="text-lg font-semibold tracking-tight text-[#f5f5f5]">
                             Laughtrack

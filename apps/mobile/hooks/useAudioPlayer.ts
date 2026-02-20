@@ -111,6 +111,10 @@ export function useRecordingPlayer(): UseRecordingPlayerReturn {
                 setIsLoading(false);
                 setPendingPlay(false);
             }, LOADING_TIMEOUT_MS);
+        }).catch((err) => {
+            hooksLogger.error('[useRecordingPlayer] Failed to resolve local URI:', err);
+            setLoadError('Failed to load audio file.');
+            setIsLoading(false);
         });
     }, [player, clearLoadingTimeout]);
 

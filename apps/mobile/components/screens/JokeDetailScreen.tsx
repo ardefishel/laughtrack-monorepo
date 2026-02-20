@@ -68,8 +68,9 @@ export default function JokeDetailScreen() {
     const isInitializedRef = useRef(false);
 
     // Debounced save functions (created lazily)
-    const saveDraftDebouncedRef = useRef<((text: string) => void) | null>(null);
-    const commitDebouncedRef = useRef<((text: string, html: string) => void) | null>(null);
+    type DebouncedFn<T extends (...args: Parameters<T>) => void> = T & { flush: () => void; cancel: () => void };
+    const saveDraftDebouncedRef = useRef<DebouncedFn<(text: string) => void> | null>(null);
+    const commitDebouncedRef = useRef<DebouncedFn<(text: string, html: string) => void> | null>(null);
 
     // Initialize debounced functions once
     const getSaveDraftDebounced = useCallback(() => {
@@ -126,10 +127,8 @@ export default function JokeDetailScreen() {
     // Flush all pending saves
     const flushAll = useCallback(async () => {
         logVerbose(uiLogger, '[JokeDetail] FLUSHING pending saves...');
-        const draftFn = saveDraftDebouncedRef.current as any;
-        const commitFn = commitDebouncedRef.current as any;
-        if (draftFn?.flush) draftFn.flush();
-        if (commitFn?.flush) await commitFn.flush();
+        saveDraftDebouncedRef.current?.flush();
+        commitDebouncedRef.current?.flush();
     }, []);
 
     // Initialize content refs
@@ -279,9 +278,9 @@ export default function JokeDetailScreen() {
                     }}
                     htmlStyle={ENRICHED_HTML_STYLE}
                     placeholder="Write your joke here..."
-                    placeholderTextColor="#9ca3af"
-                    selectionColor="#3b82f6"
-                    cursorColor="#3b82f6"
+                    placeholderTextColor="var(--muted)"
+                    selectionColor="var(--accent)"
+                    cursorColor="var(--accent)"
                     defaultValue={initialContentRef.current}
                     onChangeState={(e) => setStylesState(e.nativeEvent)}
                     onChangeHtml={handleEditorChange}

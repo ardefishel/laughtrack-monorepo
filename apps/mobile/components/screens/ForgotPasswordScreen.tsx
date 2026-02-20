@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { AuthContainer } from '@/components/auth/AuthContainer';
+import { uiLogger } from '@/lib/loggers';
 
 export default function ForgotPasswordScreen() {
     const router = useRouter();
@@ -28,7 +29,7 @@ export default function ForgotPasswordScreen() {
 
                 <Button
                     variant="primary"
-                    onPress={() => console.log('Send Reset Link pressed')}
+                    onPress={() => uiLogger.debug('[ForgotPasswordScreen] Send Reset Link pressed')}
                     className="w-full"
                 >
                     <Button.Label>Send Reset Link</Button.Label>

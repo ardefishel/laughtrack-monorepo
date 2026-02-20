@@ -15,11 +15,15 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
 
   const resetDatabase = useCallback(async () => {
     dbLogger.info('[DatabaseContext] Resetting database...');
-    await database.write(async () => {
-      await database.unsafeResetDatabase();
-    });
-    setDbKey((k) => k + 1);
-    dbLogger.info('[DatabaseContext] Database reset complete, remounting consumers');
+    try {
+      await database.write(async () => {
+        await database.unsafeResetDatabase();
+      });
+      setDbKey((k) => k + 1);
+      dbLogger.info('[DatabaseContext] Database reset complete, remounting consumers');
+    } catch (err) {
+      dbLogger.error('[DatabaseContext] Failed to reset database:', err);
+    }
   }, []);
 
   return (

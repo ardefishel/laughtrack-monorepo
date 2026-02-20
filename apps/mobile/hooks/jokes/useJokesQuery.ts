@@ -159,6 +159,9 @@ export function useJokesQuery(searchQuery?: string, chipTagFilters?: string[]): 
       next: () => {
         logVerbose(hooksLogger, '[useJokesQuery] JOKE_TAGS OBSERVABLE EMITTED');
         resolve();
+      },
+      error: (err: unknown) => {
+        hooksLogger.error('[useJokesQuery] JokeTags observable error:', err);
       }
     });
 

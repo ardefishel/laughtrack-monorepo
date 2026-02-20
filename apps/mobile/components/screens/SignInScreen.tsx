@@ -72,6 +72,8 @@ export default function SignInScreen() {
                 <Pressable
                     onPress={() => router.push('/auth/forgot-password')}
                     className="self-end"
+                    accessibilityRole="link"
+                    accessibilityLabel="Forgot Password"
                 >
                     <Text className="text-accent text-sm">Forgot Password?</Text>
                 </Pressable>
@@ -107,7 +109,7 @@ export default function SignInScreen() {
 
                 <View className="flex-row justify-center gap-1 mt-4">
                     <Text className="text-muted">Don&apos;t have an account?</Text>
-                    <Pressable onPress={() => router.push('/auth/sign-up')}>
+                    <Pressable onPress={() => router.push('/auth/sign-up')} accessibilityRole="link" accessibilityLabel="Sign Up">
                         <Text className="text-accent">Sign Up</Text>
                     </Pressable>
                 </View>

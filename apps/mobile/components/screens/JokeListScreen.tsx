@@ -1,4 +1,3 @@
-import { useHeaderTitleWidth } from '@/app/(tabs)/_layout';
 import { AudioRecorderButton } from '@/components/audio/AudioRecorderButton';
 import { ActiveFilterBar } from '@/components/jokes/ActiveFilterBar';
 import { JokeCard } from '@/components/jokes/JokeCard';
@@ -8,8 +7,8 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { SwipeableRow } from '@/components/ui/SwipeableRow';
 import { useJokeFilters } from '@/context/JokeFilterContext';
 import { RawJoke, useCreateJoke, useDeleteJoke, useJokesQuery } from '@/hooks/jokes';
-import { logVerbose, uiLogger } from '@/lib/loggers';
-import { FlashList } from '@shopify/flash-list';
+import { uiLogger } from '@/lib/loggers';
+import { FlashList, type FlashListRef } from '@shopify/flash-list';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { Button, Input } from 'heroui-native';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
@@ -18,10 +17,9 @@ import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-nat
 export default function JokeListScreen() {
     const router = useRouter();
     const navigation = useNavigation();
-    const headerTitleWidth = useHeaderTitleWidth();
     const { scrollToTop } = useLocalSearchParams<{ scrollToTop?: string }>();
 
-    const flashListRef = useRef<any>(null);
+    const flashListRef = useRef<FlashListRef<RawJoke>>(null);
     const [newJokeText, setNewJokeText] = useState('');
     const [shouldScrollToTop, setShouldScrollToTop] = useState(false);
     const [isQuickCapture, setIsQuickCapture] = useState(true);
@@ -42,14 +40,6 @@ export default function JokeListScreen() {
     const { deleteJoke } = useDeleteJoke();
 
     useEffect(() => {
-        logVerbose(uiLogger, '[JokesScreen] MOUNTED, jokes count:', jokes.length);
-        return () => {
-            logVerbose(uiLogger, '[JokesScreen] UNMOUNTED');
-        };
-    }, [jokes.length]);
-
-    useEffect(() => {
-        logVerbose(uiLogger, '[JokesScreen] JOKES DATA CHANGED, count:', jokes.length);
         if (shouldScrollToTop && jokes.length > 0) {
             flashListRef.current?.scrollToOffset({ offset: 0, animated: true });
             setShouldScrollToTop(false);
@@ -58,7 +48,6 @@ export default function JokeListScreen() {
 
     useEffect(() => {
         if (scrollToTop === 'true' && jokes.length > 0) {
-            logVerbose(uiLogger, '[JokesScreen] Scroll to top triggered by navigation param');
             flashListRef.current?.scrollToOffset({ offset: 0, animated: true });
             router.setParams({ scrollToTop: undefined });
         }
@@ -104,8 +93,7 @@ export default function JokeListScreen() {
         });
     }, [navigation, handleOpenFilter, hasActiveFilters, activeFilterCount]);
 
-    const handleJokePress = useCallback((joke: RawJoke) => {
-        logVerbose(uiLogger, '[JokesScreen] CLICKED joke:', joke.id, 'content:', joke.content_html.substring(0, 50), 'status:', joke.status);
+    const handleJokePress = useCallback((joke: { id: string }) => {
         router.push({ pathname: '/jokes/[id]', params: { id: joke.id } });
     }, [router]);
 
@@ -127,43 +115,17 @@ export default function JokeListScreen() {
 
     const handleDeleteJoke = useCallback(
         async (joke: RawJoke) => {
-            uiLogger.info('[JokesScreen] USER ACTION: Delete button pressed for joke', {
-                id: joke.id,
-                content: joke.content_html.substring(0, 50),
-                status: joke.status,
-                createdAt: joke.created_at,
-            });
-
-            uiLogger.debug('[JokesScreen] Initiating database delete operation for joke:', joke.id);
-            const startTime = Date.now();
-
             try {
                 const success = await deleteJoke(joke.id);
-                const duration = Date.now() - startTime;
-
                 if (success) {
-                    uiLogger.info('[JokesScreen] Joke deleted successfully:', {
-                        id: joke.id,
-                        content: joke.content_html.substring(0, 50),
-                        duration: `${duration}ms`,
-                    });
-                    uiLogger.debug('[JokesScreen] Triggering refetch after successful deletion');
                     refetch();
                 } else {
-                    uiLogger.error('[JokesScreen] Delete operation returned false for joke:', {
-                        id: joke.id,
-                        content: joke.content_html.substring(0, 50),
-                        duration: `${duration}ms`,
-                    });
+                    uiLogger.error('[JokesScreen] Delete failed for joke:', joke.id);
                 }
             } catch (err) {
-                const duration = Date.now() - startTime;
                 uiLogger.error('[JokesScreen] Exception during joke deletion:', {
                     id: joke.id,
-                    content: joke.content_html.substring(0, 50),
                     error: err instanceof Error ? err.message : 'Unknown error',
-                    stack: err instanceof Error ? err.stack : undefined,
-                    duration: `${duration}ms`,
                 });
             }
         },
@@ -171,19 +133,14 @@ export default function JokeListScreen() {
     );
 
     const renderJokeCard = useCallback(({ item }: { item: RawJoke }) => {
-        logVerbose(uiLogger, '[JokesScreen] RENDERING joke:', item.id, 'updated_at:', item.updated_at, 'content:', item.content_html.substring(0, 30));
         const jokeWithStringDates = {
             ...item,
             created_at: new Date(item.created_at).toISOString(),
             updated_at: new Date(item.updated_at).toISOString(),
         };
         return (
-            <SwipeableRow
-                onDelete={() => handleDeleteJoke(item)}
-                onSwipeStart={() => logVerbose(uiLogger, '[JokesScreen] Swipe gesture started for joke:', item.id)}
-                onSwipeOpen={() => logVerbose(uiLogger, '[JokesScreen] Swipe gesture opened for joke:', item.id)}
-            >
-                <JokeCard joke={jokeWithStringDates} onPress={handleJokePress as any} />
+            <SwipeableRow onDelete={() => handleDeleteJoke(item)}>
+                <JokeCard joke={jokeWithStringDates} onPress={handleJokePress} />
             </SwipeableRow>
         );
     }, [handleJokePress, handleDeleteJoke]);
@@ -200,7 +157,7 @@ export default function JokeListScreen() {
         >
             <View className="flex-1 bg-background">
                 <FlashList
-                    ref={flashListRef as any}
+                    ref={flashListRef}
                     data={jokes}
                     renderItem={renderJokeCard}
                     keyExtractor={(item) => item.id}
@@ -239,7 +196,7 @@ export default function JokeListScreen() {
 
                 <View className="absolute bottom-0 left-0 right-0 bg-background px-4 py-3">
                     <View className="flex-row items-center relative">
-                        <Button isIconOnly variant='ghost' className='absolute z-20' onPress={() => setIsQuickCapture(!isQuickCapture)}>
+                        <Button isIconOnly variant='ghost' className='absolute z-20' onPress={() => setIsQuickCapture(!isQuickCapture)} accessibilityRole="switch" accessibilityLabel="Quick capture mode" accessibilityState={{ checked: isQuickCapture }}>
                             <Icon name={isQuickCapture ? 'flash' : 'flash-outline'} size={18} className={isQuickCapture ? 'text-warning/80' : 'text-muted/40'} />
                         </Button>
                         <Input

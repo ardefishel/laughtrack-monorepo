@@ -28,7 +28,7 @@ function MenuItem({ icon, label, onPress, trailing, danger }: MenuItemProps) {
             accessibilityLabel={label}
         >
             <View className={`w-8 h-8 rounded-lg items-center justify-center mr-3 ${danger ? 'bg-danger/10' : 'bg-accent/10'}`}>
-                <Icon name={icon} size={18} color={danger ? '#ef4444' : undefined} className={danger ? '' : 'text-accent'} />
+                <Icon name={icon} size={18} className={danger ? 'text-danger' : 'text-accent'} />
             </View>
             <Text className={`flex-1 text-base ${danger ? 'text-danger' : 'text-foreground'}`}>{label}</Text>
             {trailing}

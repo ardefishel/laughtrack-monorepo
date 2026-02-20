@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { useAudioRecorder as useExpoAudioRecorder, setAudioModeAsync } from 'expo-audio';
+import { useAudioRecorder as useExpoAudioRecorder, setAudioModeAsync, RecordingOptions } from 'expo-audio';
 import { useAudio } from '@/context/AudioContext';
 import { hooksLogger } from '@/lib/loggers';
 import { resetAudioRouteToSpeaker } from '@/lib/audioMode';
@@ -24,7 +24,7 @@ export interface UseAudioRecorderReturn {
   reset: () => void;
 }
 
-export function useAudioRecorder(recordingOptions: any): UseAudioRecorderReturn {
+export function useAudioRecorder(recordingOptions: RecordingOptions): UseAudioRecorderReturn {
   const { isPermissionGranted, requestPermission } = useAudio();
   const recorder = useExpoAudioRecorder(recordingOptions);
 
@@ -142,7 +142,11 @@ export function useAudioRecorder(recordingOptions: any): UseAudioRecorderReturn 
     setRecordingData(null);
     hooksLogger.debug('[useAudioRecorder] Recording cancelled');
 
-    await resetAudioRouteToSpeaker();
+    try {
+      await resetAudioRouteToSpeaker();
+    } catch (err) {
+      hooksLogger.error('[useAudioRecorder] Failed to reset audio route:', err);
+    }
   }, []);
 
   return {

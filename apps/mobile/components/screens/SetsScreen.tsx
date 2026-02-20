@@ -9,7 +9,7 @@ import { useJokeSetsQuery } from '@/hooks/sets/useJokeSetsQuery';
 import { useHeaderTitleWidth } from '@/hooks/useHeaderTitleWidth';
 import { logVerbose, uiLogger } from '@/lib/loggers';
 import type { RawJokeSet } from '@laughtrack/shared-types';
-import { FlashList } from '@shopify/flash-list';
+import { FlashList, type FlashListRef } from '@shopify/flash-list';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { Button } from 'heroui-native';
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
@@ -24,7 +24,7 @@ export default function SetsScreen() {
     const [searchQuery, setSearchQuery] = useState('');
     const { jokeSets, isLoading, error, refetch } = useJokeSetsQuery(searchQuery);
     const { deleteJokeSet } = useDeleteJokeSet();
-    const listRef = useRef<any>(null);
+    const listRef = useRef<FlashListRef<RawJokeSet>>(null);
     const prevSetCountRef = useRef(jokeSets.length);
     logVerbose(uiLogger, '[SetsScreen] RENDER, jokeSets count:', jokeSets.length, ', isLoading:', isLoading);
 

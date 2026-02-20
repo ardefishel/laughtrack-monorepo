@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { AuthContainer } from '@/components/auth/AuthContainer';
+import { uiLogger } from '@/lib/loggers';
 
 export default function VerifyForgotPasswordScreen() {
     const router = useRouter();
@@ -28,15 +29,17 @@ export default function VerifyForgotPasswordScreen() {
 
                 <Button
                     variant="primary"
-                    onPress={() => console.log('Verify pressed')}
+                    onPress={() => uiLogger.debug('[VerifyForgotPasswordScreen] Verify pressed')}
                     className="w-full"
                 >
                     <Button.Label>Verify</Button.Label>
                 </Button>
 
                 <Pressable
-                    onPress={() => console.log('Resend code')}
+                    onPress={() => uiLogger.debug('[VerifyForgotPasswordScreen] Resend code pressed')}
                     className="self-center mt-4"
+                    accessibilityRole="button"
+                    accessibilityLabel="Resend verification code"
                 >
                     <Text className="text-accent text-sm">Didn&apos;t receive it? Resend</Text>
                 </Pressable>
@@ -44,6 +47,8 @@ export default function VerifyForgotPasswordScreen() {
                 <Pressable
                     onPress={() => router.push('/auth')}
                     className="self-center mt-2"
+                    accessibilityRole="link"
+                    accessibilityLabel="Back to Sign In"
                 >
                     <Text className="text-muted text-sm">Back to Sign In</Text>
                 </Pressable>

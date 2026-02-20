@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { AuthContainer } from '@/components/auth/AuthContainer';
+import { uiLogger } from '@/lib/loggers';
 
 export default function ChangePasswordScreen() {
     const router = useRouter();
@@ -39,7 +40,7 @@ export default function ChangePasswordScreen() {
 
                 <Button
                     variant="primary"
-                    onPress={() => console.log('Change Password pressed')}
+                    onPress={() => uiLogger.debug('[ChangePasswordScreen] Change Password pressed')}
                     className="w-full"
                 >
                     <Button.Label>Update Password</Button.Label>

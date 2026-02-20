@@ -40,8 +40,12 @@ export function useSetItemsHandlers(options: UseSetItemHandlersOptions): UseSetI
   }, [setPendingAddPosition, router, mode, setId]);
 
   const handleAddNote = useCallback(async (afterId?: string | null) => {
-    if (onAddNote) {
-      await onAddNote(afterId);
+    try {
+      if (onAddNote) {
+        await onAddNote(afterId);
+      }
+    } catch (err) {
+      uiLogger.error('[useSetItemsHandlers] Failed to add note:', err);
     }
     setExpandedSeparatorId(null);
   }, [onAddNote]);
@@ -66,10 +70,14 @@ export function useSetItemsHandlers(options: UseSetItemHandlersOptions): UseSetI
     }
   }, [onDragEnd]);
 
-  const handleDeleteItem = useCallback((itemId: string) => {
+  const handleDeleteItem = useCallback(async (itemId: string) => {
     uiLogger.debug(`[${mode === 'edit' ? 'SetDetailScreen' : 'NewSetScreen'}] Deleting item:`, itemId);
-    if (onDeleteItem) {
-      onDeleteItem(itemId);
+    try {
+      if (onDeleteItem) {
+        await onDeleteItem(itemId);
+      }
+    } catch (err) {
+      uiLogger.error('[useSetItemsHandlers] Failed to delete item:', err);
     }
   }, [onDeleteItem, mode]);
 

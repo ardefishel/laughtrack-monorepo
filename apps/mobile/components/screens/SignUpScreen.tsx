@@ -134,7 +134,7 @@ export default function SignUpScreen() {
 
                 <View className="flex-row justify-center gap-1 mt-4">
                     <Text className="text-muted">Already have an account?</Text>
-                    <Pressable onPress={() => router.back()}>
+                    <Pressable onPress={() => router.back()} accessibilityRole="link" accessibilityLabel="Sign In">
                         <Text className="text-accent">Sign In</Text>
                     </Pressable>
                 </View>

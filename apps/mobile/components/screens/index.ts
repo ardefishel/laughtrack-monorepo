@@ -3,6 +3,7 @@ export { default as ChangePasswordScreen } from './ChangePasswordScreen';
 export { default as EditSetDetailScreen } from './EditSetDetailScreen';
 export { default as ForgotPasswordScreen } from './ForgotPasswordScreen';
 export { default as JokeDetailScreen } from './JokeDetailScreen';
+export { default as JokeListScreen } from './JokeListScreen';
 export { default as LearnArticleListScreen } from './LearnArticleListScreen';
 export { default as LearnArticleScreen } from './LearnArticleScreen';
 export { default as LearnScreen } from './LearnScreen';

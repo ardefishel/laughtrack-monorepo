@@ -38,7 +38,7 @@ export function TagEditor({ tags, onAddTag, onRemoveTag }: TagEditorProps) {
           onChangeText={setInputValue}
           onSubmitEditing={handleSubmit}
           placeholder="Add tag..."
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor="var(--muted)"
           returnKeyType="done"
           autoCapitalize="none"
           autoCorrect={false}

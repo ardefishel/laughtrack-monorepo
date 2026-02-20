@@ -1,22 +1,27 @@
 import { getArticleById, getCollectionById } from '@/lib/mocks/learn';
-import type { ArticleSection } from '@/lib/types/learn';
+import type { ArticleDifficulty, ArticleSection } from '@/lib/types/learn';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
-import { Card } from 'heroui-native';
-import { useLayoutEffect, useMemo } from 'react';
+import { Card, useThemeColor } from 'heroui-native';
+import { type ComponentProps, useLayoutEffect, useMemo } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Icon } from '@/components/ui/Icon';
 
-const difficultyConfig = {
-    beginner: { label: 'Beginner', color: '#10B981', icon: 'leaf' },
-    intermediate: { label: 'Intermediate', color: '#F59E0B', icon: 'flame' },
-    advanced: { label: 'Advanced', color: '#8B5CF6', icon: 'trophy' },
+type IconName = ComponentProps<typeof Icon>['name'];
+
+const difficultyConfig: Record<
+    ArticleDifficulty,
+    { label: string; colorToken: 'success' | 'warning' | 'accent'; icon: IconName }
+> = {
+    beginner: { label: 'Beginner', colorToken: 'success', icon: 'leaf' },
+    intermediate: { label: 'Intermediate', colorToken: 'warning', icon: 'flame' },
+    advanced: { label: 'Advanced', colorToken: 'accent', icon: 'trophy' },
 };
 
 function PremiumSectionOverlay() {
     return (
         <View className="py-8 px-4">
-            <Card className="p-6 items-center border-2 border-warning/30" style={{ backgroundColor: 'rgba(251, 191, 36, 0.1)' }}>
+            <Card className="p-6 items-center border-2 border-warning/30 bg-warning/10">
                 <Icon name="lock-closed" size={48} className="text-warning mb-4" />
                 <Text className="text-foreground text-lg font-bold text-center mb-2">
                     Premium Content
@@ -77,7 +82,12 @@ export default function LearnArticleScreen() {
     const article = useMemo(() => getArticleById(articleId), [articleId]);
     const collection = useMemo(() => getCollectionById(collectionId), [collectionId]);
 
-    const difficulty = article ? difficultyConfig[article.difficulty] : null;
+    const difficultyEntry = article ? difficultyConfig[article.difficulty] : null;
+    const successColor = useThemeColor('success');
+    const warningColor = useThemeColor('warning');
+    const accentColor = useThemeColor('accent');
+    const colorMap = { success: successColor, warning: warningColor, accent: accentColor } as const;
+    const difficultyColor = difficultyEntry ? colorMap[difficultyEntry.colorToken] : undefined;
 
     const freeSections = article?.sections.filter((s) => !s.isPremium) || [];
     const premiumSections = article?.sections.filter((s) => s.isPremium) || [];
@@ -85,7 +95,7 @@ export default function LearnArticleScreen() {
     useLayoutEffect(() => {
         navigation.setOptions({
             headerTitle: () => (
-                <Pressable onPress={() => { }} className="py-2">
+                <Pressable onPress={() => { }} className="py-2" accessibilityRole="header" accessibilityLabel={article?.title || 'Article'}>
                     <Text className="text-xl font-semibold text-foreground" numberOfLines={1}>
                         {article?.title || 'Article'}
                     </Text>
@@ -109,11 +119,11 @@ export default function LearnArticleScreen() {
                     <View className="flex-row items-center gap-2 mb-2">
                         <View
                             className="px-2 py-0.5 rounded-full flex-row items-center gap-1"
-                            style={{ backgroundColor: `${difficulty?.color}20` }}
+                            style={{ backgroundColor: difficultyColor ? `${difficultyColor}20` : undefined }}
                         >
-                            <Icon name={difficulty?.icon as any} size={12} style={{ color: difficulty?.color }} />
-                            <Text className="text-xs font-medium" style={{ color: difficulty?.color }}>
-                                {difficulty?.label}
+                            {difficultyEntry && <Icon name={difficultyEntry.icon} size={12} style={{ color: difficultyColor }} />}
+                            <Text className="text-xs font-medium" style={{ color: difficultyColor }}>
+                                {difficultyEntry?.label}
                             </Text>
                         </View>
                         {article.isPremium && (
