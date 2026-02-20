@@ -1,14 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Q } from '@nozbe/watermelondb';
-import { Database } from '@nozbe/watermelondb';
 import { useDatabase } from '@/context/DatabaseContext';
-import { Joke, JOKES_TABLE } from '@/models/Joke';
-import { Tag, TAGS_TABLE } from '@/models/Tag';
-import { JokeTag, JOKE_TAGS_TABLE } from '@/models/JokeTag';
-import { RawJoke } from '@laughtrack/shared-types';
-import { jokeToPlain, fetchRecordingCounts, fetchTagsForJokes } from './transformers';
-import { normalizeTag } from '@/lib/tagUtils';
 import { hooksLogger, logVerbose } from '@/lib/loggers';
+import { normalizeTag } from '@/lib/tagUtils';
+import { Joke, JOKES_TABLE } from '@/models/Joke';
+import { JOKE_TAGS_TABLE, JokeTag } from '@/models/JokeTag';
+import { Tag, TAGS_TABLE } from '@/models/Tag';
+import { RawJoke } from '@laughtrack/shared-types';
+import { Database, Q } from '@nozbe/watermelondb';
+import { useCallback, useEffect, useState } from 'react';
+import { fetchRecordingCounts, fetchTagsForJokes, jokeToPlain } from './transformers';
 
 export function parseSearchInput(query: string): { textQuery: string; tagFilters: string[] } {
   const words = query.trim().split(/\s+/).filter(Boolean);
@@ -77,7 +76,7 @@ async function fetchFilteredJokes(
   const conditions = [
     Q.sortBy('created_at', Q.desc),
     ...(filteredJokeIds !== null ? [Q.where('id', Q.oneOf(filteredJokeIds))] : []),
-    ...(textQuery ? [Q.where('content_text', Q.like(`%${Q.sanitizeLikeString(textQuery.toLowerCase())}%`))] : [])
+    ...(textQuery ? [Q.where('content_html', Q.like(`%${Q.sanitizeLikeString(textQuery.toLowerCase())}%`))] : [])
   ];
 
   const records = await database.get<Joke>(JOKES_TABLE).query(...conditions).fetch();
@@ -140,7 +139,7 @@ export function useJokesQuery(searchQuery?: string, chipTagFilters?: string[]): 
     const jokeObservable = database.get<Joke>(JOKES_TABLE).query(
       Q.sortBy('created_at', Q.desc),
       ...(textQuery
-        ? [Q.where('content_text', Q.like(`%${Q.sanitizeLikeString(textQuery.toLowerCase())}%`))]
+        ? [Q.where('content_html', Q.like(`%${Q.sanitizeLikeString(textQuery.toLowerCase())}%`))]
         : [])
     ).observeWithColumns(['created_at', 'updated_at', 'draft_updated_at']);
 

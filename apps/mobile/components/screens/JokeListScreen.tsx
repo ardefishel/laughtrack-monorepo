@@ -1,68 +1,45 @@
 import { useHeaderTitleWidth } from '@/app/(tabs)/_layout';
 import { AudioRecorderButton } from '@/components/audio/AudioRecorderButton';
-import { AnimatedSearchBar } from '@/components/jokes/AnimatedSearchBar';
+import { ActiveFilterBar } from '@/components/jokes/ActiveFilterBar';
 import { JokeCard } from '@/components/jokes/JokeCard';
-import { TagFilterBar } from '@/components/jokes/TagFilterBar';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { Icon } from '@/components/ui/Icon';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { SwipeableRow } from '@/components/ui/SwipeableRow';
+import { useJokeFilters } from '@/context/JokeFilterContext';
 import { RawJoke, useCreateJoke, useDeleteJoke, useJokesQuery } from '@/hooks/jokes';
 import { logVerbose, uiLogger } from '@/lib/loggers';
 import { FlashList } from '@shopify/flash-list';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { Button, Input } from 'heroui-native';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
-
-import { Icon } from '@/components/ui/Icon';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
 
 export default function JokeListScreen() {
     const router = useRouter();
     const navigation = useNavigation();
     const headerTitleWidth = useHeaderTitleWidth();
     const { scrollToTop } = useLocalSearchParams<{ scrollToTop?: string }>();
+
     const flashListRef = useRef<any>(null);
-    const [searchQuery, setSearchQuery] = useState('');
     const [newJokeText, setNewJokeText] = useState('');
     const [shouldScrollToTop, setShouldScrollToTop] = useState(false);
     const [isQuickCapture, setIsQuickCapture] = useState(true);
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const [availableTags, setAvailableTags] = useState<string[]>([]);
+
+    // Filter state from shared context
+    const {
+        searchQuery,
+        selectedTags,
+        removeTag,
+        clearAll,
+        activeFilterCount,
+        hasActiveFilters,
+        setSearchQuery,
+    } = useJokeFilters();
+
     const { jokes, isLoading, error, refetch } = useJokesQuery(searchQuery, selectedTags);
     const { createJoke, isLoading: isCreating } = useCreateJoke();
     const { deleteJoke } = useDeleteJoke();
-
-    const hasActiveFilters = searchQuery.length > 0 || selectedTags.length > 0;
-
-    // Derive unique tags from the user's jokes
-    const jokeTags = useMemo(() => {
-        const tagSet = new Set<string>();
-        for (const joke of jokes) {
-            for (const tag of joke.tags) {
-                tagSet.add(tag);
-            }
-        }
-        return [...tagSet].sort((a, b) => a.localeCompare(b));
-    }, [jokes]);
-
-    // Only update the displayed tags when no tag filter is active,
-    // so the tag bar stays stable while filtering
-    useEffect(() => {
-        if (selectedTags.length === 0) {
-            setAvailableTags(jokeTags);
-        }
-    }, [jokeTags, selectedTags.length]);
-
-    const handleToggleTag = useCallback((tag: string) => {
-        setSelectedTags((prev) =>
-            prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-        );
-    }, []);
-
-    const handleClearTags = useCallback(() => {
-        setSelectedTags([]);
-    }, []);
-
 
     useEffect(() => {
         logVerbose(uiLogger, '[JokesScreen] MOUNTED, jokes count:', jokes.length);
@@ -87,26 +64,50 @@ export default function JokeListScreen() {
         }
     }, [scrollToTop, jokes.length, router]);
 
-    const handleSearch = useCallback((query: string) => {
-        setSearchQuery(query);
-    }, []);
+    // --- Filter actions ---
+    const handleOpenFilter = useCallback(() => {
+        router.push('/jokes/search-filter');
+    }, [router]);
+
+    const handleRemoveSearch = useCallback(() => {
+        setSearchQuery('');
+    }, [setSearchQuery]);
+
+    const handleClearAllFilters = useCallback(() => {
+        clearAll();
+    }, [clearAll]);
+
+    // --- Header: filter icon with badge ---
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <Pressable
+                    onPress={handleOpenFilter}
+                    accessibilityRole="button"
+                    accessibilityLabel={
+                        hasActiveFilters
+                            ? `Search and filter, ${activeFilterCount} active`
+                            : 'Search and filter'
+                    }
+                    className="w-10 h-10 items-center justify-center mr-1"
+                >
+                    <Icon name={hasActiveFilters ? 'filter' : 'filter-outline'} size={20} className={hasActiveFilters ? 'text-accent' : 'text-muted'} />
+                    {hasActiveFilters && (
+                        <View className="absolute top-1 right-1 bg-danger rounded-full min-w-[16px] h-[16px] items-center justify-center px-1">
+                            <Text className="text-danger-foreground text-[10px] font-bold">
+                                {activeFilterCount}
+                            </Text>
+                        </View>
+                    )}
+                </Pressable>
+            ),
+        });
+    }, [navigation, handleOpenFilter, hasActiveFilters, activeFilterCount]);
 
     const handleJokePress = useCallback((joke: RawJoke) => {
         logVerbose(uiLogger, '[JokesScreen] CLICKED joke:', joke.id, 'content:', joke.content_html.substring(0, 50), 'status:', joke.status);
         router.push({ pathname: '/jokes/[id]', params: { id: joke.id } });
     }, [router]);
-
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerRight: () => (
-                <AnimatedSearchBar
-                    searchQuery={searchQuery}
-                    onChangeText={handleSearch}
-                    headerTitleWidth={headerTitleWidth}
-                />
-            ),
-        });
-    }, [navigation, searchQuery, handleSearch, headerTitleWidth]);
 
     const handleCreateJoke = async () => {
         if (!newJokeText.trim() || isCreating) return;
@@ -206,12 +207,14 @@ export default function JokeListScreen() {
                     extraData={jokes}
                     contentContainerStyle={{ paddingVertical: 12, paddingBottom: 100 }}
                     ListHeaderComponent={
-                        availableTags.length > 0 ? (
-                            <TagFilterBar
-                                tags={availableTags}
+                        hasActiveFilters ? (
+                            <ActiveFilterBar
+                                searchQuery={searchQuery}
                                 selectedTags={selectedTags}
-                                onToggleTag={handleToggleTag}
-                                onClearAll={handleClearTags}
+                                onRemoveSearch={handleRemoveSearch}
+                                onRemoveTag={removeTag}
+                                onClearAll={handleClearAllFilters}
+                                onPress={handleOpenFilter}
                             />
                         ) : null
                     }
@@ -269,6 +272,6 @@ export default function JokeListScreen() {
                     </View>
                 </View>
             </View>
-        </KeyboardAvoidingView >
+        </KeyboardAvoidingView>
     );
 }

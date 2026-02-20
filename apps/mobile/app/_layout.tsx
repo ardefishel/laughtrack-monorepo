@@ -2,6 +2,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { AudioProvider } from '@/context/AudioContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { DatabaseProvider } from '@/context/DatabaseContext';
+import { JokeFilterProvider } from '@/context/JokeFilterContext';
 import { SetEditingProvider } from '@/context/SetEditingContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import '@/global.css';
@@ -32,6 +33,15 @@ function ThemedStack() {
       />
       {/* Jokes */}
       <Stack.Screen name="jokes/[id]" />
+      <Stack.Screen
+        name="jokes/search-filter"
+        options={{
+          presentation: 'formSheet',
+          headerShown: false,
+          sheetAllowedDetents: [0.6, 0.9],
+          sheetInitialDetentIndex: 0,
+        }}
+      />
       {/* Sets */}
       <Stack.Screen name="sets/[id]/index" />
       <Stack.Screen name="sets/[id]/edit" options={{ presentation: 'formSheet', headerShown: false, sheetAllowedDetents: [0.8] }} />
@@ -75,7 +85,9 @@ export default function RootLayout() {
               <ThemeProvider>
                 <AudioProvider>
                   <SetEditingProvider mode="edit">
-                    <ThemedStack />
+                    <JokeFilterProvider>
+                      <ThemedStack />
+                    </JokeFilterProvider>
                   </SetEditingProvider>
                 </AudioProvider>
               </ThemeProvider>
