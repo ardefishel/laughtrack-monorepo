@@ -1,4 +1,4 @@
-export { AnimatedSearchBar } from './AnimatedSearchBar';
+
 export { JokeCard } from './JokeCard';
 export { JokeDeleteButton } from './JokeDeleteButton';
 export { JokeInputBar } from './JokeInputBar';

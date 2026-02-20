@@ -155,19 +155,16 @@ export function useJokesQuery(searchQuery?: string, chipTagFilters?: string[]): 
       }
     });
 
-    let jokeTagSub: { unsubscribe: () => void } | undefined;
-    if (hasTagFilters) {
-      jokeTagSub = database.get<JokeTag>(JOKE_TAGS_TABLE).query().observe().subscribe({
-        next: () => {
-          logVerbose(hooksLogger, '[useJokesQuery] JOKE_TAGS OBSERVABLE EMITTED');
-          resolve();
-        }
-      });
-    }
+    const jokeTagSub = database.get<JokeTag>(JOKE_TAGS_TABLE).query().observe().subscribe({
+      next: () => {
+        logVerbose(hooksLogger, '[useJokesQuery] JOKE_TAGS OBSERVABLE EMITTED');
+        resolve();
+      }
+    });
 
     return () => {
       jokeSub.unsubscribe();
-      jokeTagSub?.unsubscribe();
+      jokeTagSub.unsubscribe();
     };
   }, [database, searchQuery, chipTagFilters]);
 

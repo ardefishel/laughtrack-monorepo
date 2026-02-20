@@ -1,6 +1,6 @@
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { AnimatedSearchBar } from '@/components/jokes/AnimatedSearchBar';
 import { SetCard } from '@/components/sets';
+import { AnimatedSearchBar } from '@/components/ui/AnimatedSearchBar';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { SwipeableRow } from '@/components/ui/SwipeableRow';
