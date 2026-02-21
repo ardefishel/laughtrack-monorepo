@@ -1,0 +1,13 @@
+{
+    "name": "@laughtrack/tsconfig",
+    "version": "0.1.0",
+    "description": "Shared TypeScript configurations for Laughtrack",
+    "private": true,
+    "exports": {
+        "./base.json": "./base.json",
+        "./node.json": "./node.json",
+        "./react.json": "./react.json",
+        "./react-native.json": "./react-native.json",
+        "./package.json": "./package.json"
+    }
+}

@@ -11,6 +11,8 @@ apps/
 packages/
   shared-types/ — Shared TypeScript type definitions (@laughtrack/shared-types)
   logger/       — Cross-platform structured logger (@laughtrack/logger)
+  html-utils/   — HTML parsing and text extraction (@laughtrack/html-utils)
+  tsconfig/     — Shared TypeScript configurations (@laughtrack/tsconfig)
 ```
 
 ## Getting Started

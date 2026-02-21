@@ -1,9 +1,9 @@
 {
-  "extends": "expo/tsconfig.base",
+  "extends": [
+    "expo/tsconfig.base",
+    "@laughtrack/tsconfig/react-native.json"
+  ],
   "compilerOptions": {
-    "strict": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "paths": {
       "@/*": [
         "./*"

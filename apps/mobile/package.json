@@ -18,6 +18,7 @@
     "@expo/vector-icons": "15.0.3",
     "@gorhom/bottom-sheet": "5.2.8",
     "@laughtrack/logger": "*",
+    "@laughtrack/html-utils": "*",
     "@laughtrack/shared-types": "*",
     "@nozbe/watermelondb": "0.28.0",
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -27,7 +28,7 @@
     "@react-navigation/native": "7.1.8",
     "@shopify/flash-list": "2.2.1",
     "@types/lodash.debounce": "4.0.9",
-    "better-auth": "^1.1.0",
+    "better-auth": "^1.4.18",
     "expo": "54.0.33",
     "expo-audio": "1.1.1",
     "expo-build-properties": "^1.0.10",
@@ -66,6 +67,7 @@
     "tailwind-variants": "3.2.2"
   },
   "devDependencies": {
+    "@laughtrack/tsconfig": "*",
     "@babel/plugin-proposal-decorators": "7.29.0",
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^30.0.0",
