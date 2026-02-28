@@ -1,12 +1,13 @@
 {
-  "extends": [
-    "expo/tsconfig.base",
-    "@laughtrack/tsconfig/react-native.json"
-  ],
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "allowImportingTsExtensions": true,
+    "experimentalDecorators": true,
+    "strict": true,
     "paths": {
       "@/*": [
-        "./*"
+        "./src/*"
       ]
     }
   },

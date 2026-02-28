@@ -1,68 +1,150 @@
-# AGENTS.md - Laughtrack Mobile
+# LaughTrack Mobile v2 - Agent Guide
 
-Expo Router app with WatermelonDB local-first storage and cloud sync.
-Scripts: `bun run mobile` (start), `bun run mobile:ios`, `bun run mobile:android`, `bun run mobile:lint`, `bun run mobile:test`.
+## Scope
+- This repo is an Expo + React Native app using Expo Router, WatermelonDB, HeroUI Native, Uniwind.
+- Use this file as the first stop for commands and code conventions.
 
-## Architecture
+## Tooling and package manager
+- `bun.lock` exists; prefer Bun for local commands and scripts.
+- Node.js 20+ required (docs).
 
-- `app/` — Expo Router file-based pages:
-  - `(tabs)/` — Tab navigation (jokes list, sets list, learn).
-  - `jokes/[id].tsx` — Joke detail/editor.
-  - `sets/[id]/index.tsx` — Set detail view.
-  - `sets/[id]/edit.tsx` — Set editor (formSheet presentation).
-  - `sets/[id]/select-jokes.tsx` — Joke picker modal for sets.
-  - `learn/[collectionId]/` — Learning content viewer.
-  - `auth/` — Authentication screens.
-  - `_layout.tsx` — Root layout with provider tree: GestureHandlerRootView → ErrorBoundary → HeroUINativeProvider → DatabaseProvider → AuthProvider → ThemeProvider → AudioProvider → SetEditingProvider → Stack.
-  - `recording-capture-bottom-sheet.tsx`, `recording-list-bottom-sheet.tsx` — Bottom sheet routes.
-- `components/` — Reusable UI organized by domain:
-  - `audio/` — Audio playback/recording UI.
-  - `auth/` — Auth-related components.
-  - `bottom-sheets/` — Bottom sheet content.
-  - `editor/` — Rich text editor components.
-  - `jokes/` — Joke-specific components (JokeCard, TagEditor, etc.).
-  - `learn/` — Learning content components.
-  - `sets/` — Set-specific components.
-  - `theme/` — Theme-related components.
-  - `ui/` — Generic UI primitives (MinimalStatusIndicator, etc.).
-  - `ErrorBoundary.tsx` — Global error boundary.
-- `context/` — React context providers:
-  - `AudioContext.tsx` — Audio recording/playback state.
-  - `AuthContext.tsx` — Authentication state (better-auth client).
-  - `DatabaseContext.tsx` — WatermelonDB instance provider.
-  - `SetEditingContext.tsx` — Set create/edit flow state.
-  - `ThemeContext.tsx` — Theme (light/dark) state.
-- `hooks/` — Custom hooks organized by domain:
-  - `jokes/` — Joke query/mutation hooks (useJokesQuery, etc.).
-  - `sets/` — Set query/mutation hooks (useJokeSetsQuery, etc.).
-  - Root hooks: `useAudioPlayer`, `useAudioRecorder`, `useGoogleSignIn`, `useMultiStepForm`, etc.
-- `models/` — WatermelonDB model classes:
-  - `Joke.ts` — Joke model with `@field`, `@date`, `@children`, `@writer` decorators.
-  - `JokeSet.ts` — Set model with items children relation.
-  - `JokeSetItem.ts` — Set item with position, content, jokeId; belongs_to JokeSet.
-  - `Tag.ts` — Tag model.
-  - `JokeTag.ts` — Join table: belongs_to Joke + Tag.
-  - `AudioRecording.ts` — Recording with jokeId, filePath, duration, remoteUrl.
-- `db/` — Database wiring:
-  - `index.ts` — WatermelonDB database instance setup.
-  - `schema.ts` — WatermelonDB table schema definitions.
-  - `migrations.ts` — WatermelonDB schema migrations.
-- `lib/` — Utilities:
-  - `loggers/` — Structured logging (use `uiLogger.debug/error`, not `console`).
-  - `types/` — TypeScript type definitions.
-  - `auth-client.ts` — better-auth client for Expo.
-  - `sync.ts` — WatermelonDB sync adapter (connects to backend `/api/sync`).
-  - `audioStorage.ts`, `audioSync.ts`, `audioMode.ts` — Audio file management.
-  - `jokeUtils.ts`, `dateUtils.ts`, `htmlParser.ts`, `tagUtils.ts`, `status.ts` — Domain utilities.
+## Common commands (from `package.json` and docs)
+- Install deps: `bun install`
+- Start dev server: `bun run start` (alias for `expo start`)
+- Web dev server: `bun run web` (alias for `expo start --web`)
+- iOS build: `bun run ios` (alias for `expo run:ios`)
+- Android build: `bun run android` (alias for `expo run:android`)
+- Lint: `bun run lint` (alias for `expo lint`)
 
-## Conventions
+## Tests
+- No test runner is configured in `package.json`.
+- No test files (`*.test.*` / `*.spec.*`) found.
+- Single-test command: not available until a test framework is added.
 
-- WatermelonDB models use TypeScript decorators (`@field`, `@date`, `@writer`, `@children`, `@relation`). Decorators are enabled in `tsconfig.json` and `babel.config.js`.
-- Model table names use snake_case (`joke_set_items`), table name constants exported as `SCREAMING_SNAKE_CASE` (`JOKE_SET_ITEMS_TABLE`).
-- Components: page components use default export; reusable components use named export.
-- Routing: push with `router.push({ pathname, params })`; read params with `useLocalSearchParams<{ id: string }>()`.
-- Styling: Tailwind v4 + Uniwind + HeroUI Native. Use semantic colors (`bg-accent`, `text-foreground`). Prefer HeroUI Native components first.
-- Lists: use `@shopify/flash-list` with `estimatedItemSize`. Memoize row components with stable ID/updated_at.
-- State: WatermelonDB observables drive list updates. Avoid manual `refetch` when observable-driven updates suffice.
-- Tests: Jest + `@testing-library/react-native`. Test files in `__tests__/`. Run with `bun run mobile:test`.
-- Import alias: `@/` maps to the mobile app root.
+## Key configs
+- ESLint: `eslint.config.js` (Expo flat config).
+- TypeScript: `tsconfig.json` (extends `expo/tsconfig.base`, `strict: true`, `experimentalDecorators: true`).
+- Babel: `babel.config.js` (decorators + `expo-router/babel` + `react-native-reanimated/plugin`).
+- Metro: `metro.config.js` (Uniwind config, css entry: `src/globals.css`).
+
+## Project structure (see `docs/project-overview.md`)
+- `src/app/`: Expo Router routes and layout groups.
+- `src/components/`: feature and shared UI components.
+- `src/database/`: WatermelonDB schema, constants, models, mappers.
+- `src/domain/`: Zod schemas for domain contracts.
+- `src/types.ts`: app-level exports and inferred types.
+- `docs/`: feature docs and architecture notes.
+
+## Import conventions (observed)
+- Use `@/` alias for `src` (configured in `tsconfig.json`).
+- Prefer type-only imports for types (`import type { ... }`).
+- Typical order in files: internal `@/` imports mixed with external; keep existing file order.
+- Follow the file’s current quote style (`'` vs `"`); do not reformat.
+
+## Formatting conventions (observed)
+- Mixed 2-space and 4-space indentation across files; follow existing file indentation.
+- Semicolons are inconsistently used; preserve existing style in each file.
+- JSX uses `className="..."` with Uniwind/Tailwind classes.
+- Keep line wraps readable; avoid reformatting unrelated code.
+
+## Type conventions
+- Domain schemas use Zod (`src/domain/*`) and infer types with `z.infer`.
+- App-level exports live in `src/types.ts` (use these in UI-facing code).
+- Use explicit types for props and state; prefer `type`/`interface` near component definitions.
+- `strict` TypeScript is enabled; avoid `any` and unsafe casts.
+
+## Naming conventions (observed)
+- Files: kebab-case (`bit-filter.tsx`, `time-ago.ts`).
+- Components: PascalCase (`BitCard`, `QuickNoteBar`).
+- Hooks: `use*` camelCase.
+- Database constants: `SCREAMING_SNAKE_CASE` for tables/columns.
+- JSON-backed columns: `tagsJson`, `setlistIdsJson` in models.
+
+## React and Expo patterns
+- Expo Router file-based routing under `src/app/`.
+- Root providers live in `src/app/_layout.tsx` (GestureHandler, WatermelonDB, HeroUI, Keyboard).
+- Modal routes are registered in `src/app/(app)/_layout.tsx` with form-sheet presentations.
+- For modal -> detail handoff, use primitive route params plus nonce trigger (see `docs/project-overview.md`).
+- For form-sheet returns, prefer `router.dismissTo(...)` to avoid duplicate screens.
+
+## WatermelonDB patterns
+- Models use decorators (`@field`, `@date`, `@writer`) and extend `Model`.
+- All mutations must be wrapped in `database.write(...)`.
+- Update `updatedAt` on every mutation (see feature docs checklists).
+- Domain <-> DB mapping lives in `src/database/mappers/*`.
+
+## Error handling
+- Prefer safe defaults when parsing (see `parseStringArrayJson` in `src/database/mappers/bitMapper.ts`).
+- Use `try/finally` for loading state cleanup.
+- If an operation is critical, log errors with context and rethrow or surface a fallback.
+- Avoid empty catch blocks without a clear recovery path.
+
+## UI and styling
+- Uniwind/Tailwind-style classes in `className` (e.g., `text-foreground`, `bg-background`).
+- HeroUI Native components in `src/components` and screens.
+- Reuse shared components before adding new primitives.
+
+## Data contracts and validation
+- Use Zod schemas from `src/domain/*` and exports from `src/types.ts`.
+- When mapping from DB records, validate with schema parse (see `bitMapper.ts`).
+
+## Navigation and routes
+- Route names map to file paths; keep route params consistent with file names.
+- Detail routes use `[id].tsx` and expect `id` values like `new` for create flow.
+- Filter/modals use explicit param sets rather than serialized JSON blobs.
+
+## Performance and state patterns (observed)
+- Use `useCallback`/`useMemo` around handlers for list-heavy screens.
+- `useEffect` subscriptions should return cleanup (WatermelonDB observe).
+- For async fire-and-forget, code uses `void` to discard promises.
+- Use `memo(...)` for card components that render lists (see `BitCard`).
+
+## Docs to consult before changes
+- `docs/project-overview.md` for architecture + routing rules.
+- `docs/architecture/data-modeling.md` for domain/DB flow.
+- `docs/features/note/README.md` for note behavior + constraints.
+- `docs/features/premise/README.md` for premise behavior + constraints.
+- `docs/features/bit/README.md` for bit behavior + constraints.
+
+## Linting
+- `bun run lint` runs Expo ESLint rules; fix lint errors before committing.
+- No Prettier config present; do not auto-format unless asked.
+
+## Build and run notes
+- Dev server: `expo start` via `bun run start`.
+- Native builds: `expo run:ios` / `expo run:android` via bun scripts.
+- Web: `expo start --web` via `bun run web`.
+
+## Local DB and migrations
+- Schema is in `src/database/schema.ts`.
+- Migrations live in `src/database/migrations.ts`.
+- Decorators require TS + Babel settings (see `tsconfig.json`, `babel.config.js`).
+
+## Cursor/Copilot rules
+- No `.cursor/rules/`, `.cursorrules`, or `.github/copilot-instructions.md` found.
+
+## Agent operating rules for this repo
+- Follow existing file style; avoid broad reformatting.
+- Preserve file-based routing conventions and modal patterns.
+- Keep app-facing types in `src/types.ts` and DB logic in `src/database/*`.
+- Prefer WatermelonDB observers for live updates and clean up subscriptions.
+- Keep UI list items memoized when rendering collections.
+- Update docs in `docs/features/<feature>/README.md` when behavior changes.
+
+## Quick reference: single-file examples
+- Root layout providers: `src/app/_layout.tsx`
+- Tabs layout: `src/app/(app)/(tabs)/_layout.tsx`
+- Modal layout: `src/app/(app)/_layout.tsx`
+- Domain types: `src/domain/*.ts`
+- DB models: `src/database/models/*.ts`
+- Mappers: `src/database/mappers/*.ts`
+- UI cards: `src/components/feature/*/*-card.tsx`
+
+## Known gaps
+- No test runner configured yet.
+- Some lint/typecheck issues may exist outside touched feature docs.
+
+## Change checklist
+- Run `bun run lint` before finishing.
+- Verify app starts with `bun run start` when making runtime changes.
+- If you add tests later, document commands here.
