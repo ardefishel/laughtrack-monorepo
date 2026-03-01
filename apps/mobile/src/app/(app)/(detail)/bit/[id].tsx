@@ -15,12 +15,13 @@ import { EnrichedTextInput } from 'react-native-enriched'
 import { KeyboardStickyView } from 'react-native-keyboard-controller'
 
 export default function BitDetailScreen() {
-    const { id, metaStatus, metaTags, metaPremiseId, metaNonce } = useLocalSearchParams<{
+    const { id, metaStatus, metaTags, metaPremiseId, metaNonce, fromSetlist } = useLocalSearchParams<{
         id: string
         metaStatus?: string
         metaTags?: string
         metaPremiseId?: string
         metaNonce?: string
+        fromSetlist?: string
     }>()
     const navigation = useNavigation('/(app)')
     const database = useDatabase()
@@ -160,10 +161,19 @@ export default function BitDetailScreen() {
             })
 
             router.back()
+
+            if (fromSetlist === 'true' && createdBitId) {
+                requestAnimationFrame(() => {
+                    router.setParams({
+                        addedBits: createdBitId,
+                        addedBitsNonce: Date.now().toString(),
+                    })
+                })
+            }
         } finally {
             setIsSaving(false)
         }
-    }, [bitModel, content, database, isEditing, isSaving, premiseId, status, tags])
+    }, [bitModel, content, database, fromSetlist, isEditing, isSaving, premiseId, status, tags])
 
     const openBitMeta = useCallback(() => {
         router.push({

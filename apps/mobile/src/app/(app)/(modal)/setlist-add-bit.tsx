@@ -18,7 +18,7 @@ export default function SetlistAddBitModal() {
             onCancel={() => router.back()}
             onCreate={() => {
                 router.back()
-                router.push('/bit/new')
+                router.push({ pathname: '/(app)/(detail)/bit/[id]', params: { id: 'new', fromSetlist: 'true' } })
             }}
             onConfirm={(selectedIds) => {
                 router.back()
