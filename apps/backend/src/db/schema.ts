@@ -94,6 +94,7 @@ export const premises = pgTable('premises', {
   attitude: text('attitude'),
   tagsJson: text('tags_json'),
   bitIdsJson: text('bit_ids_json'),
+  sourceNoteId: text('source_note_id'),
   createdAt: bigint('created_at', { mode: 'number' }),
   updatedAt: bigint('updated_at', { mode: 'number' }),
   serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),

@@ -19,6 +19,7 @@ export class Premise extends Model {
     @field(PREMISE_COLUMNS.attitude) attitude!: Attitude | null
     @field(PREMISE_COLUMNS.tagsJson) tagsJson!: string
     @field(PREMISE_COLUMNS.bitIdsJson) bitIdsJson!: string
+    @field(PREMISE_COLUMNS.sourceNoteId) sourceNoteId!: string | null
     @date(PREMISE_COLUMNS.createdAt) createdAt!: Date
     @date(PREMISE_COLUMNS.updatedAt) updatedAt!: Date
 

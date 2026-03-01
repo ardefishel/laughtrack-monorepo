@@ -1,4 +1,4 @@
-import { DraggableList, type DraggableRenderItemParams } from "@/components/DraggableList";
+import DraggableList from "@/components/ui/draggable-list";
 import { Icon } from "@/components/ui/ion-icon";
 import { BIT_TABLE, SETLIST_TABLE } from "@/database/constants";
 import { bitModelToDomain } from "@/database/mappers/bitMapper";
@@ -6,29 +6,23 @@ import { setlistModelToDomain } from "@/database/mappers/setlistMapper";
 import { Bit as BitModel } from "@/database/models/bit";
 import { Setlist as SetlistModel } from "@/database/models/setlist";
 import type { SetlistItem } from "@/types";
-import { timeAgo } from "@/utils/time-ago";
 import { useDatabase } from "@nozbe/watermelondb/react";
-import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import { Button, Card, Chip, Dialog, Input } from "heroui-native";
+import { Button, Chip, Dialog, Input } from "heroui-native";
 import {
     useCallback,
     useEffect,
     useLayoutEffect,
-    useMemo,
-    useRef,
-    useState,
+    useState
 } from "react";
 import {
-    Animated,
     KeyboardAvoidingView,
     Platform,
     Pressable,
     Text,
-    View,
+    View
 } from "react-native";
 
-import { Swipeable } from "react-native-gesture-handler";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -233,11 +227,6 @@ export default function SetlistDetailScreen() {
 
     const canSave = description.trim().length > 0 && !isSaving;
     const bitCount = items.filter((i) => i.type === "bit").length;
-    const updatedMeta = useMemo(() => {
-        if (!updatedAt) return null;
-        const value = timeAgo(updatedAt);
-        return `Updated ${value === "Just now" ? "just now" : value}`;
-    }, [updatedAt]);
 
     // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -366,10 +355,6 @@ export default function SetlistDetailScreen() {
         setTags(tags.filter((t) => t !== tag));
     };
 
-    const handleRemoveItem = useCallback((itemId: string) => {
-        setItems((prev) => prev.filter((item) => item.id !== itemId));
-    }, []);
-
     // Type picker → open formSheet modal for bit selection
     const handleChooseBit = () => {
         setTypeDialogOpen(false);
@@ -410,45 +395,7 @@ export default function SetlistDetailScreen() {
         setNoteDialogOpen(false);
         setNoteText("");
     };
-
-    // ── Drag & Drop handler ──────────────────────────────────────────────────
-
-    const handleDragBegin = useCallback(() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    }, []);
-
-    const handleDragEnd = useCallback(({ data }: { data: SetlistItem[] }) => {
-        setItems(data);
-    }, []);
-
-    // ── Render ────────────────────────────────────────────────────────────────
-
-    const renderItem = useCallback(
-        ({ item, drag, isActive, getIndex }: DraggableRenderItemParams<SetlistItem>) => {
-            const index = getIndex();
-            return (
-                <View className="px-4">
-                    <SetlistItemRow
-                        item={item}
-                        index={index}
-                        onRemove={() => handleRemoveItem(item.id)}
-                        onBitPress={
-                            item.type === "bit"
-                                ? () => router.push(`/bit/${item.bitId}`)
-                                : undefined
-                        }
-                        drag={drag}
-                        isActive={isActive}
-                    />
-                </View>
-            );
-        },
-        [handleRemoveItem],
-    );
-
-    // ── List sub-components ────────────────────────────────────────────────────
-
-    const ListHeader = (
+    const ListHeader = () => (
         <View className="gap-6 px-4 pt-6">
             {/* Description */}
             <View className="gap-2">
@@ -521,26 +468,6 @@ export default function SetlistDetailScreen() {
         </View>
     );
 
-    const ListFooter =
-        isEditing && updatedMeta ? (
-            <View className="flex-row items-center gap-2 pt-2 mx-4 mt-2 mb-24 border-t border-separator">
-                <Icon name="time-outline" size={14} className="text-muted" />
-                <Text className="text-muted text-xs">
-                    {updatedMeta}
-                </Text>
-            </View>
-        ) : (
-            <View className="pb-24" />
-        );
-
-    const ListEmpty = (
-        <View className="items-center py-10 gap-3 px-4">
-            <Icon name="list-outline" size={32} className="text-muted" />
-            <Text className="text-muted text-sm text-center">
-                No items yet.{"\n"}Add bits or set-notes to build your setlist.
-            </Text>
-        </View>
-    );
 
     return (
         <>
@@ -549,19 +476,8 @@ export default function SetlistDetailScreen() {
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 keyboardVerticalOffset={100}
             >
-                <DraggableList
-                    data={items}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderItem}
-                    onDragBegin={handleDragBegin}
-                    onDragEnd={handleDragEnd}
-                    ItemSeparatorComponent={() => <View className="h-3" />}
-                    ListHeaderComponent={ListHeader}
-                    ListEmptyComponent={ListEmpty}
-                    ListFooterComponent={ListFooter}
-                    contentContainerStyle={{ paddingBottom: 24 }}
-                    keyboardShouldPersistTaps="handled"
-                />
+                <ListHeader />
+                <DraggableList />
             </KeyboardAvoidingView>
 
             {/* ── Stage 1: Type Picker Dialog ─────────────────────────────── */}
@@ -656,135 +572,4 @@ export default function SetlistDetailScreen() {
             </Dialog>
         </>
     );
-}
-
-// ─── SetlistItemRow ───────────────────────────────────────────────────────────
-
-function SetlistItemRow({
-    item,
-    index,
-    onRemove,
-    onBitPress,
-    drag,
-    isActive,
-}: {
-    item: SetlistItem;
-    index: number;
-    onRemove: () => void;
-    onBitPress?: () => void;
-    drag: () => void;
-    isActive: boolean;
-}) {
-    const swipeableRef = useRef<Swipeable>(null);
-
-    const renderRightActions = (
-        _progress: Animated.AnimatedInterpolation<number>,
-        dragX: Animated.AnimatedInterpolation<number>,
-    ) => {
-        const scale = dragX.interpolate({
-            inputRange: [-80, 0],
-            outputRange: [1, 0.5],
-            extrapolate: "clamp",
-        });
-        return (
-            <Pressable
-                onPress={() => {
-                    swipeableRef.current?.close();
-                    onRemove();
-                }}
-                className="bg-danger rounded-xl items-center justify-center ml-3"
-                style={{ width: 72 }}
-            >
-                <Animated.View
-                    style={{ transform: [{ scale }] }}
-                    className="items-center gap-1"
-                >
-                    <Icon name="trash-outline" size={20} className="text-white" />
-                    <Text className="text-white text-[10px] font-semibold">Delete</Text>
-                </Animated.View>
-            </Pressable>
-        );
-    };
-
-    if (item.type === "set-note" && item.setlistNote) {
-        return (
-            <Swipeable
-                ref={swipeableRef}
-                renderRightActions={renderRightActions}
-                overshootRight={false}
-                friction={2}
-                enabled={!isActive}
-            >
-                <Pressable
-                    onLongPress={drag}
-                    disabled={isActive}
-                    className={`flex-row items-start gap-3 ${isActive ? "opacity-80" : ""}`}
-                >
-                    <View className="items-center pt-1 gap-1">
-                        <Text className="text-muted text-[11px] font-semibold w-5 text-center">
-                            {index + 1}
-                        </Text>
-                        <Icon
-                            name="document-text-outline"
-                            size={14}
-                            className="text-muted"
-                        />
-                    </View>
-                    <View className="flex-1 px-3 py-2 bg-surface rounded-xl border border-separator">
-                        <Text className="text-muted text-[10px] tracking-[2px] font-semibold uppercase mb-1">
-                            Note
-                        </Text>
-                        <Text className="text-foreground text-sm leading-5 italic">
-                            {item.setlistNote.content}
-                        </Text>
-                    </View>
-                </Pressable>
-            </Swipeable>
-        );
-    }
-
-    if (item.type === "bit") {
-        const dotClass = item.bit ? BIT_STATUS_DOT[item.bit.status] ?? "bg-muted" : "bg-muted";
-        return (
-            <Swipeable
-                ref={swipeableRef}
-                renderRightActions={renderRightActions}
-                overshootRight={false}
-                friction={2}
-                enabled={!isActive}
-            >
-                <Pressable
-                    onLongPress={drag}
-                    onPress={onBitPress}
-                    disabled={isActive}
-                    className={`flex-row items-start gap-3 ${isActive ? "opacity-80" : ""}`}
-                >
-                    <View className="items-center pt-1.5">
-                        <Text className="text-muted text-[11px] font-semibold w-5 text-center">
-                            {index + 1}
-                        </Text>
-                    </View>
-                    <Card className="flex-1 flex-row overflow-hidden">
-                        <View className="w-1 bg-blue-500 rounded-full" />
-                        <View className="flex-1 pl-3 gap-1.5">
-                            <View className="flex-row items-center gap-1.5">
-                                <View className={`size-2 rounded-full ${dotClass}`} />
-                                <Text className="text-muted text-[10px] tracking-[2px] font-semibold uppercase">
-                                    {item.bit?.status ?? "missing"}
-                                </Text>
-                            </View>
-                            <Text
-                                className="text-foreground text-[14px] leading-5"
-                                numberOfLines={2}
-                            >
-                                {item.bit?.content ?? `Bit unavailable (${item.bitId})`}
-                            </Text>
-                        </View>
-                    </Card>
-                </Pressable>
-            </Swipeable>
-        );
-    }
-
-    return null;
 }

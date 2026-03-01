@@ -27,6 +27,7 @@ export const PremiseSchema = z.object({
     tags: z.array(PremiseTagSchema).optional(),
     attitude: AttitudeSchema.optional(),
     bitIds: z.array(z.string()).optional(),
+    sourceNoteId: z.string().optional(),
     createdAt: z.date(),
     updatedAt: z.date(),
 })

@@ -22,6 +22,7 @@ const CAMEL_TO_SNAKE: Record<string, string> = {
     premiseId: 'premise_id',
     setlistIdsJson: 'setlist_ids_json',
     bitIdsJson: 'bit_ids_json',
+    sourceNoteId: 'source_note_id',
     itemsJson: 'items_json',
 }
 

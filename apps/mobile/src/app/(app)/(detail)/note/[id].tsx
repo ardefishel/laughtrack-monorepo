@@ -1,12 +1,14 @@
-import { NOTE_TABLE } from '@/database/constants'
+import { Icon } from '@/components/ui/ion-icon'
+import { NOTE_TABLE, PREMISE_TABLE } from '@/database/constants'
 import { Note as NoteModel } from '@/database/models/note'
+import { Premise as PremiseModel } from '@/database/models/premise'
 import type { Note } from '@/types'
 import { timeAgo } from '@/utils/time-ago'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 import { Button, TextArea } from 'heroui-native'
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react'
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native'
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native'
 
 function toNote(model: NoteModel): Note {
     return {
@@ -78,6 +80,50 @@ export default function NoteDetail() {
         }
     }, [content, database, isEditing, isSaving, noteState?.note, router])
 
+    const handlePromoteToPremise = useCallback(() => {
+        if (!isEditing || !noteState?.note) return
+
+        const trimmed = content.trim()
+        if (!trimmed) return
+
+        Alert.alert(
+            'Promote to Premise',
+            'This will create a new premise from this note and delete the original note.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Promote',
+                    onPress: async () => {
+                        setIsSaving(true)
+                        try {
+                            let premiseId = ''
+                            await database.write(async () => {
+                                const premise = await database
+                                    .get<PremiseModel>(PREMISE_TABLE)
+                                    .create((p: PremiseModel) => {
+                                        const now = Date.now()
+                                        p.content = trimmed
+                                        p.status = 'draft'
+                                        p.attitude = null
+                                        p.tagsJson = JSON.stringify([])
+                                        p.bitIdsJson = JSON.stringify([])
+                                        p.sourceNoteId = id!
+                                        p.createdAt = new Date(now)
+                                        p.updatedAt = new Date(now)
+                                    })
+                                premiseId = premise.id
+                                await noteState.note.markAsDeleted()
+                            })
+                            router.replace({ pathname: '/(app)/(detail)/premise/[id]', params: { id: premiseId } })
+                        } finally {
+                            setIsSaving(false)
+                        }
+                    },
+                },
+            ],
+        )
+    }, [content, database, isEditing, noteState?.note, router])
+
     const detailMeta = noteData
         ? (() => {
             const value = timeAgo(noteData.updatedAt)
@@ -116,6 +162,25 @@ export default function NoteDetail() {
                 </View>
                 {detailMeta && (
                     <Text className='text-muted text-xs px-3'>{detailMeta}</Text>
+                )}
+
+                {isEditing && (
+                    <View className='pt-4 border-t border-separator'>
+                        <Pressable
+                            onPress={handlePromoteToPremise}
+                            disabled={isSaving || !content.trim()}
+                            className='flex-row items-center gap-3 px-3 py-3 rounded-xl active:opacity-70'
+                        >
+                            <View className='size-8 rounded-lg bg-accent/15 items-center justify-center'>
+                                <Icon name='arrow-up-circle-outline' size={18} className='text-accent' />
+                            </View>
+                            <View className='flex-1'>
+                                <Text className='text-foreground text-[15px] font-medium'>Promote to Premise</Text>
+                                <Text className='text-muted text-xs'>Convert this note into a draft premise</Text>
+                            </View>
+                            <Icon name='chevron-forward' size={16} className='text-muted' />
+                        </Pressable>
+                    </View>
                 )}
             </ScrollView>
         </KeyboardAvoidingView>

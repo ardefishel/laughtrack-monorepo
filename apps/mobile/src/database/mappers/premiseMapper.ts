@@ -34,6 +34,7 @@ function toDomain(input: {
     attitude: string | null
     tagsJson: string
     bitIdsJson: string
+    sourceNoteId: string | null
     createdAt: Date
     updatedAt: Date
 }): Premise {
@@ -47,6 +48,7 @@ function toDomain(input: {
         attitude: (input.attitude ?? undefined) as Attitude | undefined,
         tags: tagNamesToTags(tagNames, input.createdAt, input.updatedAt),
         bitIds,
+        sourceNoteId: input.sourceNoteId ?? undefined,
         createdAt: input.createdAt,
         updatedAt: input.updatedAt,
     })
@@ -60,6 +62,7 @@ export const premiseRecordToDomain = (record: PremiseRecord): Premise =>
         attitude: record.attitude,
         tagsJson: record.tags_json,
         bitIdsJson: record.bit_ids_json,
+        sourceNoteId: record.source_note_id,
         createdAt: new Date(record.created_at),
         updatedAt: new Date(record.updated_at),
     })
@@ -72,6 +75,7 @@ export const premiseModelToDomain = (premise: PremiseModel): Premise =>
         attitude: premise.attitude,
         tagsJson: premise.tagsJson,
         bitIdsJson: premise.bitIdsJson,
+        sourceNoteId: premise.sourceNoteId,
         createdAt: premise.createdAt,
         updatedAt: premise.updatedAt,
     })
@@ -83,6 +87,7 @@ export const domainToPremiseRecord = (premise: Premise): PremiseRecord => ({
     attitude: premise.attitude ?? null,
     tags_json: JSON.stringify((premise.tags ?? []).map((tag) => tag.name)),
     bit_ids_json: JSON.stringify(premise.bitIds ?? []),
+    source_note_id: premise.sourceNoteId ?? null,
     created_at: premise.createdAt.getTime(),
     updated_at: premise.updatedAt.getTime(),
 })

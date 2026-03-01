@@ -6,6 +6,7 @@ export const PREMISE_COLUMNS = {
     attitude: 'attitude',
     tagsJson: 'tags_json',
     bitIdsJson: 'bit_ids_json',
+    sourceNoteId: 'source_note_id',
     createdAt: 'created_at',
     updatedAt: 'updated_at',
 } as const
@@ -18,6 +19,7 @@ export const PREMISE_TABLE_SCHEMA = {
         { name: PREMISE_COLUMNS.attitude, type: 'string' as const, isOptional: true, isIndexed: true },
         { name: PREMISE_COLUMNS.tagsJson, type: 'string' as const },
         { name: PREMISE_COLUMNS.bitIdsJson, type: 'string' as const },
+        { name: PREMISE_COLUMNS.sourceNoteId, type: 'string' as const, isOptional: true },
         { name: PREMISE_COLUMNS.createdAt, type: 'number' as const },
         { name: PREMISE_COLUMNS.updatedAt, type: 'number' as const, isIndexed: true },
     ],
@@ -30,6 +32,7 @@ export type PremiseRecord = {
     attitude: string | null
     tags_json: string
     bit_ids_json: string
+    source_note_id: string | null
     created_at: number
     updated_at: number
 }
