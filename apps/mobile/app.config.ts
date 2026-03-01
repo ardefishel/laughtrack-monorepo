@@ -51,6 +51,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-build-properties',
       {
+        ios: {
+          infoPlist: {
+            NSAppTransportSecurity: {
+              NSAllowsLocalNetworking: true,
+            },
+          },
+        },
         android: {
           googleServicesFile: './google-services.json',
         },

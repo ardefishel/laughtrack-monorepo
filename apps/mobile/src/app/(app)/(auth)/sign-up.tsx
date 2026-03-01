@@ -1,10 +1,40 @@
+import { useAuth } from '@/context/auth-context'
 import { AuthContainer } from '@/components/feature/auth/container'
 import { Icon } from '@/components/ui/ion-icon'
 import { router } from 'expo-router'
 import { Button, Input, TextField } from 'heroui-native'
-import { Pressable, Text, View } from 'react-native'
+import { useCallback, useState } from 'react'
+import { Alert, Pressable, Text, View } from 'react-native'
 
 export default function SignUp() {
+    const { signUp } = useAuth()
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+
+    const handleSignUp = useCallback(async () => {
+        if (!name.trim() || !email.trim() || !password.trim()) return
+        if (password !== confirmPassword) {
+            Alert.alert('Error', 'Passwords do not match.')
+            return
+        }
+        setIsLoading(true)
+        try {
+            const result = await signUp(email.trim(), password, name.trim())
+            if (result.success) {
+                Alert.alert('Account Created', 'You can now sign in.', [
+                    { text: 'OK', onPress: () => router.back() }
+                ])
+            } else {
+                Alert.alert('Sign Up Failed', result.error ?? 'Please try again.')
+            }
+        } finally {
+            setIsLoading(false)
+        }
+    }, [name, email, password, confirmPassword, signUp])
+
     return (
         <AuthContainer title='Create Account' subtitle='Sign up to get started'>
             <View className="gap-4">
@@ -13,6 +43,8 @@ export default function SignUp() {
                         placeholder="Name"
                         autoCapitalize="words"
                         className="text-foreground"
+                        value={name}
+                        onChangeText={setName}
                     />
                 </TextField>
 
@@ -21,6 +53,8 @@ export default function SignUp() {
                         placeholder="Email"
                         keyboardType="email-address"
                         autoCapitalize="none"
+                        value={email}
+                        onChangeText={setEmail}
                     />
                 </TextField>
 
@@ -28,6 +62,8 @@ export default function SignUp() {
                     <Input
                         placeholder="Password"
                         secureTextEntry
+                        value={password}
+                        onChangeText={setPassword}
                     />
                 </TextField>
 
@@ -35,15 +71,18 @@ export default function SignUp() {
                     <Input
                         placeholder="Confirm Password"
                         secureTextEntry
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
                     />
                 </TextField>
 
                 <Button
                     variant="primary"
-                    onPress={() => { }}
+                    onPress={handleSignUp}
+                    isDisabled={isLoading || !name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()}
                     className="w-full"
                 >
-                    <Button.Label>Sign Up</Button.Label>
+                    <Button.Label>{isLoading ? 'Creating Account...' : 'Sign Up'}</Button.Label>
                 </Button>
 
                 <View className="flex-row items-center gap-3 my-4">

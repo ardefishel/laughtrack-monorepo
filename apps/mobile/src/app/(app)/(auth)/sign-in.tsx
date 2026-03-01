@@ -1,10 +1,32 @@
+import { useAuth } from '@/context/auth-context'
 import { AuthContainer } from '@/components/feature/auth/container'
 import { Icon } from '@/components/ui/ion-icon'
 import { router } from 'expo-router'
 import { Button, Input, TextField } from 'heroui-native'
-import { Pressable, Text, View } from 'react-native'
+import { useCallback, useState } from 'react'
+import { Alert, Pressable, Text, View } from 'react-native'
 
 export default function SignIn() {
+    const { signIn } = useAuth()
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+
+    const handleSignIn = useCallback(async () => {
+        if (!email.trim() || !password.trim()) return
+        setIsLoading(true)
+        try {
+            const result = await signIn(email.trim(), password)
+            if (result.success) {
+                router.dismissAll()
+            } else {
+                Alert.alert('Sign In Failed', result.error ?? 'Please try again.')
+            }
+        } finally {
+            setIsLoading(false)
+        }
+    }, [email, password, signIn])
+
     return (
         <AuthContainer title='Welcome Back' subtitle='Sign in to your account'>
             <View className="gap-4">
@@ -13,6 +35,8 @@ export default function SignIn() {
                         placeholder="Email"
                         keyboardType="email-address"
                         autoCapitalize="none"
+                        value={email}
+                        onChangeText={setEmail}
                     />
                 </TextField>
 
@@ -20,11 +44,13 @@ export default function SignIn() {
                     <Input
                         placeholder="Password"
                         secureTextEntry
+                        value={password}
+                        onChangeText={setPassword}
                     />
                 </TextField>
 
                 <Button
-                    onPress={() => { }}
+                    onPress={() => router.push('/(app)/(auth)/forgot-password')}
                     className="self-end"
                     accessibilityRole="link"
                     accessibilityLabel="Forgot Password"
@@ -35,10 +61,11 @@ export default function SignIn() {
 
                 <Button
                     variant="primary"
-                    onPress={() => { }}
+                    onPress={handleSignIn}
+                    isDisabled={isLoading || !email.trim() || !password.trim()}
                     className="w-full"
                 >
-                    <Button.Label>Sign In</Button.Label>
+                    <Button.Label>{isLoading ? 'Signing In...' : 'Sign In'}</Button.Label>
                 </Button>
 
                 <View className="flex-row items-center gap-3 my-4">
@@ -70,4 +97,3 @@ export default function SignIn() {
         </AuthContainer>
     )
 }
-

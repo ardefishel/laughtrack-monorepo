@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, bigint, integer } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, boolean, bigint } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
 // Users table
@@ -60,53 +60,10 @@ export const verification = pgTable('verification', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
 
-// Jokes table
-export const jokes = pgTable('jokes', {
+export const notes = pgTable('notes', {
   id: text('id').primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  contentHtml: text('content_html'),
-  contentText: text('content_text'),
-  status: text('status'),
-  createdAt: bigint('created_at', { mode: 'number' }),
-  updatedAt: bigint('updated_at', { mode: 'number' }),
-  draftUpdatedAt: bigint('draft_updated_at', { mode: 'number' }),
-  tags: text('tags'),
-  serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
-  lastModified: timestamp('last_modified').notNull().defaultNow(),
-  isDeleted: boolean('is_deleted').notNull().default(false),
-})
-
-// Joke sets table
-export const jokeSets = pgTable('joke_sets', {
-  id: text('id').primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  title: text('title'),
-  description: text('description'),
-  duration: integer('duration'),
-  place: text('place'),
-  status: text('status'),
-  createdAt: bigint('created_at', { mode: 'number' }),
-  updatedAt: bigint('updated_at', { mode: 'number' }),
-  serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
-  lastModified: timestamp('last_modified').notNull().defaultNow(),
-  isDeleted: boolean('is_deleted').notNull().default(false),
-})
-
-// Joke set items table
-export const jokeSetItems = pgTable('joke_set_items', {
-  id: text('id').primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  setId: text('set_id'),
-  itemType: text('item_type'),
-  jokeId: text('joke_id'),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   content: text('content'),
-  position: integer('position'),
   createdAt: bigint('created_at', { mode: 'number' }),
   updatedAt: bigint('updated_at', { mode: 'number' }),
   serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
@@ -114,51 +71,42 @@ export const jokeSetItems = pgTable('joke_set_items', {
   isDeleted: boolean('is_deleted').notNull().default(false),
 })
 
-// Audio recordings table
-export const audioRecordings = pgTable('audio_recordings', {
+export const bits = pgTable('bits', {
   id: text('id').primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  jokeId: text('joke_id'),
-  filePath: text('file_path'),
-  duration: integer('duration'),
-  size: integer('size'),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  content: text('content'),
+  status: text('status'),
+  tagsJson: text('tags_json'),
+  premiseId: text('premise_id'),
+  setlistIdsJson: text('setlist_ids_json'),
+  createdAt: bigint('created_at', { mode: 'number' }),
+  updatedAt: bigint('updated_at', { mode: 'number' }),
+  serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
+  lastModified: timestamp('last_modified').notNull().defaultNow(),
+  isDeleted: boolean('is_deleted').notNull().default(false),
+})
+
+export const premises = pgTable('premises', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  content: text('content'),
+  status: text('status'),
+  attitude: text('attitude'),
+  tagsJson: text('tags_json'),
+  bitIdsJson: text('bit_ids_json'),
+  createdAt: bigint('created_at', { mode: 'number' }),
+  updatedAt: bigint('updated_at', { mode: 'number' }),
+  serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
+  lastModified: timestamp('last_modified').notNull().defaultNow(),
+  isDeleted: boolean('is_deleted').notNull().default(false),
+})
+
+export const setlists = pgTable('setlists', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   description: text('description'),
-  remoteUrl: text('remote_url'),
-  createdAt: bigint('created_at', { mode: 'number' }),
-  updatedAt: bigint('updated_at', { mode: 'number' }),
-  serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
-  lastModified: timestamp('last_modified').notNull().defaultNow(),
-  isDeleted: boolean('is_deleted').notNull().default(false),
-})
-
-// Tags table
-export const tags = pgTable('tags', {
-  id: text('id').primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  name: text('name').notNull(),
-  createdAt: bigint('created_at', { mode: 'number' }),
-  updatedAt: bigint('updated_at', { mode: 'number' }),
-  serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
-  lastModified: timestamp('last_modified').notNull().defaultNow(),
-  isDeleted: boolean('is_deleted').notNull().default(false),
-})
-
-// Joke tags table
-export const jokeTags = pgTable('joke_tags', {
-  id: text('id').primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  jokeId: text('joke_id')
-    .notNull()
-    .references(() => jokes.id, { onDelete: 'cascade' }),
-  tagId: text('tag_id')
-    .notNull()
-    .references(() => tags.id, { onDelete: 'cascade' }),
+  itemsJson: text('items_json'),
+  tagsJson: text('tags_json'),
   createdAt: bigint('created_at', { mode: 'number' }),
   updatedAt: bigint('updated_at', { mode: 'number' }),
   serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
@@ -170,12 +118,10 @@ export const jokeTags = pgTable('joke_tags', {
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   accounts: many(accounts),
-  jokes: many(jokes),
-  jokeSets: many(jokeSets),
-  jokeSetItems: many(jokeSetItems),
-  audioRecordings: many(audioRecordings),
-  tags: many(tags),
-  jokeTags: many(jokeTags),
+  notes: many(notes),
+  bits: many(bits),
+  premises: many(premises),
+  setlists: many(setlists),
 }))
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -192,65 +138,31 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
   }),
 }))
 
-export const jokesRelations = relations(jokes, ({ one, many }) => ({
+export const notesRelations = relations(notes, ({ one }) => ({
   user: one(users, {
-    fields: [jokes.userId],
+    fields: [notes.userId],
     references: [users.id],
-  }),
-  audioRecordings: many(audioRecordings),
-  jokeTags: many(jokeTags),
-}))
-
-export const jokeSetsRelations = relations(jokeSets, ({ one, many }) => ({
-  user: one(users, {
-    fields: [jokeSets.userId],
-    references: [users.id],
-  }),
-  items: many(jokeSetItems),
-}))
-
-export const jokeSetItemsRelations = relations(jokeSetItems, ({ one }) => ({
-  user: one(users, {
-    fields: [jokeSetItems.userId],
-    references: [users.id],
-  }),
-  jokeSet: one(jokeSets, {
-    fields: [jokeSetItems.setId],
-    references: [jokeSets.id],
   }),
 }))
 
-export const audioRecordingsRelations = relations(audioRecordings, ({ one }) => ({
+export const bitsRelations = relations(bits, ({ one }) => ({
   user: one(users, {
-    fields: [audioRecordings.userId],
+    fields: [bits.userId],
     references: [users.id],
-  }),
-  joke: one(jokes, {
-    fields: [audioRecordings.jokeId],
-    references: [jokes.id],
   }),
 }))
 
-export const tagsRelations = relations(tags, ({ one, many }) => ({
+export const premisesRelations = relations(premises, ({ one }) => ({
   user: one(users, {
-    fields: [tags.userId],
+    fields: [premises.userId],
     references: [users.id],
   }),
-  jokeTags: many(jokeTags),
 }))
 
-export const jokeTagsRelations = relations(jokeTags, ({ one }) => ({
+export const setlistsRelations = relations(setlists, ({ one }) => ({
   user: one(users, {
-    fields: [jokeTags.userId],
+    fields: [setlists.userId],
     references: [users.id],
-  }),
-  joke: one(jokes, {
-    fields: [jokeTags.jokeId],
-    references: [jokes.id],
-  }),
-  tag: one(tags, {
-    fields: [jokeTags.tagId],
-    references: [tags.id],
   }),
 }))
 
@@ -261,15 +173,11 @@ export type Session = typeof sessions.$inferSelect
 export type NewSession = typeof sessions.$inferInsert
 export type Account = typeof accounts.$inferSelect
 export type Verification = typeof verification.$inferSelect
-export type Joke = typeof jokes.$inferSelect
-export type NewJoke = typeof jokes.$inferInsert
-export type JokeSet = typeof jokeSets.$inferSelect
-export type NewJokeSet = typeof jokeSets.$inferInsert
-export type JokeSetItem = typeof jokeSetItems.$inferSelect
-export type NewJokeSetItem = typeof jokeSetItems.$inferInsert
-export type AudioRecording = typeof audioRecordings.$inferSelect
-export type NewAudioRecording = typeof audioRecordings.$inferInsert
-export type Tag = typeof tags.$inferSelect
-export type NewTag = typeof tags.$inferInsert
-export type JokeTag = typeof jokeTags.$inferSelect
-export type NewJokeTag = typeof jokeTags.$inferInsert
+export type Note = typeof notes.$inferSelect
+export type NewNote = typeof notes.$inferInsert
+export type Bit = typeof bits.$inferSelect
+export type NewBit = typeof bits.$inferInsert
+export type Premise = typeof premises.$inferSelect
+export type NewPremise = typeof premises.$inferInsert
+export type Setlist = typeof setlists.$inferSelect
+export type NewSetlist = typeof setlists.$inferInsert

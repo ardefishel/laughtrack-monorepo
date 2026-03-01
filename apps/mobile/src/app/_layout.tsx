@@ -1,5 +1,6 @@
 import "@/globals.css";
 import { database } from "@/database";
+import { AuthProvider } from "@/context/auth-context";
 import { reconcilePremiseBitLinks } from "@/database/reconcilePremiseBitLinks";
 import { reconcileSetlistBitLinks } from "@/database/reconcileSetlistBitLinks";
 import { DatabaseProvider } from "@nozbe/watermelondb/react";
@@ -21,12 +22,14 @@ export default function RootLayout() {
     }, [])
 
     return <GestureHandlerRootView style={{ flex: 1 }}>
-        <DatabaseProvider database={database}>
-            <HeroUINativeProvider config={{ devInfo: { stylingPrinciples: false } }}>
-                <KeyboardProvider>
-                    <Slot />
-                </KeyboardProvider>
-            </HeroUINativeProvider>
-        </DatabaseProvider>
+        <AuthProvider>
+            <DatabaseProvider database={database}>
+                <HeroUINativeProvider config={{ devInfo: { stylingPrinciples: false } }}>
+                    <KeyboardProvider>
+                        <Slot />
+                    </KeyboardProvider>
+                </HeroUINativeProvider>
+            </DatabaseProvider>
+        </AuthProvider>
     </GestureHandlerRootView>
 }
