@@ -1,7 +1,7 @@
 import DraggableList from "@/components/ui/draggable-list";
 import { Icon } from "@/components/ui/ion-icon";
 import { BIT_TABLE, SETLIST_TABLE } from "@/database/constants";
-import { bitModelToDomain } from "@/database/mappers/bitMapper";
+import { bitContentToPreview, bitModelToDomain } from "@/database/mappers/bitMapper";
 import { setlistModelToDomain } from "@/database/mappers/setlistMapper";
 import { Bit as BitModel } from "@/database/models/bit";
 import { Setlist as SetlistModel } from "@/database/models/setlist";
@@ -26,12 +26,12 @@ import {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const BIT_STATUS_DOT: Record<string, string> = {
-    draft: "bg-muted",
-    rework: "bg-warning",
-    tested: "bg-blue-500",
-    final: "bg-success",
-    dead: "bg-danger",
+const BIT_STATUS_LABEL: Record<string, string> = {
+    draft: "DRAFT",
+    rework: "REWORK",
+    tested: "TESTED",
+    final: "FINAL",
+    dead: "DEAD",
 };
 
 function parseStringArrayJson(value: string): string[] {
@@ -477,7 +477,44 @@ export default function SetlistDetailScreen() {
                 keyboardVerticalOffset={100}
             >
                 <ListHeader />
-                <DraggableList />
+                <DraggableList
+                    data={items}
+                    onDragEnd={setItems}
+                    onDelete={(item) => setItems((prev) => prev.filter((i) => i.id !== item.id))}
+                    renderItemContent={(item) => {
+                        if (item.type === "bit") {
+                            const preview = item.bit
+                                ? bitContentToPreview(item.bit.content)
+                                : null;
+                            return (
+                                <View className="gap-1.5">
+                                    <Text className="text-muted text-[10px] tracking-[2px] font-semibold">
+                                        {BIT_STATUS_LABEL[item.bit?.status ?? "draft"] ?? "DRAFT"}
+                                    </Text>
+                                    <Text className="text-foreground text-[16px] font-medium leading-5" numberOfLines={1}>
+                                        {preview?.title || "Untitled bit"}
+                                    </Text>
+                                    {preview?.description ? (
+                                        <Text className="text-muted text-[13px] leading-4" numberOfLines={1}>
+                                            {preview.description}
+                                        </Text>
+                                    ) : null}
+                                </View>
+                            );
+                        }
+                        return (
+                            <View className="gap-1.5">
+                                <Text className="text-muted text-[10px] tracking-[2px] font-semibold">NOTE</Text>
+                                <View className="flex-row items-center gap-2">
+                                    <Icon name="document-text-outline" size={14} className="text-blue-500" />
+                                    <Text className="text-foreground text-[14px]" numberOfLines={1}>
+                                        {item.setlistNote?.content ?? "Note"}
+                                    </Text>
+                                </View>
+                            </View>
+                        );
+                    }}
+                />
             </KeyboardAvoidingView>
 
             {/* ── Stage 1: Type Picker Dialog ─────────────────────────────── */}
