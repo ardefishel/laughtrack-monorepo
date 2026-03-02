@@ -454,16 +454,38 @@ export default function SetlistDetailScreen() {
                 <Text className="text-muted text-xs tracking-[2px] font-semibold uppercase">
                     Items ({bitCount} {bitCount === 1 ? "bit" : "bits"})
                 </Text>
-                <Button
-                    size="sm"
-                    variant="ghost"
-                    onPress={() => setTypeDialogOpen(true)}
-                >
-                    <Icon name="add-outline" size={16} className="text-accent" />
-                    <Button.Label className="text-accent text-xs">
-                        Add Set Item
-                    </Button.Label>
-                </Button>
+                <View className="flex-row items-center gap-1">
+                    {items.length > 0 && (
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            onPress={() =>
+                                router.push({
+                                    pathname: "/(app)/(detail)/setlist/reader",
+                                    params: {
+                                        title: description || "Reader",
+                                        items: JSON.stringify(items),
+                                    },
+                                })
+                            }
+                        >
+                            <Icon name="book-outline" size={16} className="text-accent" />
+                            <Button.Label className="text-accent text-xs">
+                                Read
+                            </Button.Label>
+                        </Button>
+                    )}
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        onPress={() => setTypeDialogOpen(true)}
+                    >
+                        <Icon name="add-outline" size={16} className="text-accent" />
+                        <Button.Label className="text-accent text-xs">
+                            Add Set Item
+                        </Button.Label>
+                    </Button>
+                </View>
             </View>
         </View>
     );

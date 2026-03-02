@@ -41,5 +41,6 @@ export default function AppStack() {
         <Stack.Screen name="(detail)/premise/[id]" options={{ headerShown: true }} />
         <Stack.Screen name="(detail)/bit/[id]" options={{ headerShown: true, contentStyle: { backgroundColor: useThemeColor('background') } }} />
         <Stack.Screen name="(detail)/setlist/[id]" options={{ headerShown: true, contentStyle: { backgroundColor: useThemeColor('background') } }} />
+        <Stack.Screen name="(detail)/setlist/reader" options={{ headerShown: true, contentStyle: { backgroundColor: useThemeColor('background') } }} />
     </Stack>;
 }
