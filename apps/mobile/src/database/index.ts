@@ -6,12 +6,15 @@ import { Premise } from './models/premise'
 import { Setlist } from './models/setlist'
 import { migrations } from './migrations'
 import { schema } from './schema'
+import { dbLogger } from '@/lib/loggers'
+
+dbLogger.info('Initializing WatermelonDB adapter')
 
 const adapter = new SQLiteAdapter({
     schema,
     migrations,
     onSetUpError: (error: unknown) => {
-        console.error('Failed to set up WatermelonDB', error)
+        dbLogger.error('Failed to set up WatermelonDB', error)
     },
 })
 
@@ -19,3 +22,5 @@ export const database = new Database({
     adapter,
     modelClasses: [Note, Premise, Bit, Setlist],
 })
+
+dbLogger.info('WatermelonDB initialized')

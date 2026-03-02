@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, type ReactNode } from 'react'
 import { authClient } from '@/lib/auth-client'
+import { authLogger } from '@/lib/loggers'
 
 interface AuthUser {
     id: string
@@ -27,36 +28,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const isPending = session.isPending
 
     const signIn = useCallback(async (email: string, password: string) => {
+        authLogger.info('Sign-in attempt')
         try {
             const result = await authClient.signIn.email({ email, password })
             if (result.error) {
+                authLogger.warn('Sign-in failed:', result.error.message)
                 return { success: false, error: result.error.message }
             }
+            authLogger.info('Sign-in successful')
             return { success: true }
         } catch (error) {
-            console.error('Sign in error:', error)
+            authLogger.error('Sign-in unexpected error:', error)
             return { success: false, error: 'An unexpected error occurred' }
         }
     }, [])
 
     const signUp = useCallback(async (email: string, password: string, name: string) => {
+        authLogger.info('Sign-up attempt')
         try {
             const result = await authClient.signUp.email({ email, password, name })
             if (result.error) {
+                authLogger.warn('Sign-up failed:', result.error.message)
                 return { success: false, error: result.error.message }
             }
+            authLogger.info('Sign-up successful')
             return { success: true }
         } catch (error) {
-            console.error('Sign up error:', error)
+            authLogger.error('Sign-up unexpected error:', error)
             return { success: false, error: 'An unexpected error occurred' }
         }
     }, [])
 
     const signOut = useCallback(async () => {
+        authLogger.info('Sign-out attempt')
         try {
             await authClient.signOut()
+            authLogger.info('Sign-out successful')
         } catch (error) {
-            console.error('Sign out error:', error)
+            authLogger.error('Sign-out error:', error)
         }
     }, [])
 
