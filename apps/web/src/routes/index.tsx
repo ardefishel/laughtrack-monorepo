@@ -3,7 +3,7 @@ import type { Stats } from '@/lib/api'
 import { getStats } from '@/lib/api'
 import { createFileRoute } from '@tanstack/react-router'
 
-const defaultStats: Stats = { users: 0, jokes: 0, sets: 0, audioRecordings: 0, tags: 0 }
+const defaultStats: Stats = { users: 0, notes: 0, bits: 0, premises: 0, setlists: 0 }
 
 export const Route = createFileRoute('/')({
   loader: async () => {
@@ -28,10 +28,10 @@ function Dashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         <StatsCard label="Users" value={stats.users} icon="👤" />
-        <StatsCard label="Jokes" value={stats.jokes} icon="😂" />
-        <StatsCard label="Sets" value={stats.sets} icon="📋" />
-        <StatsCard label="Recordings" value={stats.audioRecordings} icon="🎙️" />
-        <StatsCard label="Tags" value={stats.tags} icon="🏷️" />
+        <StatsCard label="Notes" value={stats.notes} icon="📝" />
+        <StatsCard label="Bits" value={stats.bits} icon="😂" />
+        <StatsCard label="Premises" value={stats.premises} icon="💡" />
+        <StatsCard label="Setlists" value={stats.setlists} icon="📋" />
       </div>
     </div>
   )

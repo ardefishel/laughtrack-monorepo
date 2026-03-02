@@ -1,12 +1,13 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true,
+    "jsx": "react-jsx",
+    "allowImportingTsExtensions": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "strict": true,
     "paths": {
       "@/*": [
-        "./*"
+        "./src/*"
       ]
     }
   },

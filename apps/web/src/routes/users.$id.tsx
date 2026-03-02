@@ -8,7 +8,7 @@ export const Route = createFileRoute('/users/$id')({
     try {
       return await getUser(params.id)
     } catch {
-      return { success: false, data: { id: params.id, email: '', name: 'Unknown', image: null, role: 'user', banned: false, banReason: null, emailVerified: false, createdAt: '', jokesCount: 0, setsCount: 0, audioRecordingsCount: 0, tagsCount: 0 }, timestamp: '' }
+      return { success: false, data: { id: params.id, email: '', name: 'Unknown', image: null, role: 'user', banned: false, banReason: null, emailVerified: false, createdAt: '', notesCount: 0, bitsCount: 0, premisesCount: 0, setlistsCount: 0 }, timestamp: '' }
     }
   },
   component: UserDetailPage,
@@ -70,10 +70,10 @@ function UserDetailPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatBlock label="Jokes" value={user.jokesCount} />
-        <StatBlock label="Sets" value={user.setsCount} />
-        <StatBlock label="Recordings" value={user.audioRecordingsCount} />
-        <StatBlock label="Tags" value={user.tagsCount} />
+        <StatBlock label="Notes" value={user.notesCount} />
+        <StatBlock label="Bits" value={user.bitsCount} />
+        <StatBlock label="Premises" value={user.premisesCount} />
+        <StatBlock label="Setlists" value={user.setlistsCount} />
       </div>
 
       {/* Read-only details */}

@@ -17,102 +17,25 @@ async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
   return response.json()
 }
 
-// Response types matching the backend paginatedResponse/successResponse format
-interface ApiResponse<T> {
-  success: boolean
-  data: T
-  timestamp: string
-}
+import type {
+  ApiResponse,
+  JokeDTO as Joke,
+  JokeDetailDTO as JokeDetail,
+  JokeSetDTO as JokeSet,
+  JokeSetDetailDTO as JokeSetDetail,
+  PaginatedApiResponse,
+  StatsDTO as Stats,
+  UpdateUserPayload,
+  UserDTO as User,
+  UserDetailDTO as UserDetail
+} from '@laughtrack/shared-types'
 
-interface PaginatedApiResponse<T> {
-  success: boolean
-  data: T[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-  }
-  timestamp: string
-}
-
-// Domain types for web API
-export interface User {
-  id: string
-  email: string
-  name: string
-  image: string | null
-  role: string
-  banned: boolean
-  emailVerified: boolean
-  createdAt: string
-}
-
-export interface UserDetail extends User {
-  banReason: string | null
-  jokesCount: number
-  setsCount: number
-  audioRecordingsCount: number
-  tagsCount: number
-}
-
-export interface UpdateUserPayload {
-  name?: string
-  email?: string
-  role?: string
-  banned?: boolean
-  banReason?: string | null
-}
-
-export interface Joke {
-  id: string
-  contentText: string | null
-  contentHtml: string | null
-  status: string | null
-  userId: string
-  userName: string
-  userEmail: string
-  createdAt: number | null
-  updatedAt: number | null
-}
-
-export interface JokeDetail extends Joke {
-  draftUpdatedAt: number | null
-  tags: string | null
-}
-
-export interface JokeSet {
-  id: string
-  title: string | null
-  description: string | null
-  duration: number | null
-  place: string | null
-  status: string | null
-  userId: string
-  userName: string
-  userEmail: string
-  createdAt: number | null
-  updatedAt: number | null
-  itemCount: number
-}
-
-export interface JokeSetDetail extends JokeSet {
-  items: Array<{
-    id: string
-    itemType: string | null
-    jokeId: string | null
-    jokeTitle: string | null
-    content: string | null
-    position: number | null
-  }>
-}
-
-export interface Stats {
-  users: number
-  jokes: number
-  sets: number
-  audioRecordings: number
-  tags: number
+export type {
+  ApiResponse, Joke,
+  JokeDetail,
+  JokeSet,
+  JokeSetDetail, PaginatedApiResponse, Stats, UpdateUserPayload, User,
+  UserDetail
 }
 
 // API functions
