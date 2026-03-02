@@ -29,10 +29,10 @@ export interface UserDTO {
 
 export interface UserDetailDTO extends UserDTO {
     banReason: string | null
-    jokesCount: number
-    setsCount: number
-    audioRecordingsCount: number
-    tagsCount: number
+    notesCount: number
+    bitsCount: number
+    premisesCount: number
+    setlistsCount: number
 }
 
 export interface UpdateUserPayload {
@@ -88,8 +88,8 @@ export interface JokeSetDetailDTO extends JokeSetDTO {
 
 export interface StatsDTO {
     users: number
-    jokes: number
-    sets: number
-    audioRecordings: number
-    tags: number
+    notes: number
+    bits: number
+    premises: number
+    setlists: number
 }
