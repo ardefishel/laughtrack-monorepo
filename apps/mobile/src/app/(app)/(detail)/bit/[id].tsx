@@ -1,4 +1,5 @@
 import { Icon } from '@/components/ui/ion-icon'
+import { uiLogger } from '@/lib/loggers'
 import { BIT_TABLE, PREMISE_TABLE } from '@/database/constants'
 import { bitModelToDomain } from '@/database/mappers/bitMapper'
 import { Bit as BitModel } from '@/database/models/bit'
@@ -10,9 +11,26 @@ import { router, useLocalSearchParams, useNavigation } from 'expo-router'
 import { Button, useThemeColor } from 'heroui-native'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
-import type { EnrichedTextInputInstance, OnChangeStateEvent } from 'react-native-enriched'
+import type {
+    EnrichedTextInputInstance,
+    OnChangeHtmlEvent,
+    OnChangeStateEvent,
+    OnChangeTextEvent,
+    OnKeyPressEvent,
+} from 'react-native-enriched'
 import { EnrichedTextInput } from 'react-native-enriched'
 import { KeyboardStickyView } from 'react-native-keyboard-controller'
+
+type ActiveHeading = 'h1' | 'h2'
+
+type PendingHeadingEnter = {
+    heading: ActiveHeading
+    beforeHtml: string
+    beforeText: string
+    htmlEventsAfterEnter: number
+    keypressSeq: number
+    armedAtMs: number
+}
 
 export default function BitDetailScreen() {
     const { id, metaStatus, metaTags, metaPremiseId, metaNonce, fromSetlist } = useLocalSearchParams<{
@@ -30,6 +48,7 @@ export default function BitDetailScreen() {
 
     const [bitModel, setBitModel] = useState<BitModel | null>(null)
     const [content, setContent] = useState('')
+    const [editorInitialValue, setEditorInitialValue] = useState('')
     const [status, setStatus] = useState<BitStatus>('draft')
     const [tags, setTags] = useState<string[]>([])
     const [premiseId, setPremiseId] = useState<string | null>(null)
@@ -38,6 +57,11 @@ export default function BitDetailScreen() {
 
     const [stylesState, setStylesState] = useState<OnChangeStateEvent | null>(null)
     const [isPremiseExpanded, setIsPremiseExpanded] = useState(false)
+    const activeHeadingRef = useRef<ActiveHeading | null>(null)
+    const eventSequenceRef = useRef(0)
+    const lastHtmlRef = useRef(content)
+    const lastTextRef = useRef('')
+    const pendingHeadingEnterRef = useRef<PendingHeadingEnter | null>(null)
 
     const foreground = useThemeColor('foreground')
     const muted = useThemeColor('muted')
@@ -47,6 +71,9 @@ export default function BitDetailScreen() {
         if (!isEditing || !id) {
             setBitModel(null)
             setContent('')
+            setEditorInitialValue('')
+            lastHtmlRef.current = ''
+            lastTextRef.current = ''
             setStatus('draft')
             setTags([])
             setPremiseId(null)
@@ -61,6 +88,9 @@ export default function BitDetailScreen() {
                 const bit = bitModelToDomain(result)
                 setBitModel(result)
                 setContent(bit.content)
+                setEditorInitialValue(bit.content)
+                lastHtmlRef.current = bit.content
+                lastTextRef.current = extractTextFromHtmlString(bit.content)
                 setStatus(bit.status)
                 setTags((bit.tags ?? []).map((tag) => tag.name))
                 setPremiseId(bit.premiseId ?? null)
@@ -109,6 +139,88 @@ export default function BitDetailScreen() {
     }, [database, premiseId])
 
     const canSave = content.trim().length > 0 && !isSaving
+
+    const logEditorEvent = useCallback((event: string, payload: Record<string, unknown>) => {
+        eventSequenceRef.current += 1
+        uiLogger.debug('BitEditor event:', {
+            seq: eventSequenceRef.current,
+            event,
+            ...payload,
+        })
+        return eventSequenceRef.current
+    }, [])
+
+    const attemptHeadingEnterRecovery = useCallback(
+        (nextHtml: string): string | null => {
+            const pending = pendingHeadingEnterRef.current
+            if (!pending) return null
+
+            const nowMs = Date.now()
+            if (nowMs - pending.armedAtMs > 400) {
+                pendingHeadingEnterRef.current = null
+                logEditorEvent('heading-enter-expired', {
+                    keypressSeq: pending.keypressSeq,
+                    ageMs: nowMs - pending.armedAtMs,
+                })
+                return null
+            }
+
+            pending.htmlEventsAfterEnter += 1
+            const didLoseHeading =
+                hasTrailingHeadingBlock(pending.beforeHtml, pending.heading) && !nextHtml.includes(`<${pending.heading}>`)
+            const beforeText = normalizeEditorText(pending.beforeText)
+            const nextText = normalizeEditorText(extractTextFromHtmlString(nextHtml))
+            const sameText = beforeText === nextText
+            const beforeBreaks = countLogicalBreaks(pending.beforeHtml)
+            const nextBreaks = countLogicalBreaks(nextHtml)
+            const missingBreak = nextBreaks <= beforeBreaks
+            const isNextSingleParagraph = hasSingleParagraphBlock(nextHtml)
+
+            logEditorEvent('heading-enter-validate', {
+                heading: pending.heading,
+                keypressSeq: pending.keypressSeq,
+                htmlEventsAfterEnter: pending.htmlEventsAfterEnter,
+                didLoseHeading,
+                sameText,
+                missingBreak,
+                beforeBreaks,
+                nextBreaks,
+                isNextSingleParagraph,
+                nextHtml,
+            })
+
+            const shouldRepair = didLoseHeading && sameText && missingBreak && isNextSingleParagraph && beforeText.length > 0
+            if (!shouldRepair) {
+                if (pending.htmlEventsAfterEnter >= 3) {
+                    pendingHeadingEnterRef.current = null
+                    logEditorEvent('heading-enter-resolved', {
+                        keypressSeq: pending.keypressSeq,
+                        reason: 'normal-transition',
+                    })
+                }
+                return null
+            }
+
+            const repairedHtml = appendParagraphAfterTrailingHeading(pending.beforeHtml, pending.heading)
+            if (!repairedHtml || repairedHtml === nextHtml) {
+                pendingHeadingEnterRef.current = null
+                logEditorEvent('heading-enter-repair-skipped', {
+                    keypressSeq: pending.keypressSeq,
+                    reason: 'repair-html-unavailable',
+                })
+                return null
+            }
+
+            editorRef.current?.setValue(repairedHtml)
+            pendingHeadingEnterRef.current = null
+            logEditorEvent('heading-enter-repaired', {
+                keypressSeq: pending.keypressSeq,
+                repairedHtml,
+            })
+            return repairedHtml
+        },
+        [logEditorEvent],
+    )
 
     const handleSave = useCallback(async () => {
         const trimmed = content.trim()
@@ -243,16 +355,76 @@ export default function BitDetailScreen() {
                 <EnrichedTextInput
                     key={editorKey}
                     ref={editorRef}
-                    defaultValue={content}
-                    onChangeText={(event) => {
-                        const payload = event.nativeEvent as { html?: string; value?: string; text?: string }
-                        setContent(payload.html ?? payload.value ?? payload.text ?? '')
+                    defaultValue={editorInitialValue}
+                    onChangeText={(event: { nativeEvent: OnChangeTextEvent }) => {
+                        const text = extractTextFromChangeEvent(event.nativeEvent)
+                        lastTextRef.current = text
+                        logEditorEvent('change-text', {
+                            activeHeading: activeHeadingRef.current,
+                            textLength: text.length,
+                            text,
+                        })
                     }}
-                    onChangeHtml={(event) => {
-                        const payload = event.nativeEvent as { html?: string; value?: string; text?: string }
-                        setContent(payload.html ?? payload.value ?? payload.text ?? '')
+                    onChangeHtml={(event: { nativeEvent: OnChangeHtmlEvent }) => {
+                        const html = extractHtmlFromChangeEvent(event.nativeEvent)
+                        const repairedHtml = attemptHeadingEnterRecovery(html)
+                        const nextHtml = repairedHtml ?? html
+                        lastHtmlRef.current = nextHtml
+                        logEditorEvent('change-html', {
+                            activeHeading: activeHeadingRef.current,
+                            htmlLength: nextHtml.length,
+                            html: nextHtml,
+                            wasRepaired: repairedHtml !== null,
+                        })
+                        setContent(nextHtml)
+                        lastTextRef.current = extractTextFromHtmlString(nextHtml)
                     }}
-                    onChangeState={(event) => setStylesState(event.nativeEvent)}
+                    onChangeState={(event) => {
+                        const state = event.nativeEvent
+                        logEditorEvent('change-state', {
+                            h1: state.h1,
+                            h2: state.h2,
+                            activeHeadingBefore: activeHeadingRef.current,
+                        })
+                        setStylesState(state)
+                        if (state.h1?.isActive) activeHeadingRef.current = 'h1'
+                        else if (state.h2?.isActive) activeHeadingRef.current = 'h2'
+                        else activeHeadingRef.current = null
+                        logEditorEvent('active-heading-updated', {
+                            activeHeadingAfter: activeHeadingRef.current,
+                        })
+                    }}
+                    onKeyPress={(event: { nativeEvent: OnKeyPressEvent }) => {
+                        const key = event.nativeEvent.key
+                        const activeHeading = activeHeadingRef.current
+                        const sequence = logEditorEvent('key-press', {
+                            key,
+                            activeHeading,
+                            pendingRecovery: pendingHeadingEnterRef.current !== null,
+                        })
+
+                        if ((key === 'Enter' || key === '\n') && activeHeading) {
+                            pendingHeadingEnterRef.current = {
+                                heading: activeHeading,
+                                beforeHtml: lastHtmlRef.current,
+                                beforeText: lastTextRef.current,
+                                htmlEventsAfterEnter: 0,
+                                keypressSeq: sequence,
+                                armedAtMs: Date.now(),
+                            }
+
+                            logEditorEvent('heading-enter-pending', {
+                                keypressSeq: sequence,
+                                heading: activeHeading,
+                                beforeHtml: lastHtmlRef.current,
+                                beforeText: lastTextRef.current,
+                            })
+                        }
+                    }}
+                    htmlStyle={{
+                        h1: { fontSize: 28, bold: true },
+                        h2: { fontSize: 22, bold: true },
+                    }}
                     style={{
                         fontSize: 17,
                         lineHeight: 26,
@@ -269,6 +441,68 @@ export default function BitDetailScreen() {
             <EditorToolbar editorRef={editorRef} stylesState={stylesState} />
         </View>
     )
+}
+
+function extractTextFromChangeEvent(event: OnChangeTextEvent | OnChangeHtmlEvent): string {
+    return event.value ?? ''
+}
+
+function extractHtmlFromChangeEvent(event: OnChangeHtmlEvent | OnChangeTextEvent): string {
+    return event.value ?? ''
+}
+
+function extractTextFromHtmlString(html: string): string {
+    return html
+        .replace(/<br\s*\/?\s*>/gi, '\n')
+        .replace(/<\/p>/gi, '\n')
+        .replace(/<\/h[1-6]>/gi, '\n')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/&amp;/gi, '&')
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>')
+        .replace(/&#39;/gi, "'")
+        .replace(/&quot;/gi, '"')
+}
+
+function normalizeEditorText(value: string): string {
+    return value.replace(/\s+/g, ' ').trim().toLowerCase()
+}
+
+function countLogicalBreaks(html: string): number {
+    const blockMatches = html.match(/<(h[1-6]|p|div|li)(\s|>)/gi)
+    const breakMatches = html.match(/<br\s*\/?\s*>/gi)
+    return (blockMatches?.length ?? 0) + (breakMatches?.length ?? 0)
+}
+
+function hasTrailingHeadingBlock(html: string, heading: ActiveHeading): boolean {
+    const pattern = new RegExp(`<${heading}[^>]*>[\\s\\S]*<\/${heading}>\\s*(?:<\/html>\\s*)?$`, 'i')
+    return pattern.test(html)
+}
+
+function hasSingleParagraphBlock(html: string): boolean {
+    const headingBlocks = html.match(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/gi)
+    if ((headingBlocks?.length ?? 0) > 0) return false
+
+    const paragraphBlocks = html.match(/<p[^>]*>[\s\S]*?<\/p>/gi)
+    return (paragraphBlocks?.length ?? 0) === 1
+}
+
+function appendParagraphAfterTrailingHeading(html: string, heading: ActiveHeading): string | null {
+    const alreadyHasTrailingParagraph = /<p>(?:<br\s*\/?\s*>|\s*)<\/p>\s*<\/html>\s*$/i.test(html)
+    if (alreadyHasTrailingParagraph) return null
+
+    const closingHtmlPattern = new RegExp(`(</${heading}>)(\\s*</html>\\s*)$`, 'i')
+    if (closingHtmlPattern.test(html)) {
+        return html.replace(closingHtmlPattern, `$1<p><br></p></html>`)
+    }
+
+    const trailingHeadingPattern = new RegExp(`(</${heading}>\\s*)$`, 'i')
+    if (trailingHeadingPattern.test(html)) {
+        return html.replace(trailingHeadingPattern, `$1<p><br></p>`)
+    }
+
+    return null
 }
 
 function parseIdsJson(value: string): string[] {
