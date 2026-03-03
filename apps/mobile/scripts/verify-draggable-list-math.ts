@@ -1,4 +1,4 @@
-import { arrayMove, clamp, getInsertIndex, isPermutation } from '../src/components/draggable-list/math'
+import { arrayMove, clamp, getInsertIndex, isPermutation } from '../src/components/ui/draggable-list/math'
 
 function assert(name: string, condition: boolean): void {
     if (!condition) {

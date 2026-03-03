@@ -4,6 +4,8 @@ import { BIT_TABLE, PREMISE_TABLE } from '@/database/constants'
 import { bitModelToDomain } from '@/database/mappers/bitMapper'
 import { Bit as BitModel } from '@/database/models/bit'
 import { Premise as PremiseModel } from '@/database/models/premise'
+import { parseStringArrayJson } from '@/database/utils/json'
+import { dbLogger } from '@/lib/loggers'
 import type { Bit, BitStatus } from '@/types'
 import { parseBooleanParam, parseCsvParam } from '@/utils/filter-query'
 import { useFocusEffect } from '@react-navigation/native'
@@ -113,14 +115,18 @@ export default function BitListScreen() {
                 if (bit.premiseId) {
                     try {
                         const premise = await database.get<PremiseModel>(PREMISE_TABLE).find(bit.premiseId)
-                        const currentBitIds = parseIdsJson(premise.bitIdsJson).filter((id) => id !== bit.id)
+                        const currentBitIds = parseStringArrayJson(premise.bitIdsJson).filter((id) => id !== bit.id)
 
                         await premise.update((model) => {
                             model.bitIdsJson = JSON.stringify(currentBitIds)
                             model.updatedAt = new Date()
                         })
-                    } catch {
-                        // Ignore dangling premise relation.
+                    } catch (error) {
+                        dbLogger.debug('BitList delete ignored dangling premise relation', {
+                            bitId: bit.id,
+                            premiseId: bit.premiseId,
+                            error,
+                        })
                     }
                 }
 
@@ -146,14 +152,4 @@ export default function BitListScreen() {
             listRef={listRef}
         />
     )
-}
-
-function parseIdsJson(value: string): string[] {
-    try {
-        const parsed = JSON.parse(value)
-        if (!Array.isArray(parsed)) return []
-        return parsed.filter((entry): entry is string => typeof entry === 'string')
-    } catch {
-        return []
-    }
 }

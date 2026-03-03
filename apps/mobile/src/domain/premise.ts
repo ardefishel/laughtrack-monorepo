@@ -1,11 +1,7 @@
 import { z } from 'zod'
+import { TagSchema, type Tag } from './tag'
 
-export const PremiseTagSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-    createdAt: z.date(),
-    updatedAt: z.date(),
-})
+export const PremiseTagSchema = TagSchema
 
 export const PremiseStatusSchema = z.enum(['draft', 'rework', 'archived', 'ready'])
 
@@ -24,7 +20,7 @@ export const PremiseSchema = z.object({
     id: z.string(),
     content: z.string(),
     status: PremiseStatusSchema,
-    tags: z.array(PremiseTagSchema).optional(),
+    tags: z.array(TagSchema).optional(),
     attitude: AttitudeSchema.optional(),
     bitIds: z.array(z.string()).optional(),
     sourceNoteId: z.string().optional(),
@@ -32,7 +28,7 @@ export const PremiseSchema = z.object({
     updatedAt: z.date(),
 })
 
-export type PremiseTag = z.infer<typeof PremiseTagSchema>
+export type PremiseTag = Tag
 export type PremiseStatus = z.infer<typeof PremiseStatusSchema>
 export type Attitude = z.infer<typeof AttitudeSchema>
 export type Premise = z.infer<typeof PremiseSchema>

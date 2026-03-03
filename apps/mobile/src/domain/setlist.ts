@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { BitSchema } from './bit'
-import { PremiseTagSchema } from './premise'
+import { TagSchema } from './tag'
 
 export const SetlistNoteSchema = z.object({
     id: z.string(),
@@ -30,7 +30,7 @@ export const SetlistItemSchema = z.discriminatedUnion('type', [
 export const SetlistSchema = z.object({
     id: z.string(),
     items: z.array(SetlistItemSchema),
-    tags: z.array(PremiseTagSchema).optional(),
+    tags: z.array(TagSchema).optional(),
     description: z.string(),
     createdAt: z.date(),
     updatedAt: z.date(),

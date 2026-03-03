@@ -4,7 +4,28 @@ import { authLogger } from '@/lib/loggers'
 import { router } from 'expo-router'
 import { Button, Input, TextField } from 'heroui-native'
 import { useCallback, useState } from 'react'
-import { Alert, Text, View } from 'react-native'
+import { Alert, View } from 'react-native'
+
+type PasswordResetRequest = {
+    email: string
+    redirectTo: string
+}
+
+async function requestPasswordReset(input: PasswordResetRequest) {
+    const forgetPassword = Reflect.get(authClient, 'forgetPassword')
+    if (typeof forgetPassword === 'function') {
+        await (forgetPassword as (payload: PasswordResetRequest) => Promise<unknown>)(input)
+        return
+    }
+
+    const requestReset = Reflect.get(authClient, 'requestPasswordReset')
+    if (typeof requestReset === 'function') {
+        await (requestReset as (payload: PasswordResetRequest) => Promise<unknown>)(input)
+        return
+    }
+
+    throw new Error('Password reset endpoint is unavailable')
+}
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('')
@@ -15,7 +36,7 @@ export default function ForgotPassword() {
         setIsLoading(true)
         authLogger.info('Password reset requested')
         try {
-            await authClient.forgetPassword({ email: email.trim(), redirectTo: 'laughtrack://reset-password' })
+            await requestPasswordReset({ email: email.trim(), redirectTo: 'laughtrack://reset-password' })
             authLogger.info('Password reset email sent')
             Alert.alert('Email Sent', 'Check your email for a password reset link.', [
                 { text: 'OK', onPress: () => router.back() }

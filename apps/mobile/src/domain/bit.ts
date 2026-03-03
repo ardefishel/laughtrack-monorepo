@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { PremiseTagSchema } from './premise'
+import { TagSchema } from './tag'
 
 export const BitStatusSchema = z.enum(['draft', 'rework', 'tested', 'final', 'dead'])
 
@@ -7,7 +7,7 @@ export const BitSchema = z.object({
     id: z.string(),
     content: z.string(),
     status: BitStatusSchema,
-    tags: z.array(PremiseTagSchema).optional(),
+    tags: z.array(TagSchema).optional(),
     premiseId: z.string().optional(),
     setlistIds: z.array(z.string()).optional(),
     createdAt: z.date(),

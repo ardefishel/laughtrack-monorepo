@@ -18,8 +18,8 @@ export async function getAuthCookieHeader(): Promise<string> {
   let parsed: Record<string, { value: string; expires: string | null }> = {}
   try {
     parsed = JSON.parse(raw)
-  } catch {
-    authLogger.error('Failed to parse session cookie data')
+  } catch (error) {
+    authLogger.error('Failed to parse session cookie data', { error })
     throw new Error('Invalid session data. Please sign in again.')
   }
   const cookie = Object.entries(parsed)

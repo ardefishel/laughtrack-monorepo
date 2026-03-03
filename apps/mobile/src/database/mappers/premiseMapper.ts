@@ -1,31 +1,9 @@
 import { PremiseSchema, type Attitude, type Premise, type PremiseStatus } from '@/domain/premise'
 import type { Premise as PremiseModel } from '../models/premise'
 import type { PremiseRecord } from '../premiseSchema'
+import { parseStringArrayJson } from '../utils/json'
+import { tagNamesToTags } from '../utils/tags'
 
-function parseStringArrayJson(value: string): string[] {
-    try {
-        const parsed = JSON.parse(value)
-        if (!Array.isArray(parsed)) return []
-        return parsed.filter((entry): entry is string => typeof entry === 'string')
-    } catch {
-        return []
-    }
-}
-
-function toTagId(name: string): string {
-    return `tag-${name.toLowerCase().replace(/\s+/g, '-')}`
-}
-
-type PremiseTag = NonNullable<Premise['tags']>[number]
-
-function tagNamesToTags(tagNames: string[], createdAt: Date, updatedAt: Date): PremiseTag[] {
-    return tagNames.map((name) => ({
-        id: toTagId(name),
-        name,
-        createdAt,
-        updatedAt,
-    }))
-}
 
 function toDomain(input: {
     id: string

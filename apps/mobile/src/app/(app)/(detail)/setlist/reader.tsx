@@ -1,4 +1,5 @@
 import { buildSetlistReaderHtml } from '@/lib/buildSetlistReaderHtml'
+import { uiLogger } from '@/lib/loggers'
 import type { SetlistItem } from '@/types'
 import { useKeepAwake } from 'expo-keep-awake'
 import { useLocalSearchParams, useNavigation } from 'expo-router'
@@ -27,7 +28,11 @@ export default function SetlistReaderScreen() {
         let parsed: SetlistItem[] = []
         try {
             parsed = JSON.parse(itemsJson || '[]') as SetlistItem[]
-        } catch {
+        } catch (error) {
+            uiLogger.debug('SetlistReader failed to parse items payload', {
+                itemsJson,
+                error,
+            })
             parsed = []
         }
 

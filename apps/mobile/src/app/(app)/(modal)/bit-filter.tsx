@@ -1,4 +1,6 @@
+import { FilterModalShell } from '@/components/feature/material/filter-modal-shell'
 import { Icon } from '@/components/ui/ion-icon'
+import { BIT_STATUS_OPTIONS } from '@/config/bit-statuses'
 import { BIT_TABLE } from '@/database/constants'
 import { Bit as BitModel } from '@/database/models/bit'
 import { parseBitTagNames } from '@/database/mappers/bitMapper'
@@ -6,17 +8,9 @@ import type { BitStatus } from '@/types'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { parseBooleanParam, parseCsvParam, toCsvParam } from '@/utils/filter-query'
 import { router, useLocalSearchParams } from 'expo-router'
-import { Button, Checkbox, Chip, PressableFeedback, Separator } from 'heroui-native'
+import { Checkbox, Chip, PressableFeedback } from 'heroui-native'
 import { useEffect, useMemo, useState } from 'react'
 import { Text, View } from 'react-native'
-
-const ALL_STATUSES: { value: BitStatus; label: string; dotClass: string }[] = [
-    { value: 'draft', label: 'Draft', dotClass: 'bg-muted' },
-    { value: 'rework', label: 'Rework', dotClass: 'bg-warning' },
-    { value: 'tested', label: 'Tested', dotClass: 'bg-blue-500' },
-    { value: 'final', label: 'Final', dotClass: 'bg-success' },
-    { value: 'dead', label: 'Dead', dotClass: 'bg-danger' },
-]
 
 export default function BitFilterModal() {
     const database = useDatabase()
@@ -94,23 +88,12 @@ export default function BitFilterModal() {
     const activeCount = selectedStatuses.size + selectedTags.size + (hasPremise !== null ? 1 : 0)
 
     return (
-        <View style={{ flex: 1 }}>
-            <View className="flex-row items-center justify-between px-4 pt-4 pb-3 bg-field">
-                <Button variant="ghost" onPress={() => router.back()}>
-                    <Button.Label>Cancel</Button.Label>
-                </Button>
-                <Text className="text-foreground text-lg font-semibold">Filters</Text>
-                <Button variant="ghost" onPress={clearAll} isDisabled={activeCount === 0}>
-                    <Button.Label>Reset</Button.Label>
-                </Button>
-            </View>
-            <Separator />
-            <View className='flex-1 px-6 pt-6 gap-4'>
+        <FilterModalShell activeCount={activeCount} onClear={clearAll} onApply={applyFilters} applyPrefix={<Icon name='funnel' size={18} />}>
                 <Text className="text-muted text-xs font-semibold tracking-[2px]">
                     STATUS
                 </Text>
                 <View>
-                    {ALL_STATUSES.map((status) => {
+                    {BIT_STATUS_OPTIONS.map((status) => {
                         const isSelected = selectedStatuses.has(status.value)
                         return (
                             <PressableFeedback
@@ -180,13 +163,6 @@ export default function BitFilterModal() {
                         <Chip.Label>No Premise</Chip.Label>
                     </Chip>
                 </View>
-                <Button variant="primary" className='mt-4' onPress={applyFilters}>
-                    <Icon name="funnel" size={18} />
-                    <Button.Label>
-                        {activeCount > 0 ? `Apply Filters (${activeCount})` : 'Apply Filters'}
-                    </Button.Label>
-                </Button>
-            </View>
-        </View>
+        </FilterModalShell>
     )
 }

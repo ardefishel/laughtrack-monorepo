@@ -122,7 +122,7 @@ export default function NoteDetail() {
                 },
             ],
         )
-    }, [content, database, isEditing, noteState?.note, router])
+    }, [content, database, id, isEditing, noteState?.note, router])
 
     const detailMeta = noteData
         ? (() => {

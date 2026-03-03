@@ -1,13 +1,13 @@
 import { Model } from '@nozbe/watermelondb'
 import { date, field, writer } from '@nozbe/watermelondb/decorators'
-import type { SetlistItem, Tags } from '@/types'
+import type { SetlistItem, Tag } from '@/types'
 import { SETLIST_TABLE } from '../constants'
 import { SETLIST_COLUMNS } from '../setlistSchema'
 
 type SetlistUpdateInput = {
     description: string
     items: SetlistItem[]
-    tags: Tags[]
+    tags: Tag[]
 }
 
 export class Setlist extends Model {

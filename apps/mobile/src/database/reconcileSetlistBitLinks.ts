@@ -1,17 +1,10 @@
 import type { Database } from '@nozbe/watermelondb'
+import { dbLogger } from '@/lib/loggers'
 import { BIT_TABLE, SETLIST_TABLE } from './constants'
 import { Bit as BitModel } from './models/bit'
 import { Setlist as SetlistModel } from './models/setlist'
+import { parseStringArrayJson } from './utils/json'
 
-function parseStringArrayJson(value: string): string[] {
-    try {
-        const parsed = JSON.parse(value)
-        if (!Array.isArray(parsed)) return []
-        return parsed.filter((entry): entry is string => typeof entry === 'string')
-    } catch {
-        return []
-    }
-}
 
 function parseSetlistBitIds(value: string): string[] {
     try {
@@ -29,7 +22,11 @@ function parseSetlistBitIds(value: string): string[] {
                     typeof entry.bitId === 'string'
             )
             .map((entry) => entry.bitId)
-    } catch {
+    } catch (error) {
+        dbLogger.debug('parseSetlistBitIds failed', {
+            valueLength: value.length,
+            error,
+        })
         return []
     }
 }

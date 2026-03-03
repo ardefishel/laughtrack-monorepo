@@ -1,6 +1,8 @@
 import { SetlistSchema, type Setlist, type SetlistItem, type SetlistNote } from '@/domain/setlist'
+import { dbLogger } from '@/lib/loggers'
 import type { Setlist as SetlistModel } from '../models/setlist'
 import type { SetlistRecord } from '../setlistSchema'
+import { tagNamesToTags } from '../utils/tags'
 
 function parseSetlistTagNamesJson(value: string): string[] {
     try {
@@ -21,25 +23,15 @@ function parseSetlistTagNamesJson(value: string): string[] {
                 return null
             })
             .filter((entry): entry is string => typeof entry === 'string')
-    } catch {
+    } catch (error) {
+        dbLogger.debug('parseSetlistTagNamesJson failed', {
+            valueLength: value.length,
+            error,
+        })
         return []
     }
 }
 
-function toTagId(name: string): string {
-    return `tag-${name.toLowerCase().replace(/\s+/g, '-')}`
-}
-
-type SetlistTag = NonNullable<Setlist['tags']>[number]
-
-function tagNamesToTags(tagNames: string[], createdAt: Date, updatedAt: Date): SetlistTag[] {
-    return tagNames.map((name) => ({
-        id: toTagId(name),
-        name,
-        createdAt,
-        updatedAt,
-    }))
-}
 
 function toValidDate(value: unknown, fallback: Date): Date {
     if (value instanceof Date && !Number.isNaN(value.getTime())) {
@@ -114,7 +106,11 @@ function parseSetlistItemsJson(value: string, fallbackCreatedAt: Date, fallbackU
                 return null
             })
             .filter((entry): entry is SetlistItem => entry !== null)
-    } catch {
+    } catch (error) {
+        dbLogger.debug('parseSetlistItemsJson failed', {
+            valueLength: value.length,
+            error,
+        })
         return []
     }
 }
