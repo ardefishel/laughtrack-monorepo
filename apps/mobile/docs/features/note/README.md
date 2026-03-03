@@ -125,10 +125,10 @@ fields and filtered queries.
 
 ## UI Components
 
-- Card UI: `src/components/feature/home/recent-note-card.tsx`
+- Card UI: `src/features/home/components/recent-note-card.tsx`
   - accepts `note`, `onPress`, `onDelete?`
   - includes Swipeable right action for delete
-- Quick input: `src/components/feature/home/quick-note-bar.tsx`
+- Quick input: `src/features/home/components/quick-note-bar.tsx`
   - controlled input, submit callback, disabled while submitting
 
 ## Known Constraints

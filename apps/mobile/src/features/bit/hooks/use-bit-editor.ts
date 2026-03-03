@@ -6,7 +6,7 @@ import {
     hasSingleParagraphBlock,
     hasTrailingHeadingBlock,
     normalizeEditorText,
-} from '@/utils/html'
+} from '@/features/bit/editor/html'
 import { useCallback, useRef, useState } from 'react'
 import type {
     EnrichedTextInputInstance,

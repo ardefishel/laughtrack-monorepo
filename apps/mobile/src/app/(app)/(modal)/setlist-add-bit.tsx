@@ -1,5 +1,5 @@
-import { SelectBitsModal } from '@/components/feature/material/select-bits-modal'
-import { parseCsvParam, toCsvParam } from '@/utils/filter-query'
+import { SelectBitsModal } from '@/features/material/components/select-bits-modal'
+import { parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
 import { router, useLocalSearchParams } from 'expo-router'
 
 export default function SetlistAddBitModal() {

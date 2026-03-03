@@ -120,6 +120,7 @@ The same structure is now implemented for Note, Premise, and Bit entities.
 3. Keep all shape conversions inside mapper files.
 4. Keep DB writes inside `database.write(...)` blocks.
 5. Reuse column constants for Watermelon schema and decorators.
+6. Keep feature orchestration in `src/features/*/services` and keep `src/database/*` focused on persistence primitives.
 
 ## When Adding a New Entity
 

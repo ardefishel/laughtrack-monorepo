@@ -1,8 +1,8 @@
 import "@/globals.css";
 import { database } from "@/database";
 import { AuthProvider } from "@/context/auth-context";
-import { reconcilePremiseBitLinks } from "@/database/reconcilePremiseBitLinks";
-import { reconcileSetlistBitLinks } from "@/database/reconcileSetlistBitLinks";
+import { reconcilePremiseBitLinks } from "@/features/premise/services/premise-bit-links";
+import { reconcileSetlistBitLinks } from "@/features/setlist/services/setlist-bit-links";
 import { appLogger, dbLogger, navLogger } from "@/lib/loggers";
 import { DatabaseProvider } from "@nozbe/watermelondb/react";
 import { Slot, usePathname } from "expo-router";

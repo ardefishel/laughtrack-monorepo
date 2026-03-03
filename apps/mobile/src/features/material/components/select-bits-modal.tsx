@@ -1,6 +1,6 @@
-import { SelectBitsRow } from '@/components/feature/material/select-bits-row'
+import { SelectBitsRow } from '@/features/material/components/select-bits-row'
 import { Icon } from '@/components/ui/ion-icon'
-import { useObservedBits } from '@/hooks/use-observed-bits'
+import { useObservedBits } from '@/features/bit/hooks/use-observed-bits'
 import type { Bit } from '@/types'
 import { FlashList } from '@shopify/flash-list'
 import { Button, Input, Separator } from 'heroui-native'

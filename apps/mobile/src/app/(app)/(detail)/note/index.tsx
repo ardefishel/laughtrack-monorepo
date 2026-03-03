@@ -1,4 +1,4 @@
-import { RecentNoteCard } from '@/components/feature/home/recent-note-card';
+import { RecentNoteCard } from '@/features/home/components/recent-note-card';
 import { NOTE_TABLE } from '@/database/constants';
 import { Note as NoteModel } from '@/database/models/note';
 import type { Note } from '@/types';

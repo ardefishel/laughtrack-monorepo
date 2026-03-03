@@ -1,6 +1,6 @@
-import { QuickNoteBar } from "@/components/feature/home/quick-note-bar";
-import { RecentNoteCard } from "@/components/feature/home/recent-note-card";
-import { RecentWorkCard } from "@/components/feature/home/recent-work-card";
+import { QuickNoteBar } from "@/features/home/components/quick-note-bar";
+import { RecentNoteCard } from "@/features/home/components/recent-note-card";
+import { RecentWorkCard } from "@/features/home/components/recent-work-card";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { Q } from "@nozbe/watermelondb";

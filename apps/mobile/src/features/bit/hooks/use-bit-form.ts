@@ -1,4 +1,4 @@
-import { syncBitPremiseRelation } from '@/database/bit-premise-sync'
+import { syncBitPremiseRelation } from '@/features/premise/services/premise-bit-links'
 import { BIT_TABLE, PREMISE_TABLE } from '@/database/constants'
 import { bitModelToDomain } from '@/database/mappers/bitMapper'
 import { Bit as BitModel } from '@/database/models/bit'

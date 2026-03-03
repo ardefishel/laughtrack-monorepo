@@ -1,4 +1,4 @@
-import { MaterialTabButton, MaterialTabList } from '@/components/feature/material/material-tab-bar';
+import { MaterialTabButton, MaterialTabList } from '@/features/material/components/material-tab-bar';
 import { TabList, Tabs, TabSlot, TabTrigger } from 'expo-router/ui';
 
 export default function MaterialLayout() {

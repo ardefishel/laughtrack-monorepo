@@ -151,9 +151,9 @@ fields and filtered queries.
 
 ## UI Components
 
-- List shell: `src/components/feature/material/material-list-screen.tsx`
+- List shell: `src/features/material/components/material-list-screen.tsx`
   - supports controlled search input via `searchValue` and `onSearchChange`
-- Card UI: `src/components/feature/material/premise-card.tsx`
+- Card UI: `src/features/material/components/premise-card.tsx`
   - accepts `premise`, `onPress`, `onDelete?`
   - includes Swipeable right action for delete
 

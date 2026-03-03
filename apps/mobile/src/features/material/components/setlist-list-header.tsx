@@ -1,4 +1,4 @@
-import { TagInput } from '@/components/feature/material/tag-input'
+import { TagInput } from '@/features/material/components/tag-input'
 import { Icon } from '@/components/ui/ion-icon'
 import type { SetlistItem } from '@/types'
 import { router } from 'expo-router'

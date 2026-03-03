@@ -1,7 +1,7 @@
 import { BitSchema, type Bit, type BitStatus } from '@/domain/bit'
-import { stripHtmlToLines } from '@/utils/html'
 import type { BitRecord } from '../bitSchema'
 import type { Bit as BitModel } from '../models/bit'
+import { stripHtmlToLines } from '../utils/html'
 import { parseStringArrayJson } from '../utils/json'
 import { tagNamesToTags } from '../utils/tags'
 
@@ -74,4 +74,3 @@ export function bitContentToPreview(content: string): { title: string; descripti
 
     return { title, description }
 }
-

@@ -1,4 +1,4 @@
-import { AuthContainer } from '@/components/feature/auth/container'
+import { AuthContainer } from '@/features/auth/components/container'
 import { authClient } from '@/lib/auth-client'
 import { authLogger } from '@/lib/loggers'
 import { router } from 'expo-router'

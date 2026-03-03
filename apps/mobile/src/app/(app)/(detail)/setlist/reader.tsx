@@ -1,4 +1,4 @@
-import { buildSetlistReaderHtml } from '@/lib/buildSetlistReaderHtml'
+import { buildSetlistReaderHtml } from '@/features/setlist/reader/buildSetlistReaderHtml'
 import { uiLogger } from '@/lib/loggers'
 import type { SetlistItem } from '@/types'
 import { useKeepAwake } from 'expo-keep-awake'

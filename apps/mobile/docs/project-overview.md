@@ -65,9 +65,12 @@ Key directories:
   - `src/app/(app)/(tabs)`: tab-level screens (Home, Material, Learn, Account)
   - `src/app/(app)/(detail)`: detail/edit screens
   - `src/app/(app)/(modal)`: modal routes
-- `src/components`: feature and shared UI components
+- `src/features`: feature-owned modules (components, hooks, filters, services, readers)
+- `src/components/ui`: shared UI primitives used across features
 - `src/database`: WatermelonDB setup, schema, constants, and models
 - `src/config`: app/tabs/material config values
+- `src/lib`: shared platform/app infrastructure
+- `src/utils`: domain-agnostic helpers
 - `src/types.ts`: app-facing domain types and schemas
 - `docs/features`: feature-specific docs
 
@@ -97,7 +100,8 @@ For note-specific behavior and constraints, see `docs/features/note/README.md`.
 - Prefer app-level types from `src/types.ts` in UI-facing code.
 - Keep DB writes wrapped in `database.write(...)`.
 - Keep routing and navigation aligned with route file names.
-- Reuse shared components from `src/components` before introducing new primitives.
+- Keep route files thin and import feature logic from `src/features/*`.
+- Reuse shared primitives from `src/components/ui` before introducing new ones.
 
 ## Current Implementation Status
 
