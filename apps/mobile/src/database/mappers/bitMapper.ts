@@ -1,40 +1,9 @@
 import { BitSchema, type Bit, type BitStatus } from '@/domain/bit'
+import type { BitRecord } from '../schemas/bitSchema'
 import type { Bit as BitModel } from '../models/bit'
-import type { BitRecord } from '../bitSchema'
-
-const HTML_ENTITY_MAP: Record<string, string> = {
-    '&nbsp;': ' ',
-    '&amp;': '&',
-    '&lt;': '<',
-    '&gt;': '>',
-    '&quot;': '"',
-    '&#39;': "'",
-}
-
-function parseStringArrayJson(value: string): string[] {
-    try {
-        const parsed = JSON.parse(value)
-        if (!Array.isArray(parsed)) return []
-        return parsed.filter((entry): entry is string => typeof entry === 'string')
-    } catch {
-        return []
-    }
-}
-
-function toTagId(name: string): string {
-    return `tag-${name.toLowerCase().replace(/\s+/g, '-')}`
-}
-
-type BitTag = NonNullable<Bit['tags']>[number]
-
-function tagNamesToTags(tagNames: string[], createdAt: Date, updatedAt: Date): BitTag[] {
-    return tagNames.map((name) => ({
-        id: toTagId(name),
-        name,
-        createdAt,
-        updatedAt,
-    }))
-}
+import { stripHtmlToLines } from '../utils/html'
+import { parseStringArrayJson } from '../utils/json'
+import { tagNamesToTags } from '../utils/tags'
 
 function toDomain(input: {
     id: string
@@ -97,26 +66,6 @@ export const domainToBitRecord = (bit: Bit): BitRecord => ({
 })
 
 export const parseBitTagNames = parseStringArrayJson
-
-function decodeHtmlEntities(value: string): string {
-    return value.replace(/&nbsp;|&amp;|&lt;|&gt;|&quot;|&#39;/g, (match) => HTML_ENTITY_MAP[match] ?? match)
-}
-
-function stripHtmlToLines(content: string): string[] {
-    const withBreaks = content
-        .replace(/<\s*br\s*\/?\s*>/gi, '\n')
-        .replace(/<\s*\/\s*p\s*>/gi, '\n')
-        .replace(/<\s*\/\s*div\s*>/gi, '\n')
-        .replace(/<\s*\/\s*li\s*>/gi, '\n')
-
-    const withoutTags = withBreaks.replace(/<[^>]+>/g, ' ')
-    const decoded = decodeHtmlEntities(withoutTags)
-
-    return decoded
-        .split('\n')
-        .map((line) => line.replace(/\s+/g, ' ').trim())
-        .filter(Boolean)
-}
 
 export function bitContentToPreview(content: string): { title: string; description: string } {
     const lines = stripHtmlToLines(content)

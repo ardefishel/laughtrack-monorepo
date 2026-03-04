@@ -29,9 +29,16 @@
 
 ## Project structure (see `docs/project-overview.md`)
 - `src/app/`: Expo Router routes and layout groups.
-- `src/components/`: feature and shared UI components.
-- `src/database/`: WatermelonDB schema, constants, models, mappers.
+- `src/features/`: feature-owned modules (components, hooks, services, readers).
+- `src/components/ui/`: shared UI primitives used across features.
+- `src/database/`: WatermelonDB setup, constants, and models.
+  - `src/database/schemas/`: per-entity column constants and table schemas.
+  - `src/database/mappers/`: domain ↔ DB type mapping.
+  - `src/database/sync/`: reconciliation and relation sync utilities.
+  - `src/database/utils/`: JSON, HTML, and tag helpers.
 - `src/domain/`: Zod schemas for domain contracts.
+- `src/config/`: app/tabs/material config values.
+- `src/lib/`: shared platform/app infrastructure.
 - `src/types.ts`: app-level exports and inferred types.
 - `docs/`: feature docs and architecture notes.
 
@@ -74,7 +81,7 @@
 - Domain <-> DB mapping lives in `src/database/mappers/*`.
 
 ## Error handling
-- Prefer safe defaults when parsing (see `parseStringArrayJson` in `src/database/mappers/bitMapper.ts`).
+- Prefer safe defaults when parsing (see `parseStringArrayJson` in `src/database/utils/json.ts`).
 - Use `try/finally` for loading state cleanup.
 - If an operation is critical, log errors with context and rethrow or surface a fallback.
 - Avoid empty catch blocks without a clear recovery path.
@@ -105,6 +112,7 @@
 - `docs/features/note/README.md` for note behavior + constraints.
 - `docs/features/premise/README.md` for premise behavior + constraints.
 - `docs/features/bit/README.md` for bit behavior + constraints.
+- `docs/features/setlist/README.md` for setlist behavior + constraints.
 
 ## Linting
 - `bun run lint` runs Expo ESLint rules; fix lint errors before committing.
@@ -138,7 +146,7 @@
 - Domain types: `src/domain/*.ts`
 - DB models: `src/database/models/*.ts`
 - Mappers: `src/database/mappers/*.ts`
-- UI cards: `src/components/feature/*/*-card.tsx`
+- UI cards: `src/features/*/components/*-card.tsx`
 
 ## Known gaps
 - No test runner configured yet.

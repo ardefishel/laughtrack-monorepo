@@ -3,7 +3,7 @@ import { NOTE_TABLE, PREMISE_TABLE } from '@/database/constants'
 import { Note as NoteModel } from '@/database/models/note'
 import { Premise as PremiseModel } from '@/database/models/premise'
 import type { Note } from '@/types'
-import { timeAgo } from '@/utils/time-ago'
+import { timeAgo } from '@/lib/time-ago'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 import { Button, TextArea } from 'heroui-native'
@@ -122,7 +122,7 @@ export default function NoteDetail() {
                 },
             ],
         )
-    }, [content, database, isEditing, noteState?.note, router])
+    }, [content, database, id, isEditing, noteState?.note, router])
 
     const detailMeta = noteData
         ? (() => {

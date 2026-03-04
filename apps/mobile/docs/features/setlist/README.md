@@ -53,7 +53,7 @@ Out of scope:
 
 - Watermelon model: `src/database/models/setlist.ts` (`SetlistModel` in UI files)
 - Table: `setlists` (`src/database/constants.ts`)
-- Table metadata: `src/database/setlistSchema.ts`
+- Table metadata: `src/database/schemas/setlistSchema.ts`
 - Schema registration: `src/database/schema.ts`
 - Columns:
   - `description` (string)
@@ -139,7 +139,7 @@ File: `src/app/(app)/(modal)/setlist-filter.tsx`
 
 ### Startup reconciliation
 
-File: `src/database/reconcileSetlistBitLinks.ts`, `src/app/_layout.tsx`
+File: `src/database/sync/reconcileSetlistBitLinks.ts`, `src/app/_layout.tsx`
 
 - App startup runs a reconciliation pass per launch
 - It rebuilds each bit `setlist_ids_json` from setlist `items_json`
@@ -156,9 +156,9 @@ fields and filtered queries.
 
 ## UI Components
 
-- List shell: `src/components/feature/material/material-list-screen.tsx`
+- List shell: `src/features/material/components/material-list-screen.tsx`
   - supports controlled search input via `searchValue` and `onSearchChange`
-- Card UI: `src/components/feature/material/setlist-card.tsx`
+- Card UI: `src/features/material/components/setlist-card.tsx`
   - accepts `setlist`, `onPress`, `onDelete?`
   - includes Swipeable right action for delete
 

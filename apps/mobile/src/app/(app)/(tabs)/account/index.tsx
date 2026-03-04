@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/auth-context'
+import { useAuth } from '@/features/auth/context/auth-context'
 import { Icon } from '@/components/ui/ion-icon'
 import { SafeAreaView } from '@/components/ui/safe-area-view'
 import { AppConfig } from '@/config/app'

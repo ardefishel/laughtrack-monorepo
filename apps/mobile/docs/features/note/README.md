@@ -125,16 +125,16 @@ fields and filtered queries.
 
 ## UI Components
 
-- Card UI: `src/components/feature/home/recent-note-card.tsx`
+- Card UI: `src/features/home/components/recent-note-card.tsx`
   - accepts `note`, `onPress`, `onDelete?`
   - includes Swipeable right action for delete
-- Quick input: `src/components/feature/home/quick-note-bar.tsx`
+- Quick input: `src/features/home/components/quick-note-bar.tsx`
   - controlled input, submit callback, disabled while submitting
 
 ## Known Constraints
 
 - Native-only persistence target (iOS/Android)
-- No migration file yet (schema version is `1`)
+- Schema version is now `3` (note table is part of the initial schema)
 - Full-project lint/typecheck has unrelated existing issues outside note feature
 
 ## Future Improvements

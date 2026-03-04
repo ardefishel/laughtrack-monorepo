@@ -1,13 +1,14 @@
+import { FilterModalShell } from '@/features/material/components/filter-modal-shell'
 import { Icon } from '@/components/ui/ion-icon'
 import { SETLIST_TABLE } from '@/database/constants'
 import { parseSetlistTagNames } from '@/database/mappers/setlistMapper'
 import { Setlist as SetlistModel } from '@/database/models/setlist'
-import { parseCsvParam, toCsvParam } from '@/utils/filter-query'
+import { parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { router, useLocalSearchParams } from 'expo-router'
-import { Button, Chip, Separator } from 'heroui-native'
+import { Chip } from 'heroui-native'
 import { useEffect, useMemo, useState } from 'react'
-import { ScrollView, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 
 export default function SetlistFilterModal() {
     const database = useDatabase()
@@ -66,19 +67,12 @@ export default function SetlistFilterModal() {
     const activeCount = selectedTags.size
 
     return (
-        <View style={{ flex: 1 }}>
-            <View className="flex-row items-center justify-between px-4 pt-4 pb-3 bg-field">
-                <Button variant="ghost" onPress={() => router.back()}>
-                    <Button.Label>Cancel</Button.Label>
-                </Button>
-                <Text className="text-foreground text-lg font-semibold">Filters</Text>
-                <Button variant="ghost" onPress={clearAll} isDisabled={activeCount === 0}>
-                    <Button.Label>Reset</Button.Label>
-                </Button>
-            </View>
-            <Separator />
-
-            <ScrollView contentContainerClassName="px-6 pt-6 gap-4 pb-8">
+        <FilterModalShell
+            activeCount={activeCount}
+            onClear={clearAll}
+            onApply={applyFilters}
+            applyPrefix={<Icon name='funnel' size={18} />}
+        >
                 <Text className="text-muted text-xs font-semibold tracking-[2px]">TAGS</Text>
                 <View className="flex-row flex-wrap gap-2">
                     {tagsToRender.map((tag) => {
@@ -96,14 +90,9 @@ export default function SetlistFilterModal() {
                         )
                     })}
                 </View>
-
-                <Button variant="primary" className="mt-4" onPress={applyFilters}>
-                    <Icon name="funnel" size={18} />
-                    <Button.Label>
-                        {activeCount > 0 ? `Apply Filters (${activeCount})` : 'Apply Filters'}
-                    </Button.Label>
-                </Button>
-            </ScrollView>
-        </View>
+                {tagsToRender.length === 0 && (
+                    <Text className="text-muted text-sm">No tags yet.</Text>
+                )}
+        </FilterModalShell>
     )
 }

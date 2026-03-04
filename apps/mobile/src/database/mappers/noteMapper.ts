@@ -1,6 +1,6 @@
 import { NoteSchema, type Note } from '@/domain/note'
 import type { Note as NoteModel } from '../models/note'
-import type { NoteRecord } from '../noteSchema'
+import type { NoteRecord } from '../schemas/noteSchema'
 
 export const noteRecordToDomain = (record: NoteRecord): Note =>
     NoteSchema.parse({

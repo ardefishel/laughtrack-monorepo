@@ -16,8 +16,8 @@ Testing status:
 - Mobile currently has no configured test runner or `test` script in `apps/mobile/package.json`.
 - Treat `bun run mobile:test` as unavailable until a mobile test command is added.
 
-Architecture: Expo Router pages in `apps/mobile/src/app/`; reusable UI in `apps/mobile/src/components/`; state in `apps/mobile/src/context/`.
-Data: WatermelonDB models in `apps/mobile/src/database/models/`, database wiring in `apps/mobile/src/database/`; app utilities/types/logging in `apps/mobile/src/lib/`.
+Architecture: Expo Router pages in `apps/mobile/src/app/`; reusable UI in `apps/mobile/src/components/ui/`; feature modules (components, hooks, services) in `apps/mobile/src/features/`.
+Data: WatermelonDB models in `apps/mobile/src/database/models/`, schema metadata in `apps/mobile/src/database/schemas/`, sync/reconciliation in `apps/mobile/src/database/sync/`, DB utilities in `apps/mobile/src/database/utils/`; app utilities/types/logging in `apps/mobile/src/lib/`.
 Styling: Tailwind v4 + Uniwind with HeroUI Native semantic colors (e.g. `bg-background`, `text-foreground`). Prefer `-accent` semantic colors (e.g. `bg-accent`, `text-accent-foreground`) over `-primary` for theming consistency. Prefer HeroUI Native components for UI before reaching for custom or React Native primitives.
 Routing: file-based; push with `router.push({ pathname, params })` and read via `useLocalSearchParams()`.
 Language: TypeScript (strict); decorators enabled for WatermelonDB models.

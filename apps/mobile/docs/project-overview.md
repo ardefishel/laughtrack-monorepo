@@ -65,9 +65,11 @@ Key directories:
   - `src/app/(app)/(tabs)`: tab-level screens (Home, Material, Learn, Account)
   - `src/app/(app)/(detail)`: detail/edit screens
   - `src/app/(app)/(modal)`: modal routes
-- `src/components`: feature and shared UI components
+- `src/features`: feature-owned modules (components, hooks, filters, services, readers)
+- `src/components/ui`: shared UI primitives used across features
 - `src/database`: WatermelonDB setup, schema, constants, and models
 - `src/config`: app/tabs/material config values
+- `src/lib`: shared platform/app infrastructure
 - `src/types.ts`: app-facing domain types and schemas
 - `docs/features`: feature-specific docs
 
@@ -84,7 +86,10 @@ Key directories:
 
 - Local persistence currently exists for notes, premises, and bits using WatermelonDB.
 - DB is initialized in `src/database/index.ts`.
-- Schema is defined in `src/database/schema.ts` (current version: `1`).
+- Schema is defined in `src/database/schema.ts` (current version: `3`).
+- Schema metadata files live in `src/database/schemas/` (per-entity column constants and table schemas).
+- Sync utilities live in `src/database/sync/` (reconciliation and relation sync).
+- DB helpers live in `src/database/utils/` (HTML, JSON, tag utilities).
 - Database provider is mounted at app root in `src/app/_layout.tsx`.
 - Decorators are required by WatermelonDB and configured in `babel.config.js` and `tsconfig.json`.
 
@@ -97,7 +102,8 @@ For note-specific behavior and constraints, see `docs/features/note/README.md`.
 - Prefer app-level types from `src/types.ts` in UI-facing code.
 - Keep DB writes wrapped in `database.write(...)`.
 - Keep routing and navigation aligned with route file names.
-- Reuse shared components from `src/components` before introducing new primitives.
+- Keep route files thin and import feature logic from `src/features/*`.
+- Reuse shared primitives from `src/components/ui` before introducing new ones.
 
 ## Current Implementation Status
 
@@ -105,6 +111,7 @@ For note-specific behavior and constraints, see `docs/features/note/README.md`.
 - Premises are integrated with local DB and support create/read/update/delete/search/filter flows.
 - Bits are integrated with local DB and support create/read/update/delete/search/filter flows.
 - Setlists are integrated with local DB and support create/read/update/delete/search/filter flows.
+- Auth feature module in `src/features/auth/` handles sign-in context and UI container.
 
 ## Documentation Map
 
@@ -114,6 +121,7 @@ For note-specific behavior and constraints, see `docs/features/note/README.md`.
 - Note feature docs: `docs/features/note/README.md`
 - Premise feature docs: `docs/features/premise/README.md`
 - Bit feature docs: `docs/features/bit/README.md`
+- Setlist feature docs: `docs/features/setlist/README.md`
 
 Add new docs under `docs/features/<feature>/README.md` for feature-level behavior,
 trade-offs, and constraints.

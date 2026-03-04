@@ -1,8 +1,8 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb'
-import { BIT_TABLE_SCHEMA } from './bitSchema'
-import { NOTE_TABLE_SCHEMA } from './noteSchema'
-import { PREMISE_TABLE_SCHEMA } from './premiseSchema'
-import { SETLIST_TABLE_SCHEMA } from './setlistSchema'
+import { BIT_TABLE_SCHEMA } from './schemas/bitSchema'
+import { NOTE_TABLE_SCHEMA } from './schemas/noteSchema'
+import { PREMISE_TABLE_SCHEMA } from './schemas/premiseSchema'
+import { SETLIST_TABLE_SCHEMA } from './schemas/setlistSchema'
 
 export const schema = appSchema({
     version: 3,

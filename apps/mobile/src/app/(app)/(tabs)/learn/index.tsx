@@ -65,7 +65,16 @@ export default function LearnScreen() {
             -1,
             true
         )
-    }, [])
+    }, [
+        featuresOpacity,
+        featuresTranslateY,
+        iconRotate,
+        iconScale,
+        pulseOpacity,
+        subtitleOpacity,
+        titleOpacity,
+        titleTranslateY,
+    ])
 
     const iconAnimatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: iconScale.value }, { rotate: `${iconRotate.value}deg` }],
@@ -118,7 +127,7 @@ export default function LearnScreen() {
                 {/* Subtitle */}
                 <Animated.View style={subtitleAnimatedStyle} className="items-center mt-3 px-4">
                     <Text className="text-base text-muted text-center leading-6">
-                        We're crafting lessons and tools to help you sharpen your comedy skills. Stay tuned!
+                        We&apos;re crafting lessons and tools to help you sharpen your comedy skills. Stay tuned!
                     </Text>
                 </Animated.View>
 

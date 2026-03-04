@@ -5,12 +5,16 @@ import { useThemeColor } from "heroui-native";
 import { Pressable, Text } from "react-native";
 
 export default function AppStack() {
+    const field = useThemeColor('field')
+    const accent = useThemeColor('accent')
+    const background = useThemeColor('background')
+
     return <Stack screenOptions={{
         headerShown: false,
         headerStyle: {
-            backgroundColor: useThemeColor('field')
+            backgroundColor: field
         },
-        headerTintColor: useThemeColor('accent'),
+        headerTintColor: accent,
 
         headerLeft({ tintColor, canGoBack }) {
             if (!canGoBack) return null
@@ -28,19 +32,19 @@ export default function AppStack() {
         <Stack.Screen name="(auth)/forgot-password" />
 
         <Stack.Screen name="(modal)/action-sheet" options={{ presentation: "formSheet" }} />
-        <Stack.Screen name="(modal)/premise-filter" options={{ presentation: "formSheet", sheetAllowedDetents: [0.8], headerShown: false, contentStyle: { backgroundColor: useThemeColor('field') } }} />
-        <Stack.Screen name="(modal)/bit-filter" options={{ presentation: "formSheet", sheetAllowedDetents: [0.8], headerShown: false, contentStyle: { backgroundColor: useThemeColor('field') } }} />
-        <Stack.Screen name="(modal)/bit-meta" options={{ presentation: "formSheet", sheetAllowedDetents: [0.7], headerShown: false, contentStyle: { backgroundColor: useThemeColor('field') } }} />
-        <Stack.Screen name="(modal)/setlist-filter" options={{ presentation: "formSheet", sheetAllowedDetents: [0.6], headerShown: false, contentStyle: { backgroundColor: useThemeColor('field') } }} />
-        <Stack.Screen name="(modal)/setlist-add-bit" options={{ presentation: "formSheet", sheetAllowedDetents: [0.85], headerShown: false, contentStyle: { backgroundColor: useThemeColor('field') } }} />
-        <Stack.Screen name="(modal)/premise-add-bit" options={{ presentation: "formSheet", sheetAllowedDetents: [0.85], headerShown: false, contentStyle: { backgroundColor: useThemeColor('field') } }} />
+        <Stack.Screen name="(modal)/premise-filter" options={{ presentation: "formSheet", sheetAllowedDetents: [0.8], headerShown: false, contentStyle: { backgroundColor: field } }} />
+        <Stack.Screen name="(modal)/bit-filter" options={{ presentation: "formSheet", sheetAllowedDetents: [0.8], headerShown: false, contentStyle: { backgroundColor: field } }} />
+        <Stack.Screen name="(modal)/bit-meta" options={{ presentation: "formSheet", sheetAllowedDetents: [0.7], headerShown: false, contentStyle: { backgroundColor: field } }} />
+        <Stack.Screen name="(modal)/setlist-filter" options={{ presentation: "formSheet", sheetAllowedDetents: [0.6], headerShown: false, contentStyle: { backgroundColor: field } }} />
+        <Stack.Screen name="(modal)/setlist-add-bit" options={{ presentation: "formSheet", sheetAllowedDetents: [0.85], headerShown: false, contentStyle: { backgroundColor: field } }} />
+        <Stack.Screen name="(modal)/premise-add-bit" options={{ presentation: "formSheet", sheetAllowedDetents: [0.85], headerShown: false, contentStyle: { backgroundColor: field } }} />
 
 
         <Stack.Screen name="(detail)/note/[id]" options={{ headerShown: true }} />
         <Stack.Screen name="(detail)/note/index" options={{ headerShown: true }} />
         <Stack.Screen name="(detail)/premise/[id]" options={{ headerShown: true }} />
-        <Stack.Screen name="(detail)/bit/[id]" options={{ headerShown: true, contentStyle: { backgroundColor: useThemeColor('background') } }} />
-        <Stack.Screen name="(detail)/setlist/[id]" options={{ headerShown: true, contentStyle: { backgroundColor: useThemeColor('background') } }} />
-        <Stack.Screen name="(detail)/setlist/reader" options={{ headerShown: true, contentStyle: { backgroundColor: useThemeColor('background') } }} />
+        <Stack.Screen name="(detail)/bit/[id]" options={{ headerShown: true, contentStyle: { backgroundColor: background } }} />
+        <Stack.Screen name="(detail)/setlist/[id]" options={{ headerShown: true, contentStyle: { backgroundColor: background } }} />
+        <Stack.Screen name="(detail)/setlist/reader" options={{ headerShown: true, contentStyle: { backgroundColor: background } }} />
     </Stack>;
 }
