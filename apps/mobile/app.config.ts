@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { ConfigContext, ExpoConfig } from "expo/config";
 import { AppConfig } from "./src/config/app.ts";
 
@@ -68,4 +69,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     typedRoutes: true,
     reactCompiler: true,
   },
+  owner: process.env.EAS_OWNER,
+  extra: {
+    eas: {
+      projectId: process.env.EAS_PROJECT_ID
+    }
+  }
 });
