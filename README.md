@@ -8,6 +8,8 @@ A comedian's toolkit for writing, organizing, and performing jokes. Mobile-first
 apps/
   mobile/       — Expo Router + WatermelonDB (local-first React Native app)
   backend/      — Hono + Drizzle + PostgreSQL API (Bun runtime)
+  web/          — Admin dashboard
+  marketing/    — Marketing site
 packages/
   shared-types/ — Shared TypeScript type definitions (@laughtrack/shared-types)
   logger/       — Cross-platform structured logger (@laughtrack/logger)
@@ -98,6 +100,6 @@ Android Google Sign-In requires a `google-services.json` file (not committed to 
 ## Documentation
 
 - [API Routes](apps/backend/ROUTES.md) — Backend endpoint reference
-- [Data Model](.docs/data-model.md) — Entity relationships and schema
+- [Mobile Project Overview](apps/mobile/docs/project-overview.md) — Architecture, setup, and structure
+- [Data Modeling](apps/mobile/docs/architecture/data-modeling.md) — Entity relationships and schema
 - [Design System](.agents/design-system-baseline.md) — UI tokens and component patterns
-- [Code Review Plan](.docs/plan/mobile-code-review-plan.md) — Prioritized refactoring items

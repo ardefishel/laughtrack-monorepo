@@ -1,50 +1,41 @@
-# Welcome to your Expo app 👋
+# LaughTrack Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo + React Native app for managing stand-up comedy material. Local-first with WatermelonDB.
 
-## Get started
+## Tech Stack
 
-1. Install dependencies
+- Expo SDK 54 + React Native 0.81
+- Expo Router (file-based routing)
+- HeroUI Native + Uniwind (Tailwind-style RN styling)
+- WatermelonDB (local database, schema version 3)
+- FlashList for performant lists
+- Zod for domain data contracts
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Getting Started
 
 ```bash
-npm run reset-project
+# From monorepo root
+bun install
+bun run mobile        # Start Expo dev server
+bun run mobile:ios    # Run on iOS simulator
+bun run mobile:android # Run on Android emulator
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Project Structure
 
-## Learn more
+See [docs/project-overview.md](docs/project-overview.md) for full details.
 
-To learn more about developing your project with Expo, look at the following resources:
+- `src/app/` — Expo Router routes and layout groups
+- `src/features/` — Feature-owned modules (components, hooks, services)
+- `src/components/ui/` — Shared UI primitives
+- `src/database/` — WatermelonDB schema, models, mappers, sync utilities
+- `src/domain/` — Zod schemas for domain contracts
+- `src/config/` — App and tab configuration
+- `src/lib/` — Shared platform/app infrastructure
+- `src/types.ts` — App-facing domain type re-exports
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Documentation
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- [Project Overview](docs/project-overview.md) — Architecture, setup, structure
+- [Data Modeling](docs/architecture/data-modeling.md) — Domain ↔ DB modeling flow
+- [Feature Docs](docs/) — Per-feature implementation and constraints

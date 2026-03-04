@@ -134,7 +134,7 @@ fields and filtered queries.
 ## Known Constraints
 
 - Native-only persistence target (iOS/Android)
-- No migration file yet (schema version is `1`)
+- Schema version is now `3` (note table is part of the initial schema)
 - Full-project lint/typecheck has unrelated existing issues outside note feature
 
 ## Future Improvements

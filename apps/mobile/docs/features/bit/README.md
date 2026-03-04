@@ -52,7 +52,7 @@ Out of scope:
 
 - Watermelon model: `src/database/models/bit.ts` (`BitModel` in UI files)
 - Table: `bits` (`src/database/constants.ts`)
-- Table metadata: `src/database/bitSchema.ts`
+- Table metadata: `src/database/schemas/bitSchema.ts`
 - Schema registration: `src/database/schema.ts`
 - Columns:
   - `content` (string)
@@ -153,7 +153,7 @@ File: `src/app/(app)/(detail)/bit/[id].tsx`, `src/app/(app)/(tabs)/material/bit.
 
 ### Startup reconciliation
 
-File: `src/features/premise/services/premise-bit-links.ts`, `src/app/_layout.tsx`
+File: `src/database/sync/reconcilePremiseBitLinks.ts`, `src/app/_layout.tsx`
 
 - App startup runs a reconciliation pass per launch
 - It rebuilds each premise `bit_ids_json` from actual bit rows (`premise_id`)

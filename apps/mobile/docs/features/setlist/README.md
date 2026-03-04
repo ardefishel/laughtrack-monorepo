@@ -53,7 +53,7 @@ Out of scope:
 
 - Watermelon model: `src/database/models/setlist.ts` (`SetlistModel` in UI files)
 - Table: `setlists` (`src/database/constants.ts`)
-- Table metadata: `src/database/setlistSchema.ts`
+- Table metadata: `src/database/schemas/setlistSchema.ts`
 - Schema registration: `src/database/schema.ts`
 - Columns:
   - `description` (string)
@@ -139,7 +139,7 @@ File: `src/app/(app)/(modal)/setlist-filter.tsx`
 
 ### Startup reconciliation
 
-File: `src/features/setlist/services/setlist-bit-links.ts`, `src/app/_layout.tsx`
+File: `src/database/sync/reconcileSetlistBitLinks.ts`, `src/app/_layout.tsx`
 
 - App startup runs a reconciliation pass per launch
 - It rebuilds each bit `setlist_ids_json` from setlist `items_json`

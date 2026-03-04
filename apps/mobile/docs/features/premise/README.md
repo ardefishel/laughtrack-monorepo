@@ -42,6 +42,7 @@ Out of scope:
   - `attitude?: Attitude`
   - `tags?: PremiseTag[]`
   - `bitIds?: string[]`
+  - `sourceNoteId?: string`
   - `createdAt: Date`
   - `updatedAt: Date`
 
@@ -49,7 +50,7 @@ Out of scope:
 
 - Watermelon model: `src/database/models/premise.ts` (`PremiseModel` in UI files)
 - Table: `premises` (`src/database/constants.ts`)
-- Table metadata: `src/database/premiseSchema.ts`
+- Table metadata: `src/database/schemas/premiseSchema.ts`
 - Schema registration: `src/database/schema.ts`
 - Columns:
   - `content` (string)
@@ -57,6 +58,7 @@ Out of scope:
   - `attitude` (string, nullable, indexed)
   - `tags_json` (string)
   - `bit_ids_json` (string)
+  - `source_note_id` (string, nullable)
   - `created_at` (number)
   - `updated_at` (number, indexed)
 
@@ -70,7 +72,7 @@ Shared mapping lives in `src/database/mappers/premiseMapper.ts`.
 ## Persistence Setup
 
 - Database instance: `src/database/index.ts`
-- Table migration: `src/database/migrations.ts` (added in schema version `2`)
+- Table migration: `src/database/migrations.ts` (table added in schema version `2`, `source_note_id` column added at version `3`)
 - Provider mounted in root layout: `src/app/_layout.tsx`
 - Adapter: SQLite (native targets only)
 
