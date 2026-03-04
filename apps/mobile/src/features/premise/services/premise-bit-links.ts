@@ -1,6 +1,6 @@
 import type { Database } from '@nozbe/watermelondb'
-import { syncBitPremiseRelation as syncBitPremiseRelationPrimitive } from '@/database/bit-premise-sync'
-import { reconcilePremiseBitLinks as reconcilePremiseBitLinksPrimitive } from '@/database/reconcilePremiseBitLinks'
+import { syncBitPremiseRelation as syncBitPremiseRelationPrimitive } from '@/database/sync/bit-premise-sync'
+import { reconcilePremiseBitLinks as reconcilePremiseBitLinksPrimitive } from '@/database/sync/reconcilePremiseBitLinks'
 
 type SyncBitPremiseRelationInput = Parameters<typeof syncBitPremiseRelationPrimitive>[0]
 

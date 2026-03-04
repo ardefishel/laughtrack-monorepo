@@ -1,4 +1,4 @@
-import { NOTE_TABLE } from './constants'
+import { NOTE_TABLE } from '../constants'
 
 export const NOTE_COLUMNS = {
     content: 'content',

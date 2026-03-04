@@ -1,7 +1,7 @@
 import { Model } from '@nozbe/watermelondb'
 import { date, field, writer } from '@nozbe/watermelondb/decorators'
 import { NOTE_TABLE } from '../constants'
-import { NOTE_COLUMNS } from '../noteSchema'
+import { NOTE_COLUMNS } from '../schemas/noteSchema'
 
 export class Note extends Model {
     static table = NOTE_TABLE

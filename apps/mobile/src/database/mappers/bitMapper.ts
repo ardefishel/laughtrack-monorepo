@@ -1,5 +1,5 @@
 import { BitSchema, type Bit, type BitStatus } from '@/domain/bit'
-import type { BitRecord } from '../bitSchema'
+import type { BitRecord } from '../schemas/bitSchema'
 import type { Bit as BitModel } from '../models/bit'
 import { stripHtmlToLines } from '../utils/html'
 import { parseStringArrayJson } from '../utils/json'

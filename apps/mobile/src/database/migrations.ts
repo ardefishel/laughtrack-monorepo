@@ -1,7 +1,7 @@
 import { addColumns, createTable, schemaMigrations } from '@nozbe/watermelondb/Schema/migrations'
 import { PREMISE_TABLE } from './constants'
-import { PREMISE_COLUMNS } from './premiseSchema'
-import { SETLIST_TABLE_SCHEMA } from './setlistSchema'
+import { PREMISE_COLUMNS } from './schemas/premiseSchema'
+import { SETLIST_TABLE_SCHEMA } from './schemas/setlistSchema'
 
 export const migrations = schemaMigrations({
     migrations: [

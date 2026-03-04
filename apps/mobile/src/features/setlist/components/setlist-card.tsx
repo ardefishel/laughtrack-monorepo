@@ -1,6 +1,6 @@
 import { Icon } from '@/components/ui/ion-icon'
 import type { Setlist } from '@/types'
-import { timeAgo } from '@/utils/time-ago'
+import { timeAgo } from '@/lib/time-ago'
 import { Card, Chip, PressableFeedback } from 'heroui-native'
 import { memo, useRef } from 'react'
 import { Animated, Pressable, Text, View } from 'react-native'

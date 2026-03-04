@@ -6,7 +6,7 @@ import { reconcilePremiseBitLinks } from '@/features/premise/services/premise-bi
 import { dbLogger } from '@/lib/loggers'
 import type { Attitude, PremiseStatus } from '@/types'
 import { parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
-import { timeAgo } from '@/utils/time-ago'
+import { timeAgo } from '@/lib/time-ago'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'

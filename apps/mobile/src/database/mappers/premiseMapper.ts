@@ -1,6 +1,6 @@
 import { PremiseSchema, type Attitude, type Premise, type PremiseStatus } from '@/domain/premise'
 import type { Premise as PremiseModel } from '../models/premise'
-import type { PremiseRecord } from '../premiseSchema'
+import type { PremiseRecord } from '../schemas/premiseSchema'
 import { parseStringArrayJson } from '../utils/json'
 import { tagNamesToTags } from '../utils/tags'
 

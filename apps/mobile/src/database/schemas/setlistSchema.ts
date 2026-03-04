@@ -1,4 +1,4 @@
-import { SETLIST_TABLE } from './constants'
+import { SETLIST_TABLE } from '../constants'
 
 export const SETLIST_COLUMNS = {
     description: 'description',

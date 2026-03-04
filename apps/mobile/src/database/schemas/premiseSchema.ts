@@ -1,4 +1,4 @@
-import { PREMISE_TABLE } from './constants'
+import { PREMISE_TABLE } from '../constants'
 
 export const PREMISE_COLUMNS = {
     content: 'content',

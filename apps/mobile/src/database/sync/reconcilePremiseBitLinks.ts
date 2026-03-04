@@ -1,8 +1,8 @@
 import type { Database } from '@nozbe/watermelondb'
-import { BIT_TABLE, PREMISE_TABLE } from './constants'
-import { Bit as BitModel } from './models/bit'
-import { Premise as PremiseModel } from './models/premise'
-import { parseStringArrayJson } from './utils/json'
+import { BIT_TABLE, PREMISE_TABLE } from '../constants'
+import { Bit as BitModel } from '../models/bit'
+import { Premise as PremiseModel } from '../models/premise'
+import { parseStringArrayJson } from '../utils/json'
 
 
 function normalizedIds(value: string[]): string[] {

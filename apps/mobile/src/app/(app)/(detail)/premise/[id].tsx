@@ -1,4 +1,4 @@
-import { PremiseBitsSection } from '@/features/material/components/premise-bits-section'
+import { PremiseBitsSection } from '@/features/premise/components/premise-bits-section'
 import { TagInput } from '@/features/material/components/tag-input'
 import { Icon } from '@/components/ui/ion-icon'
 import { attitudeConfig } from '@/config/attitudes'

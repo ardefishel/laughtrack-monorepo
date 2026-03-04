@@ -1,35 +1,37 @@
 import { Icon } from '@/components/ui/ion-icon'
-import { attitudeConfig } from '@/config/attitudes'
-import type { Premise, PremiseStatus } from '@/types'
-import { timeAgo } from '@/utils/time-ago'
+import { bitContentToPreview } from '@/database/mappers/bitMapper'
+import type { Bit, BitStatus } from '@/types'
+import { timeAgo } from '@/lib/time-ago'
 import { Card, Chip, PressableFeedback } from 'heroui-native'
 import { memo, useRef } from 'react'
 import { Animated, Pressable, Text, View } from 'react-native'
 import { Swipeable } from 'react-native-gesture-handler'
 
-const statusConfig: Record<PremiseStatus, { label: string; dotClass: string }> = {
+const statusConfig: Record<BitStatus, { label: string; dotClass: string }> = {
     draft: { label: 'DRAFT', dotClass: 'bg-muted' },
     rework: { label: 'REWORK', dotClass: 'bg-warning' },
-    archived: { label: 'ARCHIVED', dotClass: 'bg-default' },
-    ready: { label: 'READY', dotClass: 'bg-success' },
+    tested: { label: 'TESTED', dotClass: 'bg-blue-500' },
+    final: { label: 'FINAL', dotClass: 'bg-success' },
+    dead: { label: 'DEAD', dotClass: 'bg-danger' },
 }
 
-interface PremiseCardProps {
-    premise: Premise
+interface BitCardProps {
+    bit: Bit
     onPress?: () => void
     onDelete?: () => void
 }
 
-function PremiseCardComponent({ premise, onPress, onDelete }: PremiseCardProps) {
-    const status = statusConfig[premise.status]
-    const bitCount = premise.bitIds?.length ?? 0
-    const hasTags = premise.tags && premise.tags.length > 0
+function BitCardComponent({ bit, onPress, onDelete }: BitCardProps) {
+    const status = statusConfig[bit.status]
+    const hasTags = bit.tags && bit.tags.length > 0
+    const hasPremise = !!bit.premiseId
     const swipeableRef = useRef<Swipeable>(null)
+    const preview = bitContentToPreview(bit.content)
 
     const card = (
         <PressableFeedback onPress={onPress}>
             <Card className="flex-row overflow-hidden">
-                <View className="w-1 bg-accent rounded-full" />
+                <View className="w-1 bg-blue-500 rounded-full" />
                 <View className="flex-1 pl-4 gap-3">
                     <View className="flex-row items-center justify-between">
                         <View className="flex-row items-center gap-2">
@@ -38,38 +40,33 @@ function PremiseCardComponent({ premise, onPress, onDelete }: PremiseCardProps) 
                                 {status.label}
                             </Text>
                         </View>
-                        <Text className="text-muted text-[11px]">
-                            {timeAgo(premise.updatedAt)}
-                        </Text>
+                        <View className="flex-row items-center gap-2">
+                            {hasPremise && (
+                                <Icon name="bulb-outline" size={13} className="text-muted" />
+                            )}
+                            <Text className="text-muted text-[11px]">
+                                {timeAgo(bit.updatedAt)}
+                            </Text>
+                        </View>
                     </View>
 
-                    <Text className="text-foreground text-[17px] font-medium leading-6">
-                        {premise.content}
+                    <Text className="text-foreground text-[17px] font-medium leading-6" numberOfLines={1}>
+                        {preview.title || 'Untitled bit'}
                     </Text>
 
-                    {premise.attitude && (
-                        <Text className="text-muted text-sm">
-                            {`${attitudeConfig[premise.attitude].emoji} ${attitudeConfig[premise.attitude].label}`}
+                    {preview.description ? (
+                        <Text className="text-muted text-[14px] leading-5" numberOfLines={2}>
+                            {preview.description}
                         </Text>
-                    )}
+                    ) : null}
 
-                    {(hasTags || bitCount > 0) && (
-                        <View className="flex-row items-center justify-between pt-1 border-t border-separator">
-                            <View className="flex-row flex-wrap gap-1.5 flex-1">
-                                {premise.tags?.map((tag) => (
-                                    <Chip key={tag.id} size="sm" variant="tertiary" color="default">
-                                        <Chip.Label className="text-[11px]">#{tag.name}</Chip.Label>
-                                    </Chip>
-                                ))}
-                            </View>
-                            {bitCount > 0 && (
-                                <View className="flex-row items-center gap-1 ml-3">
-                                    <Icon name="reader-outline" size={13} className="text-muted" />
-                                    <Text className="text-muted text-xs font-medium">
-                                        {bitCount}
-                                    </Text>
-                                </View>
-                            )}
+                    {hasTags && (
+                        <View className="flex-row flex-wrap gap-1.5 pt-1">
+                            {bit.tags?.map((tag) => (
+                                <Chip key={tag.id} size="sm" variant="tertiary" color="default">
+                                    <Chip.Label className="text-[11px]">#{tag.name}</Chip.Label>
+                                </Chip>
+                            ))}
                         </View>
                     )}
                 </View>
@@ -113,4 +110,4 @@ function PremiseCardComponent({ premise, onPress, onDelete }: PremiseCardProps) 
     )
 }
 
-export const PremiseCard = memo(PremiseCardComponent)
+export const BitCard = memo(BitCardComponent)

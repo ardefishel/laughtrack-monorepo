@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/auth-context'
+import { useAuth } from '@/features/auth/context/auth-context'
 import { AuthContainer } from '@/features/auth/components/container'
 import { Icon } from '@/components/ui/ion-icon'
 import { router } from 'expo-router'

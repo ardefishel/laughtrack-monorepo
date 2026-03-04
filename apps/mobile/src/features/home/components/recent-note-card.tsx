@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { Animated, Pressable, Text, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import type { Note } from "@/types";
-import { timeAgo } from "@/utils/time-ago";
+import { timeAgo } from "@/lib/time-ago";
 
 interface RecentNoteCardProps {
     note: Note;

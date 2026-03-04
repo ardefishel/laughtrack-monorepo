@@ -1,3 +1,7 @@
+export * from './components/add-setlist-item-dialog'
+export * from './components/setlist-card'
+export * from './components/setlist-item-content'
+export * from './components/setlist-list-header'
 export * from './hooks/use-setlist-form'
 export * from './reader/buildSetlistReaderHtml'
 export * from './services/setlist-bit-links'

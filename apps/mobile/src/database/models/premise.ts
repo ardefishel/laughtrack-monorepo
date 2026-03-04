@@ -2,7 +2,7 @@ import { Model } from '@nozbe/watermelondb'
 import { date, field, writer } from '@nozbe/watermelondb/decorators'
 import type { Attitude, PremiseStatus } from '@/types'
 import { PREMISE_TABLE } from '../constants'
-import { PREMISE_COLUMNS } from '../premiseSchema'
+import { PREMISE_COLUMNS } from '../schemas/premiseSchema'
 
 type PremiseUpdateInput = {
     content: string

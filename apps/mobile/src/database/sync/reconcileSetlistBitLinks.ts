@@ -1,9 +1,9 @@
 import type { Database } from '@nozbe/watermelondb'
 import { dbLogger } from '@/lib/loggers'
-import { BIT_TABLE, SETLIST_TABLE } from './constants'
-import { Bit as BitModel } from './models/bit'
-import { Setlist as SetlistModel } from './models/setlist'
-import { parseStringArrayJson } from './utils/json'
+import { BIT_TABLE, SETLIST_TABLE } from '../constants'
+import { Bit as BitModel } from '../models/bit'
+import { Setlist as SetlistModel } from '../models/setlist'
+import { parseStringArrayJson } from '../utils/json'
 
 
 function parseSetlistBitIds(value: string): string[] {

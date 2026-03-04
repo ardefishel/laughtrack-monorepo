@@ -1,7 +1,7 @@
 import { SetlistSchema, type Setlist, type SetlistItem, type SetlistNote } from '@/domain/setlist'
 import { dbLogger } from '@/lib/loggers'
 import type { Setlist as SetlistModel } from '../models/setlist'
-import type { SetlistRecord } from '../setlistSchema'
+import type { SetlistRecord } from '../schemas/setlistSchema'
 import { tagNamesToTags } from '../utils/tags'
 
 function parseSetlistTagNamesJson(value: string): string[] {

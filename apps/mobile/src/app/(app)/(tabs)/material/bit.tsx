@@ -1,4 +1,4 @@
-import { BitCard } from '@/features/material/components/bit-card'
+import { BitCard } from '@/features/bit/components/bit-card'
 import { MaterialListScreen } from '@/features/material/components/material-list-screen'
 import { BIT_TABLE, PREMISE_TABLE } from '@/database/constants'
 import { bitModelToDomain } from '@/database/mappers/bitMapper'

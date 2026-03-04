@@ -1,4 +1,4 @@
-import { SetlistCard } from '@/features/material/components/setlist-card'
+import { SetlistCard } from '@/features/setlist/components/setlist-card'
 import { MaterialListScreen } from '@/features/material/components/material-list-screen'
 import { setlistModelToDomain } from '@/database/mappers/setlistMapper'
 import { SETLIST_TABLE } from '@/database/constants'

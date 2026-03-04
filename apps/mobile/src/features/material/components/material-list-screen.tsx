@@ -1,5 +1,5 @@
 import { Icon } from '@/components/ui/ion-icon'
-import { useKeyboardOffset } from '@/hooks/use-keyboard-offset'
+import { useKeyboardOffset } from '@/lib/use-keyboard-offset'
 import { FlashList, type FlashListProps, type FlashListRef, type ListRenderItem } from '@shopify/flash-list'
 import { Button, Input } from 'heroui-native'
 import type { RefObject } from 'react'

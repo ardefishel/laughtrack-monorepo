@@ -2,7 +2,7 @@ import { Model } from '@nozbe/watermelondb'
 import { date, field, writer } from '@nozbe/watermelondb/decorators'
 import type { SetlistItem, Tag } from '@/types'
 import { SETLIST_TABLE } from '../constants'
-import { SETLIST_COLUMNS } from '../setlistSchema'
+import { SETLIST_COLUMNS } from '../schemas/setlistSchema'
 
 type SetlistUpdateInput = {
     description: string

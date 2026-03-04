@@ -1,5 +1,5 @@
-import { BitPremiseStrip } from '@/features/material/components/bit-premise-strip'
-import { EditorToolbar } from '@/features/material/components/editor-toolbar'
+import { BitPremiseStrip } from '@/features/bit/components/bit-premise-strip'
+import { EditorToolbar } from '@/features/bit/components/editor-toolbar'
 import { useBitEditor } from '@/features/bit/hooks/use-bit-editor'
 import { useBitForm } from '@/features/bit/hooks/use-bit-form'
 import { useNavigation } from 'expo-router'

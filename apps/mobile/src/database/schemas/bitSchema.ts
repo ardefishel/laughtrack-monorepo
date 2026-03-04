@@ -1,4 +1,4 @@
-import { BIT_TABLE } from './constants'
+import { BIT_TABLE } from '../constants'
 
 export const BIT_COLUMNS = {
     content: 'content',

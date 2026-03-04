@@ -1,4 +1,4 @@
-import { PremiseCard } from '@/features/material/components/premise-card'
+import { PremiseCard } from '@/features/premise/components/premise-card'
 import { MaterialListScreen } from '@/features/material/components/material-list-screen'
 import { premiseModelToDomain } from '@/database/mappers/premiseMapper'
 import { PREMISE_TABLE } from '@/database/constants'

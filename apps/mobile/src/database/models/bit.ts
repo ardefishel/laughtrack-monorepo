@@ -2,7 +2,7 @@ import { Model } from '@nozbe/watermelondb'
 import { date, field, writer } from '@nozbe/watermelondb/decorators'
 import type { BitStatus } from '@/domain/bit'
 import { BIT_TABLE } from '../constants'
-import { BIT_COLUMNS } from '../bitSchema'
+import { BIT_COLUMNS } from '../schemas/bitSchema'
 
 type BitUpdateInput = {
     content: string
