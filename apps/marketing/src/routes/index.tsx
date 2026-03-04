@@ -1,5 +1,5 @@
 import { useI18n } from '@/lib/i18n-context'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState } from 'react'
 
 export const Route = createFileRoute('/')({
@@ -299,28 +299,66 @@ function LandingPage() {
                 </div>
             </section>
 
-            {/* CTA */}
+            {/* WORKFLOW */}
             <section className="py-32" style={{ background: '#0a0a0a' }}>
-                <div className="max-w-3xl mx-auto px-6 text-center stagger-children">
-                    <h2
-                        className="text-4xl sm:text-5xl font-bold tracking-tight mb-6"
-                        style={{ fontFamily: "'Playfair Display', serif" }}
-                    >
-                        {t.cta.heading}
-                    </h2>
-                    <p className="text-lg mb-10" style={{ color: '#999' }}>
-                        {t.cta.desc}
-                    </p>
-                    <a
-                        href="#waitlist"
-                        className="inline-flex items-center gap-3 px-8 py-4 rounded-full text-base font-semibold text-white transition-all duration-200 hover:scale-105"
-                        style={{ background: 'oklch(70.45% 0.1926 39.23)' }}
-                    >
-                        {t.cta.button}
-                    </a>
-                    <p className="mt-4 text-sm" style={{ color: '#555' }}>
-                        {t.cta.note}
-                    </p>
+                <div className="max-w-5xl mx-auto px-6">
+                    <div className="mb-20 text-center">
+                        <p
+                            className="text-sm font-semibold tracking-[0.25em] uppercase mb-4"
+                            style={{ color: 'oklch(70.45% 0.1926 39.23)' }}
+                        >
+                            {t.workflow.label}
+                        </p>
+                        <h2
+                            className="text-4xl sm:text-5xl font-bold tracking-tight mb-6"
+                            style={{ fontFamily: "'Playfair Display', serif" }}
+                        >
+                            {t.workflow.heading}
+                        </h2>
+                        <p className="text-lg max-w-2xl mx-auto" style={{ color: '#999' }}>
+                            {t.workflow.desc}
+                        </p>
+                    </div>
+
+                    <div className="relative">
+                        {/* Connecting line */}
+                        <div
+                            className="hidden md:block absolute top-10 left-[10%] right-[10%] h-px"
+                            style={{ background: 'linear-gradient(90deg, transparent, oklch(70.45% 0.1926 39.23 / 0.3) 20%, oklch(70.45% 0.1926 39.23 / 0.3) 80%, transparent)' }}
+                        />
+
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-4">
+                            {t.workflow.steps.map((step, i) => (
+                                <div key={i} className="relative text-center group">
+                                    {/* Step dot on the line */}
+                                    <div className="flex justify-center mb-5">
+                                        <div
+                                            className="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl transition-transform duration-300 group-hover:scale-110"
+                                            style={{
+                                                background: 'rgba(255,255,255,0.04)',
+                                                border: '1px solid rgba(255,255,255,0.08)',
+                                                boxShadow: '0 0 24px oklch(70.45% 0.1926 39.23 / 0.06)',
+                                            }}
+                                        >
+                                            {step.icon}
+                                        </div>
+                                    </div>
+
+                                    {/* Arrow between steps (mobile) */}
+                                    {i < t.workflow.steps.length - 1 && (
+                                        <div className="md:hidden flex justify-center my-2">
+                                            <span className="text-lg" style={{ color: 'oklch(70.45% 0.1926 39.23 / 0.4)' }}>↓</span>
+                                        </div>
+                                    )}
+
+                                    <h3 className="text-base font-bold mb-2">{step.title}</h3>
+                                    <p className="text-[13px] leading-relaxed" style={{ color: '#888' }}>
+                                        {step.desc}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -331,9 +369,9 @@ function LandingPage() {
                         {t.footer.copyright}
                     </p>
                     <div className="flex gap-6 text-sm" style={{ color: '#555' }}>
-                        <a href="#" className="hover:text-white transition-colors">{t.footer.privacy}</a>
-                        <a href="#" className="hover:text-white transition-colors">{t.footer.terms}</a>
-                        <a href="#" className="hover:text-white transition-colors">{t.footer.contact}</a>
+                        <Link to="/privacy" className="hover:text-white transition-colors">{t.footer.privacy}</Link>
+                        <Link to="/terms" className="hover:text-white transition-colors">{t.footer.terms}</Link>
+                        <Link to="/contact" className="hover:text-white transition-colors">{t.footer.contact}</Link>
                     </div>
                 </div>
             </footer>

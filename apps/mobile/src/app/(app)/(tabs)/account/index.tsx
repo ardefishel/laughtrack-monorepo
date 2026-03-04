@@ -7,7 +7,11 @@ import { performSync } from '@/lib/sync'
 import { router } from 'expo-router'
 import { Avatar, Button, ListGroup, Separator } from 'heroui-native'
 import { useCallback, useState } from 'react'
-import { Alert, ScrollView, Text, View } from 'react-native'
+import { Alert, Linking, ScrollView, Text, View } from 'react-native'
+
+const MARKETING_URL = process.env.EXPO_PUBLIC_MARKETING_URL ?? 'https://laughtrack.app'
+const PRIVACY_POLICY_URL = `${MARKETING_URL}/privacy`
+const TERMS_OF_SERVICE_URL = `${MARKETING_URL}/terms`
 
 export default function AccountScreen() {
     const { user, isAuthenticated, signOut } = useAuth()
@@ -84,12 +88,22 @@ export default function AccountScreen() {
                         <ListGroup.ItemSuffix />
                     </ListGroup.Item>
                     <Separator className="mx-4" />
-                    <ListGroup.Item onPress={() => { }}>
+                    <ListGroup.Item onPress={() => void Linking.openURL(TERMS_OF_SERVICE_URL)}>
                         <ListGroup.ItemPrefix>
                             <Icon name="document-text-outline" size={22} className="text-foreground" />
                         </ListGroup.ItemPrefix>
                         <ListGroup.ItemContent>
                             <ListGroup.ItemTitle>Terms of Service</ListGroup.ItemTitle>
+                        </ListGroup.ItemContent>
+                        <ListGroup.ItemSuffix />
+                    </ListGroup.Item>
+                    <Separator className="mx-4" />
+                    <ListGroup.Item onPress={() => void Linking.openURL(PRIVACY_POLICY_URL)}>
+                        <ListGroup.ItemPrefix>
+                            <Icon name="shield-checkmark-outline" size={22} className="text-foreground" />
+                        </ListGroup.ItemPrefix>
+                        <ListGroup.ItemContent>
+                            <ListGroup.ItemTitle>Privacy Policy</ListGroup.ItemTitle>
                         </ListGroup.ItemContent>
                         <ListGroup.ItemSuffix />
                     </ListGroup.Item>
