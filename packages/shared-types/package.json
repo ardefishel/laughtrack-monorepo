@@ -21,6 +21,7 @@
   "peerDependencies": {},
   "dependencies": {},
   "devDependencies": {
+    "@laughtrack/tsconfig": "*",
     "typescript": "^5.9.0"
   },
   "engines": {

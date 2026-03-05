@@ -1,0 +1,15 @@
+{
+  "extends": "@laughtrack/tsconfig/react.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "baseUrl": "."
+  },
+  "include": [
+    "src"
+  ]
+}

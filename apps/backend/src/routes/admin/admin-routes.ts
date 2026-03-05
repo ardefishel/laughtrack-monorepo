@@ -1,38 +1,31 @@
-import { and, count, eq, inArray } from 'drizzle-orm'
+import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { db } from '../../db'
-import { audioRecordings, jokes, jokeSetItems, jokeSets, tags, users } from '../../db/schema'
+import { bits, notes, premises, setlists, users } from '../../db/schema'
 import { errorResponse, paginatedResponse, successResponse } from '../../lib/response'
-import { requireAdmin } from '../../middlewares/auth'
+import { requireAdmin, requireAuth } from '../../middlewares/auth'
 
-const adminRoutes = new Hono()
+const webRoutes = new Hono()
 
-adminRoutes.use('*', requireAdmin)
-
-// GET /stats — dashboard summary
-adminRoutes.get('/stats', async (c) => {
+webRoutes.get('/stats', requireAuth, async (c) => {
     const [userCount] = await db.select({ count: count() }).from(users)
-    const [jokeCount] = await db.select({ count: count() }).from(jokes).where(eq(jokes.isDeleted, false))
-    const [setCount] = await db.select({ count: count() }).from(jokeSets).where(eq(jokeSets.isDeleted, false))
-    const [audioCount] = await db
-        .select({ count: count() })
-        .from(audioRecordings)
-        .where(eq(audioRecordings.isDeleted, false))
-    const [tagCount] = await db.select({ count: count() }).from(tags).where(eq(tags.isDeleted, false))
+    const [noteCount] = await db.select({ count: count() }).from(notes).where(eq(notes.isDeleted, false))
+    const [bitCount] = await db.select({ count: count() }).from(bits).where(eq(bits.isDeleted, false))
+    const [premiseCount] = await db.select({ count: count() }).from(premises).where(eq(premises.isDeleted, false))
+    const [setlistCount] = await db.select({ count: count() }).from(setlists).where(eq(setlists.isDeleted, false))
 
     return c.json(
         successResponse({
             users: userCount.count,
-            jokes: jokeCount.count,
-            sets: setCount.count,
-            audioRecordings: audioCount.count,
-            tags: tagCount.count
+            notes: noteCount.count,
+            bits: bitCount.count,
+            premises: premiseCount.count,
+            setlists: setlistCount.count
         })
     )
 })
 
-// GET /users — list all users
-adminRoutes.get('/users', async (c) => {
+webRoutes.get('/users', requireAdmin, async (c) => {
     const page = Number(c.req.query('page') || '1')
     const limit = Number(c.req.query('limit') || '20')
     const offset = (page - 1) * limit
@@ -45,6 +38,8 @@ adminRoutes.get('/users', async (c) => {
             email: users.email,
             name: users.name,
             image: users.image,
+            role: users.role,
+            banned: users.banned,
             emailVerified: users.emailVerified,
             createdAt: users.createdAt
         })
@@ -55,8 +50,7 @@ adminRoutes.get('/users', async (c) => {
     return c.json(paginatedResponse(rows, { page, limit, total: totalResult.count }))
 })
 
-// GET /users/:id — user detail with content counts
-adminRoutes.get('/users/:id', async (c) => {
+webRoutes.get('/users/:id', requireAdmin, async (c) => {
     const userId = c.req.param('id')
 
     const [user] = await db
@@ -65,6 +59,9 @@ adminRoutes.get('/users/:id', async (c) => {
             email: users.email,
             name: users.name,
             image: users.image,
+            role: users.role,
+            banned: users.banned,
+            banReason: users.banReason,
             emailVerified: users.emailVerified,
             createdAt: users.createdAt
         })
@@ -73,196 +70,228 @@ adminRoutes.get('/users/:id', async (c) => {
 
     if (!user) return c.json(errorResponse('User not found', 404), 404)
 
-    const [jokeCount] = await db
+    const [noteCount] = await db
         .select({ count: count() })
-        .from(jokes)
-        .where(and(eq(jokes.userId, userId), eq(jokes.isDeleted, false)))
-    const [setCount] = await db
+        .from(notes)
+        .where(and(eq(notes.userId, userId), eq(notes.isDeleted, false)))
+    const [bitCount] = await db
         .select({ count: count() })
-        .from(jokeSets)
-        .where(and(eq(jokeSets.userId, userId), eq(jokeSets.isDeleted, false)))
-    const [audioCount] = await db
+        .from(bits)
+        .where(and(eq(bits.userId, userId), eq(bits.isDeleted, false)))
+    const [premiseCount] = await db
         .select({ count: count() })
-        .from(audioRecordings)
-        .where(and(eq(audioRecordings.userId, userId), eq(audioRecordings.isDeleted, false)))
-    const [tagCount] = await db
+        .from(premises)
+        .where(and(eq(premises.userId, userId), eq(premises.isDeleted, false)))
+    const [setlistCount] = await db
         .select({ count: count() })
-        .from(tags)
-        .where(and(eq(tags.userId, userId), eq(tags.isDeleted, false)))
+        .from(setlists)
+        .where(and(eq(setlists.userId, userId), eq(setlists.isDeleted, false)))
 
     return c.json(
         successResponse({
             ...user,
-            jokesCount: jokeCount.count,
-            setsCount: setCount.count,
-            audioRecordingsCount: audioCount.count,
-            tagsCount: tagCount.count
+            notesCount: noteCount.count,
+            bitsCount: bitCount.count,
+            premisesCount: premiseCount.count,
+            setlistsCount: setlistCount.count
         })
     )
 })
 
-// GET /jokes — list all jokes
-adminRoutes.get('/jokes', async (c) => {
-    const page = Number(c.req.query('page') || '1')
-    const limit = Number(c.req.query('limit') || '20')
-    const userId = c.req.query('userId')
-    const offset = (page - 1) * limit
+webRoutes.put('/users/:id', requireAdmin, async (c) => {
+    const userId = c.req.param('id')
+    const body = await c.req.json<{
+        name?: string
+        email?: string
+        role?: string
+        banned?: boolean
+        banReason?: string | null
+    }>()
 
-    const conditions = [eq(jokes.isDeleted, false)]
-    if (userId) conditions.push(eq(jokes.userId, userId))
-    const where = and(...conditions)
-
-    const [totalResult] = await db.select({ count: count() }).from(jokes).where(where)
-
-    const rows = await db
-        .select({
-            id: jokes.id,
-            contentText: jokes.contentText,
-            contentHtml: jokes.contentHtml,
-            status: jokes.status,
-            userId: jokes.userId,
-            userName: users.name,
-            userEmail: users.email,
-            createdAt: jokes.createdAt,
-            updatedAt: jokes.updatedAt
-        })
-        .from(jokes)
-        .leftJoin(users, eq(jokes.userId, users.id))
-        .where(where)
-        .limit(limit)
-        .offset(offset)
-
-    const mapped = rows.map((r) => ({
-        ...r,
-        contentText: r.contentText ? r.contentText.slice(0, 100) : null,
-        contentHtml: r.contentHtml ? r.contentHtml.slice(0, 500) : null
-    }))
-
-    return c.json(paginatedResponse(mapped, { page, limit, total: totalResult.count }))
-})
-
-// GET /jokes/:id — single joke detail
-adminRoutes.get('/jokes/:id', async (c) => {
-    const jokeId = c.req.param('id')
-
-    const [row] = await db
-        .select({
-            id: jokes.id,
-            contentHtml: jokes.contentHtml,
-            contentText: jokes.contentText,
-            status: jokes.status,
-            tags: jokes.tags,
-            userId: jokes.userId,
-            userName: users.name,
-            userEmail: users.email,
-            createdAt: jokes.createdAt,
-            updatedAt: jokes.updatedAt,
-            draftUpdatedAt: jokes.draftUpdatedAt
-        })
-        .from(jokes)
-        .leftJoin(users, eq(jokes.userId, users.id))
-        .where(and(eq(jokes.id, jokeId), eq(jokes.isDeleted, false)))
-
-    if (!row) return c.json(errorResponse('Joke not found', 404), 404)
-
-    return c.json(successResponse(row))
-})
-
-// GET /sets — list all joke sets
-adminRoutes.get('/sets', async (c) => {
-    const page = Number(c.req.query('page') || '1')
-    const limit = Number(c.req.query('limit') || '20')
-    const userId = c.req.query('userId')
-    const offset = (page - 1) * limit
-
-    const conditions = [eq(jokeSets.isDeleted, false)]
-    if (userId) conditions.push(eq(jokeSets.userId, userId))
-    const where = and(...conditions)
-
-    const [totalResult] = await db.select({ count: count() }).from(jokeSets).where(where)
-
-    const rows = await db
-        .select({
-            id: jokeSets.id,
-            title: jokeSets.title,
-            description: jokeSets.description,
-            duration: jokeSets.duration,
-            place: jokeSets.place,
-            status: jokeSets.status,
-            userId: jokeSets.userId,
-            userName: users.name,
-            userEmail: users.email,
-            createdAt: jokeSets.createdAt,
-            updatedAt: jokeSets.updatedAt
-        })
-        .from(jokeSets)
-        .leftJoin(users, eq(jokeSets.userId, users.id))
-        .where(where)
-        .limit(limit)
-        .offset(offset)
-
-    const setIds = rows.map((r) => r.id)
-    let itemCounts: Record<string, number> = {}
-    if (setIds.length > 0) {
-        const counts = await db
-            .select({ setId: jokeSetItems.setId, count: count() })
-            .from(jokeSetItems)
-            .where(and(eq(jokeSetItems.isDeleted, false), inArray(jokeSetItems.setId, setIds)))
-            .groupBy(jokeSetItems.setId)
-        itemCounts = Object.fromEntries(counts.map((r) => [r.setId, r.count]))
+    const validRoles = ['user', 'admin']
+    if (body.role !== undefined && !validRoles.includes(body.role)) {
+        return c.json(errorResponse('Invalid role. Must be one of: user, admin', 400), 400)
     }
 
+    const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.id, userId))
+    if (!existing) return c.json(errorResponse('User not found', 404), 404)
+
+    const updates: Record<string, unknown> = { updatedAt: new Date() }
+    if (body.name !== undefined) updates.name = body.name
+    if (body.email !== undefined) updates.email = body.email
+    if (body.role !== undefined) updates.role = body.role
+    if (body.banned !== undefined) updates.banned = body.banned
+    if (body.banReason !== undefined) updates.banReason = body.banReason
+
+    await db.update(users).set(updates).where(eq(users.id, userId))
+
+    const [updated] = await db
+        .select({
+            id: users.id,
+            email: users.email,
+            name: users.name,
+            image: users.image,
+            role: users.role,
+            banned: users.banned,
+            banReason: users.banReason,
+            emailVerified: users.emailVerified,
+            createdAt: users.createdAt
+        })
+        .from(users)
+        .where(eq(users.id, userId))
+
+    return c.json(successResponse(updated))
+})
+
+webRoutes.get('/notes', requireAuth, async (c) => {
+    const page = Number(c.req.query('page') || '1')
+    const limit = Number(c.req.query('limit') || '20')
+    const userId = c.req.query('userId')
+    const offset = (page - 1) * limit
+
+    const conditions = [eq(notes.isDeleted, false)]
+    if (userId) conditions.push(eq(notes.userId, userId))
+    const where = and(...conditions)
+
+    const [totalResult] = await db.select({ count: count() }).from(notes).where(where)
+
+    const rows = await db
+        .select({
+            id: notes.id,
+            content: notes.content,
+            userId: notes.userId,
+            userName: users.name,
+            userEmail: users.email,
+            createdAt: notes.createdAt,
+            updatedAt: notes.updatedAt
+        })
+        .from(notes)
+        .leftJoin(users, eq(notes.userId, users.id))
+        .where(where)
+        .limit(limit)
+        .offset(offset)
+
     const mapped = rows.map((r) => ({
         ...r,
-        itemCount: itemCounts[r.id] ?? 0
+        content: r.content ? r.content.slice(0, 200) : null
     }))
 
     return c.json(paginatedResponse(mapped, { page, limit, total: totalResult.count }))
 })
 
-// GET /sets/:id — single set detail with items
-adminRoutes.get('/sets/:id', async (c) => {
-    const setId = c.req.param('id')
+webRoutes.get('/bits', requireAuth, async (c) => {
+    const page = Number(c.req.query('page') || '1')
+    const limit = Number(c.req.query('limit') || '20')
+    const userId = c.req.query('userId')
+    const offset = (page - 1) * limit
 
-    const [row] = await db
+    const conditions = [eq(bits.isDeleted, false)]
+    if (userId) conditions.push(eq(bits.userId, userId))
+    const where = and(...conditions)
+
+    const [totalResult] = await db.select({ count: count() }).from(bits).where(where)
+
+    const rows = await db
         .select({
-            id: jokeSets.id,
-            title: jokeSets.title,
-            description: jokeSets.description,
-            duration: jokeSets.duration,
-            place: jokeSets.place,
-            status: jokeSets.status,
-            userId: jokeSets.userId,
+            id: bits.id,
+            content: bits.content,
+            status: bits.status,
+            tagsJson: bits.tagsJson,
+            premiseId: bits.premiseId,
+            userId: bits.userId,
             userName: users.name,
             userEmail: users.email,
-            createdAt: jokeSets.createdAt,
-            updatedAt: jokeSets.updatedAt
+            createdAt: bits.createdAt,
+            updatedAt: bits.updatedAt
         })
-        .from(jokeSets)
-        .leftJoin(users, eq(jokeSets.userId, users.id))
-        .where(and(eq(jokeSets.id, setId), eq(jokeSets.isDeleted, false)))
+        .from(bits)
+        .leftJoin(users, eq(bits.userId, users.id))
+        .where(where)
+        .limit(limit)
+        .offset(offset)
 
-    if (!row) return c.json(errorResponse('Set not found', 404), 404)
-
-    const itemRows = await db
-        .select({
-            id: jokeSetItems.id,
-            itemType: jokeSetItems.itemType,
-            jokeId: jokeSetItems.jokeId,
-            content: jokeSetItems.content,
-            position: jokeSetItems.position,
-            jokeTitle: jokes.contentText,
-        })
-        .from(jokeSetItems)
-        .leftJoin(jokes, eq(jokeSetItems.jokeId, jokes.id))
-        .where(and(eq(jokeSetItems.setId, setId), eq(jokeSetItems.isDeleted, false)))
-
-    const items = itemRows.map((item) => ({
-        ...item,
-        jokeTitle: item.jokeTitle ? item.jokeTitle.slice(0, 100) : null,
+    const mapped = rows.map((r) => ({
+        ...r,
+        content: r.content ? r.content.slice(0, 200) : null
     }))
 
-    return c.json(successResponse({ ...row, items }))
+    return c.json(paginatedResponse(mapped, { page, limit, total: totalResult.count }))
 })
 
-export { adminRoutes }
+webRoutes.get('/premises', requireAuth, async (c) => {
+    const page = Number(c.req.query('page') || '1')
+    const limit = Number(c.req.query('limit') || '20')
+    const userId = c.req.query('userId')
+    const offset = (page - 1) * limit
+
+    const conditions = [eq(premises.isDeleted, false)]
+    if (userId) conditions.push(eq(premises.userId, userId))
+    const where = and(...conditions)
+
+    const [totalResult] = await db.select({ count: count() }).from(premises).where(where)
+
+    const rows = await db
+        .select({
+            id: premises.id,
+            content: premises.content,
+            status: premises.status,
+            attitude: premises.attitude,
+            tagsJson: premises.tagsJson,
+            userId: premises.userId,
+            userName: users.name,
+            userEmail: users.email,
+            createdAt: premises.createdAt,
+            updatedAt: premises.updatedAt
+        })
+        .from(premises)
+        .leftJoin(users, eq(premises.userId, users.id))
+        .where(where)
+        .limit(limit)
+        .offset(offset)
+
+    const mapped = rows.map((r) => ({
+        ...r,
+        content: r.content ? r.content.slice(0, 200) : null
+    }))
+
+    return c.json(paginatedResponse(mapped, { page, limit, total: totalResult.count }))
+})
+
+webRoutes.get('/setlists', requireAuth, async (c) => {
+    const page = Number(c.req.query('page') || '1')
+    const limit = Number(c.req.query('limit') || '20')
+    const userId = c.req.query('userId')
+    const offset = (page - 1) * limit
+
+    const conditions = [eq(setlists.isDeleted, false)]
+    if (userId) conditions.push(eq(setlists.userId, userId))
+    const where = and(...conditions)
+
+    const [totalResult] = await db.select({ count: count() }).from(setlists).where(where)
+
+    const rows = await db
+        .select({
+            id: setlists.id,
+            description: setlists.description,
+            tagsJson: setlists.tagsJson,
+            userId: setlists.userId,
+            userName: users.name,
+            userEmail: users.email,
+            createdAt: setlists.createdAt,
+            updatedAt: setlists.updatedAt
+        })
+        .from(setlists)
+        .leftJoin(users, eq(setlists.userId, users.id))
+        .where(where)
+        .limit(limit)
+        .offset(offset)
+
+    const mapped = rows.map((r) => ({
+        ...r,
+        description: r.description ? r.description.slice(0, 200) : null
+    }))
+
+    return c.json(paginatedResponse(mapped, { page, limit, total: totalResult.count }))
+})
+
+export { webRoutes }

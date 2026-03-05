@@ -38,7 +38,7 @@ yarn-error.*
 .env
 .env*.local
 
-# Firebase / Google Services
+# Firebase / Google services config
 google-services.json
 GoogleService-Info.plist
 

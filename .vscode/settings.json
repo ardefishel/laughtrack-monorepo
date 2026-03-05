@@ -4,6 +4,9 @@
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
   },
+  "workbench.statusBar.visible": false,
+  "workbench.secondarySideBar.defaultVisibility": "hidden",
+  "antigravity.agent.openOnStartup": false,
   "search.exclude": {
     "**/node_modules": true,
     "**/bower_components": true,

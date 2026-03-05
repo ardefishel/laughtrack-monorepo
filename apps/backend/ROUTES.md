@@ -10,7 +10,7 @@ Base URL: `http://localhost:3000` (configurable via `PORT` env var).
 
 ## Auth — `/api/auth/*` (Shared)
 
-Used by both mobile and web-admin clients.
+Used by both mobile and web clients.
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
@@ -62,21 +62,24 @@ Cloudflare R2 presigned URL management. All endpoints require `requireAuth`.
 
 ---
 
-## Admin — `/api/admin/*`
+## Web — `/api/web/*`
 
-Dashboard and management endpoints consumed exclusively by the web-admin app. CORS restricted to `CORS_ORIGIN` and `http://localhost:3001`. All endpoints require `requireAdmin` (role-based).
+Dashboard and content endpoints consumed by the web app. CORS restricted to `CORS_ORIGIN` and `http://localhost:3001`.
+
+Content routes require `requireAuth` (any authenticated user). User management routes require `requireAdmin` (role-based).
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| GET | `/api/admin/stats` | `requireAdmin` | Dashboard summary. Returns counts for users, jokes, sets, audioRecordings, tags. |
-| GET | `/api/admin/users` | `requireAdmin` | List all users (paginated). Query: `?page=1&limit=20`. Returns id, email, name, image, emailVerified, createdAt. |
-| GET | `/api/admin/users/:id` | `requireAdmin` | User detail with content counts (jokes, sets, audioRecordings, tags). |
-| GET | `/api/admin/jokes` | `requireAdmin` | List all jokes (paginated). Query: `?page=1&limit=20&userId=optional`. Returns jokes with user name/email joined, contentText truncated to 100 chars. |
-| GET | `/api/admin/jokes/:id` | `requireAdmin` | Single joke detail with full content and user info. |
-| GET | `/api/admin/sets` | `requireAdmin` | List all joke sets (paginated). Query: `?page=1&limit=20&userId=optional`. Returns sets with user name/email joined and itemCount. |
-| GET | `/api/admin/sets/:id` | `requireAdmin` | Single set detail with all items and user info. |
+| GET | `/api/web/stats` | `requireAuth` | Dashboard summary. Returns counts for users, jokes, sets, audioRecordings, tags. |
+| GET | `/api/web/users` | `requireAdmin` | List all users (paginated). Query: `?page=1&limit=20`. Returns id, email, name, image, role, banned, emailVerified, createdAt. |
+| GET | `/api/web/users/:id` | `requireAdmin` | User detail with content counts (jokes, sets, audioRecordings, tags). |
+| PUT | `/api/web/users/:id` | `requireAdmin` | Update user details (name, email, role, banned, banReason). |
+| GET | `/api/web/jokes` | `requireAuth` | List all jokes (paginated). Query: `?page=1&limit=20&userId=optional`. Returns jokes with user name/email joined, contentText truncated to 100 chars. |
+| GET | `/api/web/jokes/:id` | `requireAuth` | Single joke detail with full content and user info. |
+| GET | `/api/web/sets` | `requireAuth` | List all joke sets (paginated). Query: `?page=1&limit=20&userId=optional`. Returns sets with user name/email joined and itemCount. |
+| GET | `/api/web/sets/:id` | `requireAuth` | Single set detail with all items and user info. |
 
-Soft-deleted records (`isDeleted: true`) are excluded from all admin queries.
+Soft-deleted records (`isDeleted: true`) are excluded from all queries.
 
 ---
 
@@ -91,7 +94,7 @@ Soft-deleted records (`isDeleted: true`) are excluded from all admin queries.
 CORS is configured per-consumer:
 - **Auth routes** (`/api/auth/*`): Accepts `CORS_ORIGIN`, `http://localhost:3001`, and `laughtrack://`
 - **Mobile routes** (`/api/mobile/*`): Accepts only `laughtrack://`
-- **Admin routes** (`/api/admin/*`): Accepts `CORS_ORIGIN` and `http://localhost:3001`
+- **Web routes** (`/api/web/*`): Accepts `CORS_ORIGIN` and `http://localhost:3001`
 
 ## Global Middleware (applied to all routes)
 

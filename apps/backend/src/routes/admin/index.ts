@@ -1,11 +1,11 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { adminRoutes } from './admin-routes'
+import { webRoutes } from './admin-routes'
 
-const adminApp = new Hono()
+const webApp = new Hono()
 
-// Admin-specific CORS: only allow web-admin origins
-adminApp.use(
+// Web app CORS: only allow web client origins
+webApp.use(
     '*',
     cors({
         origin: [process.env.CORS_ORIGIN ?? 'http://localhost:3000', 'http://localhost:3001'],
@@ -15,6 +15,6 @@ adminApp.use(
     })
 )
 
-adminApp.route('/', adminRoutes)
+webApp.route('/', webRoutes)
 
-export { adminApp }
+export { webApp }

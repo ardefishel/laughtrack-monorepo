@@ -1,0 +1,25 @@
+{
+    "name": "@laughtrack/html-utils",
+    "version": "0.1.0",
+    "description": "Shared HTML parsing utilities for Laughtrack",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": "./dist/index.js",
+        "./package.json": "./package.json"
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "build:watch": "tsc --watch",
+        "test": "echo \"No tests\" && exit 0",
+        "lint": "echo \"No linting\" && exit 0",
+        "clean": "rm -rf dist tsconfig.tsbuildinfo"
+    },
+    "devDependencies": {
+        "@laughtrack/tsconfig": "*",
+        "typescript": "^5.9.2"
+    }
+}

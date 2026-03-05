@@ -8,9 +8,13 @@ A comedian's toolkit for writing, organizing, and performing jokes. Mobile-first
 apps/
   mobile/       — Expo Router + WatermelonDB (local-first React Native app)
   backend/      — Hono + Drizzle + PostgreSQL API (Bun runtime)
+  web/          — Admin dashboard
+  marketing/    — Marketing site
 packages/
   shared-types/ — Shared TypeScript type definitions (@laughtrack/shared-types)
   logger/       — Cross-platform structured logger (@laughtrack/logger)
+  html-utils/   — HTML parsing and text extraction (@laughtrack/html-utils)
+  tsconfig/     — Shared TypeScript configurations (@laughtrack/tsconfig)
 ```
 
 ## Getting Started
@@ -40,6 +44,15 @@ bun run db:migrate
 # Start both apps
 bun run dev
 ```
+
+### Google Sign-In (Android)
+
+Android Google Sign-In requires a `google-services.json` file (not committed to git):
+
+1. Go to [Firebase Console](https://console.firebase.google.com/) → your project → **Project Settings**
+2. Under **Your apps**, add an Android app with package name `com.rtvcl.laughtrack`
+3. Download `google-services.json` and place it at `apps/mobile/google-services.json`
+4. Rebuild with `bun run mobile:android`
 
 ### Backend Env Vars
 
@@ -87,6 +100,6 @@ bun run dev
 ## Documentation
 
 - [API Routes](apps/backend/ROUTES.md) — Backend endpoint reference
-- [Data Model](.docs/data-model.md) — Entity relationships and schema
+- [Mobile Project Overview](apps/mobile/docs/project-overview.md) — Architecture, setup, and structure
+- [Data Modeling](apps/mobile/docs/architecture/data-modeling.md) — Entity relationships and schema
 - [Design System](.agents/design-system-baseline.md) — UI tokens and component patterns
-- [Code Review Plan](.docs/plan/mobile-code-review-plan.md) — Prioritized refactoring items

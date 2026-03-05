@@ -1,0 +1,14 @@
+{
+    "extends": "@laughtrack/tsconfig/react.json",
+    "compilerOptions": {
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ]
+        },
+        "baseUrl": "."
+    },
+    "include": [
+        "src"
+    ]
+}

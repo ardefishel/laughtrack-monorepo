@@ -1,34 +1,29 @@
 import { and, eq, gt } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { db } from '../../db'
-import { audioRecordings, jokes, jokeSetItems, jokeSets, jokeTags, tags } from '../../db/schema'
+import { bits, notes, premises, setlists } from '../../db/schema'
 import { requireAuth } from '../../middlewares/auth'
 
 const syncRoutes = new Hono()
 
 const SYNC_TABLES = {
-    jokes,
-    joke_sets: jokeSets,
-    joke_set_items: jokeSetItems,
-    audio_recordings: audioRecordings,
-    tags,
-    joke_tags: jokeTags,
+    notes,
+    bits,
+    premises,
+    setlists,
 } as const
 
 type SyncTableName = keyof typeof SYNC_TABLES
 
 const CAMEL_TO_SNAKE: Record<string, string> = {
-    contentHtml: 'content_html',
-    contentText: 'content_text',
-    draftUpdatedAt: 'draft_updated_at',
     createdAt: 'created_at',
     updatedAt: 'updated_at',
-    setId: 'set_id',
-    itemType: 'item_type',
-    jokeId: 'joke_id',
-    tagId: 'tag_id',
-    filePath: 'file_path',
-    remoteUrl: 'remote_url',
+    tagsJson: 'tags_json',
+    premiseId: 'premise_id',
+    setlistIdsJson: 'setlist_ids_json',
+    bitIdsJson: 'bit_ids_json',
+    sourceNoteId: 'source_note_id',
+    itemsJson: 'items_json',
 }
 
 const SNAKE_TO_CAMEL: Record<string, string> = Object.fromEntries(
@@ -58,7 +53,7 @@ function snakeToDrizzleRecord(record: Record<string, unknown>): Record<string, u
     return result
 }
 
-type SyncTable = typeof jokes | typeof jokeSets | typeof jokeSetItems | typeof audioRecordings | typeof tags | typeof jokeTags
+type SyncTable = typeof notes | typeof bits | typeof premises | typeof setlists
 
 async function pullTable(table: SyncTable, userId: string, lastPulledAt: Date | null) {
     if (!lastPulledAt) {
@@ -108,17 +103,6 @@ syncRoutes.get('/pull', requireAuth, async (c) => {
     tableNames.forEach((name, i) => {
         changes[name] = results[i]
     })
-
-    if (changes.audio_recordings) {
-        const stripFilePath = (records: unknown[]) =>
-            records.map((r) => {
-                const copy = { ...(r as Record<string, unknown>) }
-                delete copy.file_path
-                return copy
-            })
-        changes.audio_recordings.created = stripFilePath(changes.audio_recordings.created)
-        changes.audio_recordings.updated = stripFilePath(changes.audio_recordings.updated)
-    }
 
     return c.json({
         changes,
