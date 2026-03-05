@@ -6,7 +6,6 @@ import { defineConfig } from 'vite'
 import tsConfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
-    base: process.env.VITE_BASE_PATH || '/',
     server: {
         port: 3002,
     },
