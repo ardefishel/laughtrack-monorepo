@@ -1,6 +1,18 @@
 import "dotenv/config";
 import { ConfigContext, ExpoConfig } from "expo/config";
-import { AppConfig } from "./src/config/app.ts";
+
+const APP_CONFIG = {
+  name: 'LaughTrack',
+  slug: 'laughtrack',
+  scheme: 'laughtrack',
+  version: '1.0.0',
+  ios: {
+    bundleIdentifier: 'com.rtvcl.laughtrack'
+  },
+  android: {
+    package: 'com.rtvcl.laughtrack'
+  }
+}
 
 const IOS_CLIENT_ID_SUFFIX = '.apps.googleusercontent.com'
 const googleIosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
@@ -11,17 +23,17 @@ const googleIosUrlScheme =
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: AppConfig.name,
-  slug: AppConfig.slug,
-  version: AppConfig.version,
+  name: APP_CONFIG.name,
+  slug: APP_CONFIG.slug,
+  version: APP_CONFIG.version,
   orientation: "portrait",
   icon: './src/assets/ios-light.png',
-  scheme: AppConfig.scheme,
+  scheme: APP_CONFIG.scheme,
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
-    bundleIdentifier: AppConfig.ios.bundleIdentifier,
+    bundleIdentifier: APP_CONFIG.ios.bundleIdentifier,
     icon: {
       light: './src/assets/ios-light.png',
       dark: './src/assets/ios-dark.png',
@@ -34,7 +46,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       foregroundImage: './src/assets/adaptive-icon.png',
     },
     edgeToEdgeEnabled: true,
-    package: AppConfig.android.package,
+    package: APP_CONFIG.android.package,
   },
   web: {
     output: "single",
