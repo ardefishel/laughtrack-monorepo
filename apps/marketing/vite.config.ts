@@ -11,12 +11,7 @@ export default defineConfig({
     },
     plugins: [
         tsConfigPaths(),
-        tanstackStart({
-            prerender: {
-                enabled: true,
-                crawlLinks: true,
-            },
-        }),
+        tanstackStart(),
         nitro(),
         viteReact(),
         tailwindcss(),
