@@ -66,6 +66,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
             NSAppTransportSecurity: {
               NSAllowsLocalNetworking: true,
             },
+            ITSAppUsesNonExemptEncryption: false
           },
         },
       },

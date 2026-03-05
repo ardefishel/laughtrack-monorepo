@@ -2,12 +2,13 @@ import { QuickNoteBar } from "@/features/home/components/quick-note-bar";
 import { RecentNoteCard } from "@/features/home/components/recent-note-card";
 import { RecentWorkCard } from "@/features/home/components/recent-work-card";
 import { useRecentWorks } from "@/features/home/hooks/use-recent-works";
+import { useKeyboardOffset } from "@/lib/use-keyboard-offset";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { Q } from "@nozbe/watermelondb";
 import { useDatabase } from "@nozbe/watermelondb/react";
-import { useCallback, useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, Text, View } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Pressable, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NOTE_TABLE } from "@/database/constants";
@@ -37,6 +38,7 @@ export default function Index() {
   const router = useRouter()
   const database = useDatabase()
   const recentWorks = useRecentWorks()
+  const keyboardOffset = useKeyboardOffset()
 
   const [recentNotes, setRecentNotes] = useState<Note[]>([])
   const [isCreatingQuickNote, setIsCreatingQuickNote] = useState(false)
@@ -102,6 +104,10 @@ export default function Index() {
     })
   }, [database])
 
+  const quickNoteStyle = useMemo(() => ({
+    marginBottom: keyboardOffset > 0 ? keyboardOffset + inset.bottom : 0,
+  }), [inset.bottom, keyboardOffset])
+
   return (
     <View className="flex-1">
       <View className="bg-field px-4 pb-4" style={{ paddingTop: inset.top }}>
@@ -148,12 +154,9 @@ export default function Index() {
           </View>
         </View>
       </ScrollView>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="absolute bottom-0 left-0 right-0"
-      >
+      <View className="absolute bottom-0 left-0 right-0" style={quickNoteStyle}>
         <QuickNoteBar onSubmit={handleQuickCreate} isSubmitting={isCreatingQuickNote} />
-      </KeyboardAvoidingView>
+      </View>
     </View>
   );
 }
