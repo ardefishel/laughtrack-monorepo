@@ -5,9 +5,9 @@ import { AppConfig } from '@/config/app'
 import { database } from '@/database'
 import { performSync } from '@/lib/sync'
 import { router } from 'expo-router'
-import { Avatar, Button, ListGroup, Separator } from 'heroui-native'
+import { Button, ListGroup, Separator } from 'heroui-native'
 import { useCallback, useState } from 'react'
-import { Alert, Linking, ScrollView, Text, View } from 'react-native'
+import { Alert, Image, Linking, ScrollView, Text, View } from 'react-native'
 
 const MARKETING_URL = process.env.EXPO_PUBLIC_MARKETING_URL ?? 'https://laughtrack.app'
 const PRIVACY_POLICY_URL = `${MARKETING_URL}/privacy`
@@ -16,6 +16,7 @@ const TERMS_OF_SERVICE_URL = `${MARKETING_URL}/terms`
 export default function AccountScreen() {
     const { user, isAuthenticated, signOut } = useAuth()
     const [isSyncing, setIsSyncing] = useState(false)
+    const avatarInitial = user?.name?.trim().charAt(0).toUpperCase() || 'G'
 
     const handleSync = useCallback(async () => {
         if (!isAuthenticated) {
@@ -51,9 +52,13 @@ export default function AccountScreen() {
                 <Text className="text-2xl font-bold text-foreground mb-6">Account</Text>
 
                 <View className="flex-row items-center gap-4 mb-8">
-                    <Avatar alt={user?.name ?? 'Guest'} size="lg">
-                        {user?.image ? <Avatar.Image source={{ uri: user.image }} /> : <Avatar.Fallback />}
-                    </Avatar>
+                    <View className="h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-accent">
+                        {user?.image ? (
+                            <Image source={{ uri: user.image }} className="h-full w-full" resizeMode="cover" />
+                        ) : (
+                            <Text className="text-base font-semibold text-accent-foreground">{avatarInitial}</Text>
+                        )}
+                    </View>
                     <View className="flex-1">
                         <Text className="text-lg font-semibold text-foreground">{user?.name ?? 'Guest'}</Text>
                         <Text className="text-sm text-muted">{isAuthenticated ? user?.email : 'Sign in to sync your data'}</Text>

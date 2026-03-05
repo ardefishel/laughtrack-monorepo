@@ -5,7 +5,7 @@ import { PREMISE_TABLE_SCHEMA } from './schemas/premiseSchema'
 import { SETLIST_TABLE_SCHEMA } from './schemas/setlistSchema'
 
 export const schema = appSchema({
-    version: 3,
+    version: 1,
     tables: [
         tableSchema(NOTE_TABLE_SCHEMA),
         tableSchema(PREMISE_TABLE_SCHEMA),

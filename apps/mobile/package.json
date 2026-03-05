@@ -5,11 +5,14 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
+    "android:device": "expo run:android -d",
     "ios": "expo run:ios --simulator",
     "ios:device": "expo run:ios -d",
     "web": "expo start --web",
     "lint": "expo lint",
-    "clean": "rm -rf node_modules .expo ios android bun.lock "
+    "build": "expo prebuild",
+    "clean": "rm -rf node_modules .expo ios android bun.lock",
+    "eas-build-post-install": "cd ../.. && bun run --filter '@laughtrack/html-utils' build && bun run --filter '@laughtrack/logger' build && bun run --filter '@laughtrack/shared-types' build"
   },
   "dependencies": {
     "@better-auth/expo": "^1.5.1",

@@ -45,14 +45,23 @@ bun run db:migrate
 bun run dev
 ```
 
-### Google Sign-In (Android)
+### Google Sign-In (Google Cloud Only)
 
-Android Google Sign-In requires a `google-services.json` file (not committed to git):
+This mobile app uses `@react-native-google-signin/google-signin` with **Google Cloud OAuth clients** (not Firebase config files).
 
-1. Go to [Firebase Console](https://console.firebase.google.com/) → your project → **Project Settings**
-2. Under **Your apps**, add an Android app with package name `com.rtvcl.laughtrack`
-3. Download `google-services.json` and place it at `apps/mobile/google-services.json`
-4. Rebuild with `bun run mobile:android`
+1. In Google Cloud Console, create OAuth client IDs for:
+   - **Web** client (used for `idToken` exchange)
+   - **iOS** client for bundle ID `com.rtvcl.laughtrack`
+   - **Android** client for package `com.rtvcl.laughtrack` (with SHA-1 configured)
+2. Set mobile env vars in `apps/mobile/.env`:
+   - `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`
+   - `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`
+3. Rebuild native apps after config changes:
+   - `bun run mobile:ios`
+   - `bun run mobile:android`
+
+Notes:
+- `google-services.json` and `GoogleService-Info.plist` are only needed when using Firebase-based setup.
 
 ### Backend Env Vars
 

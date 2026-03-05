@@ -2,6 +2,13 @@ import "dotenv/config";
 import { ConfigContext, ExpoConfig } from "expo/config";
 import { AppConfig } from "./src/config/app.ts";
 
+const IOS_CLIENT_ID_SUFFIX = '.apps.googleusercontent.com'
+const googleIosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
+const googleIosUrlScheme =
+  googleIosClientId && googleIosClientId.endsWith(IOS_CLIENT_ID_SUFFIX)
+    ? `com.googleusercontent.apps.${googleIosClientId.replace(IOS_CLIENT_ID_SUFFIX, '')}`
+    : undefined
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: AppConfig.name,
@@ -48,7 +55,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
       },
     ],
-    '@react-native-google-signin/google-signin',
+    googleIosUrlScheme
+      ? ['@react-native-google-signin/google-signin', { iosUrlScheme: googleIosUrlScheme }]
+      : '@react-native-google-signin/google-signin',
     [
       'expo-build-properties',
       {
@@ -58,9 +67,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
               NSAllowsLocalNetworking: true,
             },
           },
-        },
-        android: {
-          googleServicesFile: './google-services.json',
         },
       },
     ],
