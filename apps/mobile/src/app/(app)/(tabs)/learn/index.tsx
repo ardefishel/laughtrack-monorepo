@@ -1,6 +1,5 @@
 import { Icon } from '@/components/ui/ion-icon'
 import { SafeAreaView } from '@/components/ui/safe-area-view'
-import { LinearGradient } from 'expo-linear-gradient'
 import React, { useEffect } from 'react'
 import { Text, View } from 'react-native'
 import Animated, {
@@ -108,14 +107,12 @@ export default function LearnScreen() {
                         className="bg-accent/20"
                     />
                     <Animated.View style={iconAnimatedStyle}>
-                        <LinearGradient
-                            colors={['rgba(var(--color-accent) / 0.15)', 'rgba(var(--color-accent) / 0.05)']}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 1 }}
+                        <View
                             style={{ width: 88, height: 88, borderRadius: 44, alignItems: 'center', justifyContent: 'center' }}
+                            className="bg-accent/10"
                         >
                             <Icon name="school-outline" size={40} className="text-accent" />
-                        </LinearGradient>
+                        </View>
                     </Animated.View>
                 </View>
 

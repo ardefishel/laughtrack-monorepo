@@ -6,6 +6,8 @@ export { SetlistNoteSchema, SetlistItemSchema, SetlistSchema } from '@/domain/se
 export type { SetlistNote, SetlistItem, Setlist } from '@/domain/setlist'
 export { TagSchema } from '@/domain/tag'
 export type { Tag } from '@/domain/tag'
+export { RecentWorkSchema, RecentWorkTypeSchema } from '@/domain/recent-work'
+export type { RecentWork } from '@/domain/recent-work'
 export {
     AttitudeSchema,
     PremiseSchema,

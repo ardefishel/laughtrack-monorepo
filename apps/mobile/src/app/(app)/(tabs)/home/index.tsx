@@ -1,6 +1,7 @@
 import { QuickNoteBar } from "@/features/home/components/quick-note-bar";
 import { RecentNoteCard } from "@/features/home/components/recent-note-card";
 import { RecentWorkCard } from "@/features/home/components/recent-work-card";
+import { useRecentWorks } from "@/features/home/hooks/use-recent-works";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { Q } from "@nozbe/watermelondb";
@@ -12,6 +13,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NOTE_TABLE } from "@/database/constants";
 import { Note as NoteModel } from "@/database/models/note";
 import type { Note } from "@/types";
+import type { RecentWork } from "@/domain/recent-work";
+
+const WORK_DETAIL_ROUTE: Record<RecentWork['type'], string> = {
+  premise: '/premise',
+  bit: '/bit',
+  set: '/setlist',
+}
 
 function toNote(model: NoteModel): Note {
   return {
@@ -26,6 +34,7 @@ export default function Index() {
   const inset = useSafeAreaInsets()
   const router = useRouter()
   const database = useDatabase()
+  const recentWorks = useRecentWorks()
 
   const [recentNotes, setRecentNotes] = useState<Note[]>([])
   const [isCreatingQuickNote, setIsCreatingQuickNote] = useState(false)
@@ -80,6 +89,10 @@ export default function Index() {
     router.push(`/note/${id}`)
   }, [router])
 
+  const openWork = useCallback((work: RecentWork) => {
+    router.push(`${WORK_DETAIL_ROUTE[work.type]}/${work.id}`)
+  }, [router])
+
   const handleDeleteNote = useCallback(async (id: string) => {
     await database.write(async () => {
       const note = await database.get<NoteModel>(NOTE_TABLE).find(id)
@@ -96,24 +109,26 @@ export default function Index() {
         </View>
       </View>
       <ScrollView className="flex-1 text-default bg-background" contentContainerStyle={{ paddingBottom: inset.bottom + 100 }}>
-        <View className="mt-4">
-          <View className="flex flex-row items-center justify-between px-4">
-            <Text className="text-foreground text-lg font-semibold">Recent Works</Text>
+        {recentWorks.length > 0 && (
+          <View className="mt-4">
+            <View className="flex flex-row items-center justify-between px-4">
+              <Text className="text-foreground text-lg font-semibold">Recent Works</Text>
+            </View>
+            <ScrollView className="pl-4 py-4 " snapToAlignment="start" snapToInterval={260} decelerationRate="fast" horizontal showsHorizontalScrollIndicator={false}>
+              {recentWorks.map((work) => (
+                <RecentWorkCard key={work.id} variant={work.type} title={work.title} onPress={() => openWork(work)} />
+              ))}
+            </ScrollView>
           </View>
-          <ScrollView className="pl-4 py-4 " snapToAlignment="start" snapToInterval={260} decelerationRate="fast" horizontal showsHorizontalScrollIndicator={false}>
-            <RecentWorkCard variant="premise" title="Semua orang punya teman yang selalu telat tapi selalu bilang 'otw'." />
-            <RecentWorkCard variant="premise" title="Orang Indo tuh unik, semua masalah diselesaikan dengan dua kata: 'santai aja'." />
-            <RecentWorkCard variant="bit" title="Kenapa orang Indonesia selalu bilang 'nanti dulu'?" />
-            <RecentWorkCard variant="set" title="Friday Night Jakarta Set" />
-            <RecentWorkCard variant="premise" title="Semua orang punya teman yang selalu telat tapi selalu bilang 'otw'." />
-          </ScrollView>
-        </View>
+        )}
         <View className="mt-4">
           <View className="flex flex-row items-center justify-between px-4">
             <Text className="text-foreground text-lg font-semibold">Recent Notes</Text>
-            <Pressable onPress={() => router.push("/note")}>
-              <Text className="text-accent">See all</Text>
-            </Pressable>
+            {recentNotes.length > 0 && (
+              <Pressable onPress={() => router.push("/note")}>
+                <Text className="text-accent">See all</Text>
+              </Pressable>
+            )}
           </View>
           <View className="px-4 pt-4 gap-4">
             {recentNotes.length === 0 ? (

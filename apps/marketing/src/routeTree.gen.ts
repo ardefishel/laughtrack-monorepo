@@ -9,12 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as Variants4RouteImport } from './routes/_variants/4'
 import { Route as Variants3RouteImport } from './routes/_variants/3'
 import { Route as Variants2RouteImport } from './routes/_variants/2'
 import { Route as Variants1RouteImport } from './routes/_variants/1'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,6 +61,9 @@ const Variants1Route = Variants1RouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/1': typeof Variants1Route
   '/2': typeof Variants2Route
   '/3': typeof Variants3Route
@@ -50,6 +71,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/1': typeof Variants1Route
   '/2': typeof Variants2Route
   '/3': typeof Variants3Route
@@ -58,6 +82,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/_variants/1': typeof Variants1Route
   '/_variants/2': typeof Variants2Route
   '/_variants/3': typeof Variants3Route
@@ -65,12 +92,23 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/1' | '/2' | '/3' | '/4'
+  fullPaths:
+    | '/'
+    | '/contact'
+    | '/privacy'
+    | '/terms'
+    | '/1'
+    | '/2'
+    | '/3'
+    | '/4'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/1' | '/2' | '/3' | '/4'
+  to: '/' | '/contact' | '/privacy' | '/terms' | '/1' | '/2' | '/3' | '/4'
   id:
     | '__root__'
     | '/'
+    | '/contact'
+    | '/privacy'
+    | '/terms'
     | '/_variants/1'
     | '/_variants/2'
     | '/_variants/3'
@@ -79,6 +117,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ContactRoute: typeof ContactRoute
+  PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
   Variants1Route: typeof Variants1Route
   Variants2Route: typeof Variants2Route
   Variants3Route: typeof Variants3Route
@@ -87,6 +128,27 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -127,6 +189,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ContactRoute: ContactRoute,
+  PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
   Variants1Route: Variants1Route,
   Variants2Route: Variants2Route,
   Variants3Route: Variants3Route,

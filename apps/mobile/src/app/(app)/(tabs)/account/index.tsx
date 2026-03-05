@@ -7,7 +7,11 @@ import { performSync } from '@/lib/sync'
 import { router } from 'expo-router'
 import { Avatar, Button, ListGroup, Separator } from 'heroui-native'
 import { useCallback, useState } from 'react'
-import { Alert, ScrollView, Text, View } from 'react-native'
+import { Alert, Linking, ScrollView, Text, View } from 'react-native'
+
+const MARKETING_URL = process.env.EXPO_PUBLIC_MARKETING_URL ?? 'https://laughtrack.app'
+const PRIVACY_POLICY_URL = `${MARKETING_URL}/privacy`
+const TERMS_OF_SERVICE_URL = `${MARKETING_URL}/terms`
 
 export default function AccountScreen() {
     const { user, isAuthenticated, signOut } = useAuth()
@@ -59,13 +63,15 @@ export default function AccountScreen() {
                 {/* Data */}
                 <Text className="text-sm text-muted mb-2 ml-2">Data</Text>
                 <ListGroup className="mb-6">
-                    <ListGroup.Item onPress={handleSync} disabled={isSyncing}>
+                    <ListGroup.Item onPress={handleSync} disabled={isSyncing || !isAuthenticated}>
                         <ListGroup.ItemPrefix>
-                            <Icon name="sync-outline" size={22} className="text-foreground" />
+                            <Icon name="sync-outline" size={22} className={isAuthenticated ? 'text-foreground' : 'text-muted'} />
                         </ListGroup.ItemPrefix>
                         <ListGroup.ItemContent>
                             <ListGroup.ItemTitle>{isSyncing ? 'Syncing...' : 'Sync Data'}</ListGroup.ItemTitle>
-                            <ListGroup.ItemDescription>Back up and restore your data</ListGroup.ItemDescription>
+                            <ListGroup.ItemDescription>
+                                {isAuthenticated ? 'Back up and restore your data' : 'Sign in to sync your data'}
+                            </ListGroup.ItemDescription>
                         </ListGroup.ItemContent>
                         <ListGroup.ItemSuffix />
                     </ListGroup.Item>
@@ -74,22 +80,22 @@ export default function AccountScreen() {
                 {/* Information */}
                 <Text className="text-sm text-muted mb-2 ml-2">Information</Text>
                 <ListGroup className="mb-6">
-                    <ListGroup.Item onPress={() => { }}>
-                        <ListGroup.ItemPrefix>
-                            <Icon name="help-circle-outline" size={22} className="text-foreground" />
-                        </ListGroup.ItemPrefix>
-                        <ListGroup.ItemContent>
-                            <ListGroup.ItemTitle>FAQ</ListGroup.ItemTitle>
-                        </ListGroup.ItemContent>
-                        <ListGroup.ItemSuffix />
-                    </ListGroup.Item>
-                    <Separator className="mx-4" />
-                    <ListGroup.Item onPress={() => { }}>
+                    <ListGroup.Item onPress={() => void Linking.openURL(TERMS_OF_SERVICE_URL)}>
                         <ListGroup.ItemPrefix>
                             <Icon name="document-text-outline" size={22} className="text-foreground" />
                         </ListGroup.ItemPrefix>
                         <ListGroup.ItemContent>
                             <ListGroup.ItemTitle>Terms of Service</ListGroup.ItemTitle>
+                        </ListGroup.ItemContent>
+                        <ListGroup.ItemSuffix />
+                    </ListGroup.Item>
+                    <Separator className="mx-4" />
+                    <ListGroup.Item onPress={() => void Linking.openURL(PRIVACY_POLICY_URL)}>
+                        <ListGroup.ItemPrefix>
+                            <Icon name="shield-checkmark-outline" size={22} className="text-foreground" />
+                        </ListGroup.ItemPrefix>
+                        <ListGroup.ItemContent>
+                            <ListGroup.ItemTitle>Privacy Policy</ListGroup.ItemTitle>
                         </ListGroup.ItemContent>
                         <ListGroup.ItemSuffix />
                     </ListGroup.Item>
