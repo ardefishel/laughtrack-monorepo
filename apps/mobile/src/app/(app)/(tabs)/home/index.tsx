@@ -109,26 +109,26 @@ export default function Index() {
         </View>
       </View>
       <ScrollView className="flex-1 text-default bg-background" contentContainerStyle={{ paddingBottom: inset.bottom + 100 }}>
-        <View className="mt-4">
-          <View className="flex flex-row items-center justify-between px-4">
-            <Text className="text-foreground text-lg font-semibold">Recent Works</Text>
-          </View>
-          {recentWorks.length === 0 ? (
-            <Text className="text-muted text-sm px-4 pt-4">No works yet. Create a premise, bit, or setlist to get started.</Text>
-          ) : (
+        {recentWorks.length > 0 && (
+          <View className="mt-4">
+            <View className="flex flex-row items-center justify-between px-4">
+              <Text className="text-foreground text-lg font-semibold">Recent Works</Text>
+            </View>
             <ScrollView className="pl-4 py-4 " snapToAlignment="start" snapToInterval={260} decelerationRate="fast" horizontal showsHorizontalScrollIndicator={false}>
               {recentWorks.map((work) => (
                 <RecentWorkCard key={work.id} variant={work.type} title={work.title} onPress={() => openWork(work)} />
               ))}
             </ScrollView>
-          )}
-        </View>
+          </View>
+        )}
         <View className="mt-4">
           <View className="flex flex-row items-center justify-between px-4">
             <Text className="text-foreground text-lg font-semibold">Recent Notes</Text>
-            <Pressable onPress={() => router.push("/note")}>
-              <Text className="text-accent">See all</Text>
-            </Pressable>
+            {recentNotes.length > 0 && (
+              <Pressable onPress={() => router.push("/note")}>
+                <Text className="text-accent">See all</Text>
+              </Pressable>
+            )}
           </View>
           <View className="px-4 pt-4 gap-4">
             {recentNotes.length === 0 ? (
