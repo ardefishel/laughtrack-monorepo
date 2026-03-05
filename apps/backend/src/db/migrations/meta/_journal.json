@@ -50,6 +50,13 @@
       "when": 1772329007555,
       "tag": "0006_secret_queen_noir",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1772675862910,
+      "tag": "0007_closed_rage",
+      "breakpoints": true
     }
   ]
 }

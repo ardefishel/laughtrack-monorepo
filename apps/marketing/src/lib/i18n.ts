@@ -192,7 +192,7 @@ export const translations: Record<Locale, Translations> = {
                 {
                     heading: '1. Introduction',
                     paragraphs: [
-                        'Laughtrack ("we", "our", or "us") is a mobile application designed for stand-up comedians to capture ideas, write jokes, organize material into setlists, and perform with confidence. This Privacy Policy explains how we collect, use, and protect your information when you use our app.',
+                        'Laughtrack ("we", "our", or "us") is a mobile application designed for stand-up comedians to capture ideas, write jokes, organize material into setlists, and perform with confidence. This Privacy Policy explains how we collect, use, and protect your information when you use our app. LaughTrack is operated by RTVCL. The legal basis for processing your personal data is your consent (given at account creation) and the performance of our service contract with you. This policy complies with Indonesia\'s Personal Data Protection Law (UU No. 27 Tahun 2022).',
                     ],
                 },
                 {
@@ -206,13 +206,14 @@ export const translations: Record<Locale, Translations> = {
                 {
                     heading: '3. How We Use Your Information',
                     paragraphs: [
-                        'We use your information to provide and improve Laughtrack, including: authenticating your account, enabling data sync and backup, and maintaining app functionality. We do not sell your personal data or comedy material to third parties.',
+                        'We use your information to provide and improve Laughtrack, including: authenticating your account, enabling data sync and backup, and maintaining app functionality. We do not sell your personal data or comedy material to third parties. We do not use your personal data or comedy content for advertising purposes, and we do not share it with advertising networks.',
                     ],
                 },
                 {
                     heading: '4. Data Storage & Security',
                     paragraphs: [
                         'Your content is stored locally on your device using an on-device database. When you enable sync, data is encrypted in transit and stored securely on our servers. We implement industry-standard security measures to protect your information.',
+                        'We retain your account information and synced content for as long as your account is active. If you request account deletion, all server-side data is permanently removed within 30 days.',
                     ],
                 },
                 {
@@ -224,7 +225,8 @@ export const translations: Record<Locale, Translations> = {
                 {
                     heading: '6. Third-Party Services',
                     paragraphs: [
-                        'We may use third-party services for authentication and analytics. These services have their own privacy policies, and we encourage you to review them. We do not share your comedy content with any third-party service.',
+                        'We use Google Sign-In (provided by Google LLC) for authentication. When you sign in with Google, Google may collect your name, email address, and profile photo according to their own privacy policy. Please review Google\'s Privacy Policy at https://policies.google.com/privacy.',
+                        'We do not share your comedy content (notes, premises, bits, or setlists) with any third-party service.',
                     ],
                 },
                 {
@@ -460,7 +462,7 @@ export const translations: Record<Locale, Translations> = {
                 {
                     heading: '1. Pendahuluan',
                     paragraphs: [
-                        'Laughtrack ("kami") adalah aplikasi mobile yang dirancang untuk komedian stand-up untuk menangkap ide, menulis jokes, menyusun materi ke dalam setlist, dan tampil dengan percaya diri. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi Anda saat menggunakan aplikasi kami.',
+                        'Laughtrack ("kami") adalah aplikasi mobile yang dirancang untuk komedian stand-up untuk menangkap ide, menulis jokes, menyusun materi ke dalam setlist, dan tampil dengan percaya diri. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi Anda saat menggunakan aplikasi kami. LaughTrack dioperasikan oleh RTVCL. Dasar hukum pemrosesan data pribadi Anda adalah persetujuan Anda (diberikan saat pembuatan akun) dan pelaksanaan kontrak layanan kami dengan Anda. Kebijakan ini mematuhi Undang-Undang Perlindungan Data Pribadi Indonesia (UU No. 27 Tahun 2022).',
                     ],
                 },
                 {
@@ -474,13 +476,14 @@ export const translations: Record<Locale, Translations> = {
                 {
                     heading: '3. Cara Kami Menggunakan Informasi Anda',
                     paragraphs: [
-                        'Kami menggunakan informasi Anda untuk menyediakan dan meningkatkan Laughtrack, termasuk: mengautentikasi akun Anda, mengaktifkan sinkronisasi dan pencadangan data, serta menjaga fungsionalitas aplikasi. Kami tidak menjual data pribadi atau materi komedi Anda kepada pihak ketiga.',
+                        'Kami menggunakan informasi Anda untuk menyediakan dan meningkatkan Laughtrack, termasuk: mengautentikasi akun Anda, mengaktifkan sinkronisasi dan pencadangan data, serta menjaga fungsionalitas aplikasi. Kami tidak menjual data pribadi atau materi komedi Anda kepada pihak ketiga. Kami tidak menggunakan data pribadi atau konten komedi Anda untuk tujuan periklanan, dan kami tidak membagikannya kepada jaringan periklanan.',
                     ],
                 },
                 {
                     heading: '4. Penyimpanan & Keamanan Data',
                     paragraphs: [
                         'Konten Anda disimpan secara lokal di perangkat menggunakan database on-device. Saat Anda mengaktifkan sinkronisasi, data dienkripsi saat transit dan disimpan dengan aman di server kami. Kami menerapkan langkah-langkah keamanan standar industri untuk melindungi informasi Anda.',
+                        'Kami menyimpan informasi akun dan konten yang disinkronkan selama akun Anda aktif. Jika Anda meminta penghapusan akun, semua data di sisi server akan dihapus secara permanen dalam 30 hari.',
                     ],
                 },
                 {
@@ -492,7 +495,8 @@ export const translations: Record<Locale, Translations> = {
                 {
                     heading: '6. Layanan Pihak Ketiga',
                     paragraphs: [
-                        'Kami mungkin menggunakan layanan pihak ketiga untuk autentikasi dan analitik. Layanan ini memiliki kebijakan privasi mereka sendiri, dan kami mendorong Anda untuk meninjaunya. Kami tidak membagikan konten komedi Anda dengan layanan pihak ketiga mana pun.',
+                        'Kami menggunakan Google Sign-In (disediakan oleh Google LLC) untuk autentikasi. Saat Anda masuk dengan Google, Google dapat mengumpulkan nama, alamat email, dan foto profil Anda sesuai kebijakan privasi mereka sendiri. Silakan tinjau Kebijakan Privasi Google di https://policies.google.com/privacy.',
+                        'Kami tidak membagikan konten komedi Anda (catatan, premis, bit, atau setlist) kepada layanan pihak ketiga mana pun.',
                     ],
                 },
                 {
