@@ -1,11 +1,10 @@
 import type { Database } from '@nozbe/watermelondb'
 import { synchronize, type SyncPullArgs, type SyncPushArgs } from '@nozbe/watermelondb/sync'
-import { Platform } from 'react-native'
+import { API_BASE_URL } from '@/lib/api-base-url'
 import { getAuthCookieHeader } from '@/lib/auth-client'
 import { syncLogger } from '@/lib/loggers'
 
-const SYNC_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL ?? (Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000')
+const SYNC_BASE_URL = API_BASE_URL
 
 function countChanges(changes: Record<string, { created?: unknown[]; updated?: unknown[]; deleted?: unknown[] }>): string {
     return Object.entries(changes)

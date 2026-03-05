@@ -5,7 +5,8 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
-    "ios": "expo run:ios",
+    "ios": "expo run:ios --simulator",
+    "ios:device": "expo run:ios -d",
     "web": "expo start --web",
     "lint": "expo lint",
     "clean": "rm -rf node_modules .expo ios android bun.lock "

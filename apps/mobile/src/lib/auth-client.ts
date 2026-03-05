@@ -1,11 +1,10 @@
-import { Platform } from 'react-native'
 import { createAuthClient } from 'better-auth/react'
 import { expoClient } from '@better-auth/expo/client'
 import * as SecureStore from 'expo-secure-store'
+import { API_BASE_URL } from '@/lib/api-base-url'
 import { authLogger } from '@/lib/loggers'
 
-const baseURL =
-  process.env.EXPO_PUBLIC_API_URL ?? (Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000')
+const baseURL = API_BASE_URL
 
 const COOKIE_STORE_KEY = 'laughtrack_cookie'
 

@@ -15,10 +15,12 @@ import { Note as NoteModel } from "@/database/models/note";
 import type { Note } from "@/types";
 import type { RecentWork } from "@/domain/recent-work";
 
-const WORK_DETAIL_ROUTE: Record<RecentWork['type'], string> = {
-  premise: '/premise',
-  bit: '/bit',
-  set: '/setlist',
+type WorkDetailPathname = '/(app)/(detail)/premise/[id]' | '/(app)/(detail)/bit/[id]' | '/(app)/(detail)/setlist/[id]'
+
+const WORK_DETAIL_ROUTE: Record<RecentWork['type'], WorkDetailPathname> = {
+  premise: '/(app)/(detail)/premise/[id]',
+  bit: '/(app)/(detail)/bit/[id]',
+  set: '/(app)/(detail)/setlist/[id]',
 }
 
 function toNote(model: NoteModel): Note {
@@ -90,7 +92,7 @@ export default function Index() {
   }, [router])
 
   const openWork = useCallback((work: RecentWork) => {
-    router.push(`${WORK_DETAIL_ROUTE[work.type]}/${work.id}`)
+    router.push({ pathname: WORK_DETAIL_ROUTE[work.type], params: { id: work.id } })
   }, [router])
 
   const handleDeleteNote = useCallback(async (id: string) => {

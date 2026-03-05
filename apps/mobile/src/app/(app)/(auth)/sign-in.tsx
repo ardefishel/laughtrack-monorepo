@@ -7,13 +7,17 @@ import { useCallback, useState } from 'react'
 import { Alert, Pressable, Text, View } from 'react-native'
 
 export default function SignIn() {
-    const { signIn } = useAuth()
+    const { signIn, signInWithGoogle } = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false)
 
     const handleSignIn = useCallback(async () => {
-        if (!email.trim() || !password.trim()) return
+        if (!email.trim() || !password.trim()) {
+            Alert.alert('Error', 'Please fill in all fields.')
+            return
+        }
         setIsLoading(true)
         try {
             const result = await signIn(email.trim(), password)
@@ -26,6 +30,20 @@ export default function SignIn() {
             setIsLoading(false)
         }
     }, [email, password, signIn])
+
+    const handleGoogleSignIn = useCallback(async () => {
+        setIsGoogleLoading(true)
+        try {
+            const result = await signInWithGoogle()
+            if (result.success) {
+                router.dismissAll()
+            } else {
+                Alert.alert('Google Sign In Failed', result.error ?? 'Please try again.')
+            }
+        } finally {
+            setIsGoogleLoading(false)
+        }
+    }, [signInWithGoogle])
 
     return (
         <AuthContainer title='Welcome Back' subtitle='Sign in to your account'>
@@ -62,7 +80,7 @@ export default function SignIn() {
                 <Button
                     variant="primary"
                     onPress={handleSignIn}
-                    isDisabled={isLoading || !email.trim() || !password.trim()}
+                    isDisabled={isLoading || isGoogleLoading || !email.trim() || !password.trim()}
                     className="w-full"
                 >
                     <Button.Label>{isLoading ? 'Signing In...' : 'Sign In'}</Button.Label>
@@ -76,7 +94,8 @@ export default function SignIn() {
 
                 <Button
                     variant="outline"
-                    onPress={() => { }}
+                    onPress={handleGoogleSignIn}
+                    isDisabled={isGoogleLoading || isLoading}
                     className="w-full"
                 >
                     <Icon
@@ -84,7 +103,7 @@ export default function SignIn() {
                         size={20}
                         className="text-foreground mr-2"
                     />
-                    <Button.Label>Google</Button.Label>
+                    <Button.Label>{isGoogleLoading ? 'Signing In...' : 'Google'}</Button.Label>
                 </Button>
 
                 <View className="flex-row justify-center gap-1 mt-4">
