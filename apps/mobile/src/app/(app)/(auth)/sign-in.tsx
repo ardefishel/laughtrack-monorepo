@@ -1,12 +1,13 @@
 import { useAuth } from '@/features/auth/context/auth-context'
 import { AuthContainer } from '@/features/auth/components/container'
 import { Icon } from '@/components/ui/ion-icon'
-import { router } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { Button, Input, TextField } from 'heroui-native'
 import { useCallback, useState } from 'react'
 import { Alert, Pressable, Text, View } from 'react-native'
 
 export default function SignIn() {
+    const router = useRouter()
     const { signIn, signInWithGoogle } = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')

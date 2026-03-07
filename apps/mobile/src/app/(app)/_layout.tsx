@@ -1,10 +1,11 @@
 
 import { Icon } from "@/components/ui/ion-icon";
-import { router, Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useThemeColor } from "heroui-native";
 import { Pressable, Text } from "react-native";
 
 export default function AppStack() {
+    const router = useRouter()
     const field = useThemeColor('field')
     const accent = useThemeColor('accent')
     const background = useThemeColor('background')

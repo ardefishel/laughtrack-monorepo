@@ -8,7 +8,7 @@ import { Premise as PremiseModel } from '@/database/models/premise'
 import type { Attitude, PremiseStatus } from '@/types'
 import { parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
 import { useDatabase } from '@nozbe/watermelondb/react'
-import { router, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Checkbox, Chip, PressableFeedback } from 'heroui-native'
 import { useEffect, useState } from 'react'
 import { Text, View } from 'react-native'
@@ -16,6 +16,7 @@ import { Text, View } from 'react-native'
 const ALL_ATTITUDES = Object.entries(attitudeConfig) as [Attitude, { label: string; emoji: string }][]
 
 export default function PremiseFilterModal() {
+    const router = useRouter()
     const database = useDatabase()
     const params = useLocalSearchParams<{ statuses?: string; tags?: string; attitudes?: string }>()
     const [allTags, setAllTags] = useState<string[]>([])

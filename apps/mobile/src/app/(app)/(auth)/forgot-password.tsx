@@ -1,7 +1,7 @@
 import { AuthContainer } from '@/features/auth/components/container'
 import { authClient } from '@/lib/auth-client'
 import { authLogger } from '@/lib/loggers'
-import { router } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { Button, Input, TextField } from 'heroui-native'
 import { useCallback, useState } from 'react'
 import { Alert, View } from 'react-native'
@@ -28,6 +28,7 @@ async function requestPasswordReset(input: PasswordResetRequest) {
 }
 
 export default function ForgotPassword() {
+    const router = useRouter()
     const [email, setEmail] = useState('')
     const [isLoading, setIsLoading] = useState(false)
 

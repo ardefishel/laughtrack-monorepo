@@ -7,12 +7,13 @@ import { parseBitTagNames } from '@/database/mappers/bitMapper'
 import type { BitStatus } from '@/types'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { parseBooleanParam, parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
-import { router, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Checkbox, Chip, PressableFeedback } from 'heroui-native'
 import { useEffect, useMemo, useState } from 'react'
 import { Text, View } from 'react-native'
 
 export default function BitFilterModal() {
+    const router = useRouter()
     const database = useDatabase()
     const params = useLocalSearchParams<{ statuses?: string; tags?: string; hasPremise?: string }>()
     const [availableTags, setAvailableTags] = useState<string[]>([])

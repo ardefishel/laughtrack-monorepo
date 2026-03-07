@@ -1,5 +1,5 @@
 import { Button, Separator } from 'heroui-native'
-import { router } from 'expo-router'
+import { useRouter } from 'expo-router'
 import type { ReactNode } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 
@@ -22,6 +22,7 @@ export function FilterModalShell({
     scroll = false,
     applyPrefix,
 }: FilterModalShellProps) {
+    const router = useRouter()
     const content = scroll ? (
         <ScrollView contentContainerClassName='px-6 pt-6 gap-4 pb-8'>{children}</ScrollView>
     ) : (

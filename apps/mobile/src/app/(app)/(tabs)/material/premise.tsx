@@ -9,10 +9,11 @@ import { useFocusEffect } from '@react-navigation/native'
 import type { FlashListRef } from '@shopify/flash-list'
 import { Q } from '@nozbe/watermelondb'
 import { useDatabase } from '@nozbe/watermelondb/react'
-import { router, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useRef, useMemo, useState } from 'react'
 
 export default function PremiseListScreen() {
+    const router = useRouter()
     const database = useDatabase()
     const params = useLocalSearchParams<{ statuses?: string; tags?: string; attitudes?: string }>()
     const [search, setSearch] = useState('')

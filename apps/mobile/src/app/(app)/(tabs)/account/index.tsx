@@ -4,7 +4,7 @@ import { SafeAreaView } from '@/components/ui/safe-area-view'
 import { AppConfig } from '@/config/app'
 import { database } from '@/database'
 import { performSync } from '@/lib/sync'
-import { router } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { Button, ListGroup, Separator } from 'heroui-native'
 import { useCallback, useState } from 'react'
 import { Alert, Image, Linking, ScrollView, Text, View } from 'react-native'
@@ -14,6 +14,7 @@ const PRIVACY_POLICY_URL = `${MARKETING_URL}/privacy`
 const TERMS_OF_SERVICE_URL = `${MARKETING_URL}/terms`
 
 export default function AccountScreen() {
+    const router = useRouter()
     const { user, isAuthenticated, signOut } = useAuth()
     const [isSyncing, setIsSyncing] = useState(false)
     const avatarInitial = user?.name?.trim().charAt(0).toUpperCase() || 'G'

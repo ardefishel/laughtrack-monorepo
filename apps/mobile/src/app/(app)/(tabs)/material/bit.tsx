@@ -12,10 +12,11 @@ import { useFocusEffect } from '@react-navigation/native'
 import type { FlashListRef } from '@shopify/flash-list'
 import { Q } from '@nozbe/watermelondb'
 import { useDatabase } from '@nozbe/watermelondb/react'
-import { router, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 export default function BitListScreen() {
+    const router = useRouter()
     const database = useDatabase()
     const params = useLocalSearchParams<{ statuses?: string; tags?: string; hasPremise?: string }>()
     const [search, setSearch] = useState('')
