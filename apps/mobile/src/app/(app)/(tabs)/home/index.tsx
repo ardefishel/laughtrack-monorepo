@@ -4,14 +4,15 @@ import { RecentWorkCard } from "@/features/home/components/recent-work-card";
 import { useRecentWorks } from "@/features/home/hooks/use-recent-works";
 import { useKeyboardOffset } from "@/lib/use-keyboard-offset";
 import { useRouter } from "expo-router";
-import { useFocusEffect } from "@react-navigation/native";
 import { Q } from "@nozbe/watermelondb";
 import { useDatabase } from "@nozbe/watermelondb/react";
+import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NOTE_TABLE } from "@/database/constants";
+import { noteModelToDomain } from "@/database/mappers/noteMapper";
 import { Note as NoteModel } from "@/database/models/note";
 import type { Note } from "@/types";
 import type { RecentWork } from "@/domain/recent-work";
@@ -24,15 +25,6 @@ const WORK_DETAIL_ROUTE: Record<RecentWork['type'], WorkDetailPathname> = {
   set: '/(app)/(detail)/setlist/[id]',
 }
 
-function toNote(model: NoteModel): Note {
-  return {
-    id: model.id,
-    content: model.content,
-    createdAt: model.createdAt,
-    updatedAt: model.updatedAt,
-  }
-}
-
 export default function Index() {
   const inset = useSafeAreaInsets()
   const router = useRouter()
@@ -43,13 +35,12 @@ export default function Index() {
   const [recentNotes, setRecentNotes] = useState<Note[]>([])
   const [isCreatingQuickNote, setIsCreatingQuickNote] = useState(false)
 
-  const loadRecentNotes = useCallback(async () => {
+  const fetchRecentNotes = useCallback(async () => {
     const value = await database
       .get<NoteModel>(NOTE_TABLE)
       .query(Q.sortBy('updated_at', Q.desc), Q.take(6))
       .fetch()
-
-    setRecentNotes(value.map(toNote))
+    setRecentNotes(value.map(noteModelToDomain))
   }, [database])
 
   useEffect(() => {
@@ -58,7 +49,7 @@ export default function Index() {
       .query(Q.sortBy('updated_at', Q.desc), Q.take(6))
       .observe()
       .subscribe((notes: NoteModel[]) => {
-        setRecentNotes(notes.map(toNote))
+        setRecentNotes(notes.map(noteModelToDomain))
       })
 
     return () => subscription.unsubscribe()
@@ -66,8 +57,8 @@ export default function Index() {
 
   useFocusEffect(
     useCallback(() => {
-      void loadRecentNotes()
-    }, [loadRecentNotes]),
+      void fetchRecentNotes()
+    }, [fetchRecentNotes]),
   )
 
   const handleQuickCreate = useCallback(async (content: string) => {

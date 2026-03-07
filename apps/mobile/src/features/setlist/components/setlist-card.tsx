@@ -1,10 +1,10 @@
 import { Icon } from '@/components/ui/ion-icon'
+import { SwipeableRow } from '@/components/ui/swipeable-row'
 import type { Setlist } from '@/types'
 import { timeAgo } from '@/lib/time-ago'
 import { Card, Chip, PressableFeedback } from 'heroui-native'
-import { memo, useRef } from 'react'
-import { Animated, Pressable, Text, View } from 'react-native'
-import { Swipeable } from 'react-native-gesture-handler'
+import { memo } from 'react'
+import { Text, View } from 'react-native'
 
 interface SetlistCardProps {
     setlist: Setlist
@@ -15,7 +15,6 @@ interface SetlistCardProps {
 function SetlistCardComponent({ setlist, onPress, onDelete }: SetlistCardProps) {
     const bitCount = setlist.items.filter((item) => item.type === 'bit').length
     const hasTags = setlist.tags && setlist.tags.length > 0
-    const swipeableRef = useRef<Swipeable>(null)
 
     const card = (
         <PressableFeedback onPress={onPress}>
@@ -65,39 +64,12 @@ function SetlistCardComponent({ setlist, onPress, onDelete }: SetlistCardProps) 
         </PressableFeedback>
     )
 
-    if (!onDelete) return card
-
-    const renderRightActions = (
-        _progress: Animated.AnimatedInterpolation<number>,
-        dragX: Animated.AnimatedInterpolation<number>,
-    ) => {
-        const scale = dragX.interpolate({
-            inputRange: [-80, 0],
-            outputRange: [1, 0.5],
-            extrapolate: 'clamp',
-        })
-
-        return (
-            <Pressable
-                onPress={() => {
-                    swipeableRef.current?.close()
-                    onDelete()
-                }}
-                className="bg-danger rounded-xl items-center justify-center ml-3"
-                style={{ width: 72 }}
-            >
-                <Animated.View style={{ transform: [{ scale }] }} className="items-center gap-1">
-                    <Icon name="trash-outline" size={20} className="text-white" />
-                    <Text className="text-white text-[10px] font-semibold">Delete</Text>
-                </Animated.View>
-            </Pressable>
-        )
-    }
-
     return (
-        <Swipeable ref={swipeableRef} renderRightActions={renderRightActions} overshootRight={false} friction={2}>
+        <SwipeableRow
+            actions={onDelete ? [{ key: 'delete', icon: 'trash-outline', label: 'Delete', color: 'bg-danger', onPress: onDelete }] : []}
+        >
             {card}
-        </Swipeable>
+        </SwipeableRow>
     )
 }
 

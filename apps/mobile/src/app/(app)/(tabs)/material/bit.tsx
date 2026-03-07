@@ -24,15 +24,13 @@ export default function BitListScreen() {
     const listRef = useRef<FlashListRef<Bit> | null>(null)
     const countBeforeCreateRef = useRef<number | null>(null)
 
-    const loadBits = useCallback(async () => {
+    const fetchBits = useCallback(async () => {
         const value = await database
             .get<BitModel>(BIT_TABLE)
             .query(Q.sortBy('updated_at', Q.desc))
             .fetch()
-
-        const mapped = value.map(bitModelToDomain)
-        setBits(mapped)
-        return mapped
+        setBits(value.map(bitModelToDomain))
+        return value.length
     }, [database])
 
     useEffect(() => {
@@ -50,10 +48,10 @@ export default function BitListScreen() {
     useFocusEffect(
         useCallback(() => {
             void (async () => {
-                const latest = await loadBits()
+                const count = await fetchBits()
                 const countBeforeCreate = countBeforeCreateRef.current
 
-                if (countBeforeCreate !== null && latest.length > countBeforeCreate) {
+                if (countBeforeCreate !== null && count > countBeforeCreate) {
                     requestAnimationFrame(() => {
                         listRef.current?.scrollToOffset({ offset: 0, animated: true })
                     })
@@ -61,7 +59,7 @@ export default function BitListScreen() {
 
                 countBeforeCreateRef.current = null
             })()
-        }, [loadBits]),
+        }, [fetchBits]),
     )
 
     const filteredBits = useMemo(() => {
