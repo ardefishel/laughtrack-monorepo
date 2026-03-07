@@ -1,2 +1,3 @@
 [install]
-hoist=true
+linker = "isolated"
+backend = "copyfile"
