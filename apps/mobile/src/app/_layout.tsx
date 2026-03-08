@@ -31,6 +31,8 @@ export default function RootLayout() {
     }, [])
 
     useEffect(() => {
+        if (!__DEV__) return
+
         const handleUrl = ({ url }: { url: string }) => {
             if (url === 'laughtrack://seed-mock-data') {
                 dbLogger.info('Deep link received: seeding mock data')
