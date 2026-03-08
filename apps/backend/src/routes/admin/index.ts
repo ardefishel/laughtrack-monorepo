@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { corsOrigins } from '../../lib/cors-origins'
 import { webRoutes } from './admin-routes'
 
 const webApp = new Hono()
@@ -8,7 +9,7 @@ const webApp = new Hono()
 webApp.use(
     '*',
     cors({
-        origin: [process.env.CORS_ORIGIN ?? 'http://localhost:3000', 'http://localhost:3001'],
+        origin: corsOrigins,
         allowHeaders: ['Content-Type', 'Authorization'],
         allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         credentials: true,

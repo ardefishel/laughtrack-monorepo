@@ -3,6 +3,7 @@ import { expo } from '@better-auth/expo'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { admin } from 'better-auth/plugins'
 import { db } from '../db'
+import { corsOrigins } from '../lib/cors-origins'
 import { users, sessions, accounts, verification } from '../db/schema'
 
 export const auth = betterAuth({
@@ -16,7 +17,7 @@ export const auth = betterAuth({
     },
   }),
   baseURL: process.env.AUTH_URL,
-  trustedOrigins: ['laughtrack://', 'http://localhost:3001'],
+  trustedOrigins: ['laughtrack://', ...corsOrigins],
   plugins: [expo(), admin()],
   emailAndPassword: {
     enabled: true,

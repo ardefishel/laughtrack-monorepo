@@ -6,6 +6,7 @@ import { webApp } from './routes/admin'
 import { authRoutes } from './routes/auth-routes'
 import { mobileApp } from './routes/mobile'
 import { detect } from './routes/runtime-routes'
+import { corsOrigins } from './lib/cors-origins'
 
 const app = new Hono()
 
@@ -25,7 +26,7 @@ app.use('*', errorMiddleware())
 app.use(
   '/api/auth/*',
   cors({
-    origin: [process.env.CORS_ORIGIN ?? 'http://localhost:3000', 'http://localhost:3001', 'laughtrack://'],
+    origin: [...corsOrigins, 'laughtrack://'],
     allowHeaders: ['Content-Type', 'Authorization'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
