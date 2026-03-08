@@ -1,7 +1,7 @@
 import { TagInput } from '@/features/material/components/tag-input'
 import { Icon } from '@/components/ui/ion-icon'
 import type { SetlistItem } from '@/types'
-import { router } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { Button, Input } from 'heroui-native'
 import { Text, View } from 'react-native'
 
@@ -24,6 +24,7 @@ export function SetlistListHeader({
     bitCount,
     onOpenTypeDialog,
 }: SetlistListHeaderProps) {
+    const router = useRouter()
     return (
         <View className='gap-6 px-4 pt-6'>
             <View className='gap-2'>

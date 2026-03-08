@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, type ReactNode } from 'react'
 import { authClient } from '@/lib/auth-client'
 import { authLogger } from '@/lib/loggers'
+import { useGoogleSignIn } from '@/features/auth/hooks/use-google-sign-in'
 
 interface AuthUser {
     id: string
@@ -15,6 +16,7 @@ interface AuthContextType {
     isPending: boolean
     signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
     signUp: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>
+    signInWithGoogle: () => Promise<{ success: boolean; error?: string }>
     signOut: () => Promise<void>
 }
 
@@ -22,6 +24,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const session = authClient.useSession()
+    const { signInWithGoogle: googleSignIn } = useGoogleSignIn()
 
     const user = (session.data?.user as AuthUser) ?? null
     const isAuthenticated = !!user
@@ -69,8 +72,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, [])
 
+    const signInWithGoogle = useCallback(async () => {
+        return googleSignIn()
+    }, [googleSignIn])
+
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, isPending, signIn, signUp, signOut }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, isPending, signIn, signUp, signInWithGoogle, signOut }}>
             {children}
         </AuthContext.Provider>
     )

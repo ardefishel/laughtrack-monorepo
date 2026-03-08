@@ -3,6 +3,10 @@
 # dependencies
 node_modules/
 
+# Build output
+.output/
+.nitro/
+
 # Expo
 .expo/
 dist/
@@ -62,3 +66,5 @@ bun.lockb
 # Amp
 .docs
 
+*.apk
+*.aab

@@ -7,7 +7,7 @@ import { parseStringArrayJson } from '@/database/utils/json'
 import { dbLogger } from '@/lib/loggers'
 import type { SetlistItem } from '@/types'
 import { useDatabase } from '@nozbe/watermelondb/react'
-import { router, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 
 function toPersistedSetlistItems(items: SetlistItem[]): SetlistItem[] {
@@ -50,6 +50,7 @@ function extractBitIds(items: SetlistItem[]): string[] {
 }
 
 export function useSetlistForm() {
+    const router = useRouter()
     const database = useDatabase()
     const { id, addedBits, addedBitsNonce } = useLocalSearchParams<{
         id: string

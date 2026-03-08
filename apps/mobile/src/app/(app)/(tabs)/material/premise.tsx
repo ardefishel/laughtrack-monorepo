@@ -9,10 +9,11 @@ import { useFocusEffect } from '@react-navigation/native'
 import type { FlashListRef } from '@shopify/flash-list'
 import { Q } from '@nozbe/watermelondb'
 import { useDatabase } from '@nozbe/watermelondb/react'
-import { router, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useRef, useMemo, useState } from 'react'
 
 export default function PremiseListScreen() {
+    const router = useRouter()
     const database = useDatabase()
     const params = useLocalSearchParams<{ statuses?: string; tags?: string; attitudes?: string }>()
     const [search, setSearch] = useState('')
@@ -20,15 +21,13 @@ export default function PremiseListScreen() {
     const listRef = useRef<FlashListRef<Premise> | null>(null)
     const countBeforeCreateRef = useRef<number | null>(null)
 
-    const loadPremises = useCallback(async () => {
+    const fetchPremises = useCallback(async () => {
         const value = await database
             .get<PremiseModel>(PREMISE_TABLE)
             .query(Q.sortBy('updated_at', Q.desc))
             .fetch()
-
-        const mapped = value.map(premiseModelToDomain)
-        setPremises(mapped)
-        return mapped
+        setPremises(value.map(premiseModelToDomain))
+        return value.length
     }, [database])
 
     useEffect(() => {
@@ -46,10 +45,10 @@ export default function PremiseListScreen() {
     useFocusEffect(
         useCallback(() => {
             void (async () => {
-                const latest = await loadPremises()
+                const count = await fetchPremises()
                 const countBeforeCreate = countBeforeCreateRef.current
 
-                if (countBeforeCreate !== null && latest.length > countBeforeCreate) {
+                if (countBeforeCreate !== null && count > countBeforeCreate) {
                     requestAnimationFrame(() => {
                         listRef.current?.scrollToOffset({ offset: 0, animated: true })
                     })
@@ -57,7 +56,7 @@ export default function PremiseListScreen() {
 
                 countBeforeCreateRef.current = null
             })()
-        }, [loadPremises]),
+        }, [fetchPremises]),
     )
 
     const filteredPremises = useMemo(() => {

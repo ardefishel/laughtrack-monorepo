@@ -1,23 +1,32 @@
 import { useAuth } from '@/features/auth/context/auth-context'
 import { AuthContainer } from '@/features/auth/components/container'
 import { Icon } from '@/components/ui/ion-icon'
-import { router } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { Button, Input, TextField } from 'heroui-native'
 import { useCallback, useState } from 'react'
 import { Alert, Pressable, Text, View } from 'react-native'
 
 export default function SignUp() {
-    const { signUp } = useAuth()
+    const router = useRouter()
+    const { signUp, signInWithGoogle } = useAuth()
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false)
 
     const handleSignUp = useCallback(async () => {
-        if (!name.trim() || !email.trim() || !password.trim()) return
+        if (!name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
+            Alert.alert('Error', 'Please fill in all fields.')
+            return
+        }
         if (password !== confirmPassword) {
             Alert.alert('Error', 'Passwords do not match.')
+            return
+        }
+        if (password.length < 8) {
+            Alert.alert('Error', 'Password must be at least 8 characters.')
             return
         }
         setIsLoading(true)
@@ -34,6 +43,20 @@ export default function SignUp() {
             setIsLoading(false)
         }
     }, [name, email, password, confirmPassword, signUp])
+
+    const handleGoogleSignIn = useCallback(async () => {
+        setIsGoogleLoading(true)
+        try {
+            const result = await signInWithGoogle()
+            if (result.success) {
+                router.dismissAll()
+            } else {
+                Alert.alert('Google Sign In Failed', result.error ?? 'Please try again.')
+            }
+        } finally {
+            setIsGoogleLoading(false)
+        }
+    }, [signInWithGoogle])
 
     return (
         <AuthContainer title='Create Account' subtitle='Sign up to get started'>
@@ -79,7 +102,14 @@ export default function SignUp() {
                 <Button
                     variant="primary"
                     onPress={handleSignUp}
-                    isDisabled={isLoading || !name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()}
+                    isDisabled={
+                        isLoading ||
+                        isGoogleLoading ||
+                        !name.trim() ||
+                        !email.trim() ||
+                        !password.trim() ||
+                        !confirmPassword.trim()
+                    }
                     className="w-full"
                 >
                     <Button.Label>{isLoading ? 'Creating Account...' : 'Sign Up'}</Button.Label>
@@ -93,7 +123,8 @@ export default function SignUp() {
 
                 <Button
                     variant="outline"
-                    onPress={() => { }}
+                    onPress={handleGoogleSignIn}
+                    isDisabled={isGoogleLoading || isLoading}
                     className="w-full"
                 >
                     <Icon
@@ -101,7 +132,7 @@ export default function SignUp() {
                         size={20}
                         className="text-foreground mr-2"
                     />
-                    <Button.Label>Google</Button.Label>
+                    <Button.Label>{isGoogleLoading ? 'Signing In...' : 'Google'}</Button.Label>
                 </Button>
 
                 <View className="flex-row justify-center gap-1 mt-4">

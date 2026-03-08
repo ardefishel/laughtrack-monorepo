@@ -2,32 +2,27 @@ import { QuickNoteBar } from "@/features/home/components/quick-note-bar";
 import { RecentNoteCard } from "@/features/home/components/recent-note-card";
 import { RecentWorkCard } from "@/features/home/components/recent-work-card";
 import { useRecentWorks } from "@/features/home/hooks/use-recent-works";
+import { useKeyboardOffset } from "@/lib/use-keyboard-offset";
 import { useRouter } from "expo-router";
-import { useFocusEffect } from "@react-navigation/native";
 import { Q } from "@nozbe/watermelondb";
 import { useDatabase } from "@nozbe/watermelondb/react";
-import { useCallback, useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, Text, View } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Pressable, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NOTE_TABLE } from "@/database/constants";
+import { noteModelToDomain } from "@/database/mappers/noteMapper";
 import { Note as NoteModel } from "@/database/models/note";
 import type { Note } from "@/types";
 import type { RecentWork } from "@/domain/recent-work";
 
-const WORK_DETAIL_ROUTE: Record<RecentWork['type'], string> = {
-  premise: '/premise',
-  bit: '/bit',
-  set: '/setlist',
-}
+type WorkDetailPathname = '/(app)/(detail)/premise/[id]' | '/(app)/(detail)/bit/[id]' | '/(app)/(detail)/setlist/[id]'
 
-function toNote(model: NoteModel): Note {
-  return {
-    id: model.id,
-    content: model.content,
-    createdAt: model.createdAt,
-    updatedAt: model.updatedAt,
-  }
+const WORK_DETAIL_ROUTE: Record<RecentWork['type'], WorkDetailPathname> = {
+  premise: '/(app)/(detail)/premise/[id]',
+  bit: '/(app)/(detail)/bit/[id]',
+  set: '/(app)/(detail)/setlist/[id]',
 }
 
 export default function Index() {
@@ -35,17 +30,17 @@ export default function Index() {
   const router = useRouter()
   const database = useDatabase()
   const recentWorks = useRecentWorks()
+  const keyboardOffset = useKeyboardOffset()
 
   const [recentNotes, setRecentNotes] = useState<Note[]>([])
   const [isCreatingQuickNote, setIsCreatingQuickNote] = useState(false)
 
-  const loadRecentNotes = useCallback(async () => {
+  const fetchRecentNotes = useCallback(async () => {
     const value = await database
       .get<NoteModel>(NOTE_TABLE)
       .query(Q.sortBy('updated_at', Q.desc), Q.take(6))
       .fetch()
-
-    setRecentNotes(value.map(toNote))
+    setRecentNotes(value.map(noteModelToDomain))
   }, [database])
 
   useEffect(() => {
@@ -54,7 +49,7 @@ export default function Index() {
       .query(Q.sortBy('updated_at', Q.desc), Q.take(6))
       .observe()
       .subscribe((notes: NoteModel[]) => {
-        setRecentNotes(notes.map(toNote))
+        setRecentNotes(notes.map(noteModelToDomain))
       })
 
     return () => subscription.unsubscribe()
@@ -62,8 +57,8 @@ export default function Index() {
 
   useFocusEffect(
     useCallback(() => {
-      void loadRecentNotes()
-    }, [loadRecentNotes]),
+      void fetchRecentNotes()
+    }, [fetchRecentNotes]),
   )
 
   const handleQuickCreate = useCallback(async (content: string) => {
@@ -90,7 +85,7 @@ export default function Index() {
   }, [router])
 
   const openWork = useCallback((work: RecentWork) => {
-    router.push(`${WORK_DETAIL_ROUTE[work.type]}/${work.id}`)
+    router.push({ pathname: WORK_DETAIL_ROUTE[work.type], params: { id: work.id } })
   }, [router])
 
   const handleDeleteNote = useCallback(async (id: string) => {
@@ -99,6 +94,10 @@ export default function Index() {
       await note.destroyPermanently()
     })
   }, [database])
+
+  const quickNoteStyle = useMemo(() => ({
+    marginBottom: keyboardOffset > 0 ? keyboardOffset + inset.bottom : 0,
+  }), [inset.bottom, keyboardOffset])
 
   return (
     <View className="flex-1">
@@ -146,12 +145,9 @@ export default function Index() {
           </View>
         </View>
       </ScrollView>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="absolute bottom-0 left-0 right-0"
-      >
+      <View className="absolute bottom-0 left-0 right-0" style={quickNoteStyle}>
         <QuickNoteBar onSubmit={handleQuickCreate} isSubmitting={isCreatingQuickNote} />
-      </KeyboardAvoidingView>
+      </View>
     </View>
   );
 }
