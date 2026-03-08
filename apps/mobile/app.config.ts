@@ -31,6 +31,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   scheme: APP_CONFIG.scheme,
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
+  platforms: ["android", "ios"],
   ios: {
     supportsTablet: true,
     bundleIdentifier: APP_CONFIG.ios.bundleIdentifier,
@@ -54,6 +55,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     "expo-router",
+    "expo-secure-store",
     [
       "expo-splash-screen",
       {

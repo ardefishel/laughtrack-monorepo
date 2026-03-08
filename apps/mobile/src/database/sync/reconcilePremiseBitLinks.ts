@@ -2,17 +2,8 @@ import type { Database } from '@nozbe/watermelondb'
 import { BIT_TABLE, PREMISE_TABLE } from '../constants'
 import { Bit as BitModel } from '../models/bit'
 import { Premise as PremiseModel } from '../models/premise'
+import { normalizedIds, areEqualIds } from '../utils/ids'
 import { parseStringArrayJson } from '../utils/json'
-
-
-function normalizedIds(value: string[]): string[] {
-    return [...new Set(value)].sort((a, b) => a.localeCompare(b))
-}
-
-function areEqualIds(left: string[], right: string[]): boolean {
-    if (left.length !== right.length) return false
-    return left.every((value, index) => value === right[index])
-}
 
 export async function reconcilePremiseBitLinks(database: Database): Promise<number> {
     const [bits, premises] = await Promise.all([

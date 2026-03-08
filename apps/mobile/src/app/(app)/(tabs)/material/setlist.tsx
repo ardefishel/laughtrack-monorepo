@@ -9,10 +9,11 @@ import { useFocusEffect } from '@react-navigation/native'
 import type { FlashListRef } from '@shopify/flash-list'
 import { Q } from '@nozbe/watermelondb'
 import { useDatabase } from '@nozbe/watermelondb/react'
-import { router, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 export default function SetlistListScreen() {
+    const router = useRouter()
     const database = useDatabase()
     const params = useLocalSearchParams<{ tags?: string }>()
     const [search, setSearch] = useState('')
@@ -20,15 +21,13 @@ export default function SetlistListScreen() {
     const listRef = useRef<FlashListRef<Setlist> | null>(null)
     const countBeforeCreateRef = useRef<number | null>(null)
 
-    const loadSetlists = useCallback(async () => {
+    const fetchSetlists = useCallback(async () => {
         const value = await database
             .get<SetlistModel>(SETLIST_TABLE)
             .query(Q.sortBy('updated_at', Q.desc))
             .fetch()
-
-        const mapped = value.map(setlistModelToDomain)
-        setSetlists(mapped)
-        return mapped
+        setSetlists(value.map(setlistModelToDomain))
+        return value.length
     }, [database])
 
     useEffect(() => {
@@ -46,10 +45,10 @@ export default function SetlistListScreen() {
     useFocusEffect(
         useCallback(() => {
             void (async () => {
-                const latest = await loadSetlists()
+                const count = await fetchSetlists()
                 const countBeforeCreate = countBeforeCreateRef.current
 
-                if (countBeforeCreate !== null && latest.length > countBeforeCreate) {
+                if (countBeforeCreate !== null && count > countBeforeCreate) {
                     requestAnimationFrame(() => {
                         listRef.current?.scrollToOffset({ offset: 0, animated: true })
                     })
@@ -57,7 +56,7 @@ export default function SetlistListScreen() {
 
                 countBeforeCreateRef.current = null
             })()
-        }, [loadSetlists]),
+        }, [fetchSetlists]),
     )
 
     const filteredSetlists = useMemo(() => {

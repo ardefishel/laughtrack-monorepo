@@ -1,9 +1,10 @@
 import { SelectBitsModal } from '@/features/material/components/select-bits-modal'
 import { parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
-import { router, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback } from 'react'
 
 export default function PremiseAddBitModal() {
+    const router = useRouter()
     const { selected: selectedParam, premiseId } = useLocalSearchParams<{
         selected?: string
         premiseId?: string

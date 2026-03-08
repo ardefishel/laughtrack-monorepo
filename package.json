@@ -5,11 +5,13 @@
     "apps/*",
     "packages/*"
   ],
+  "packageManager": "bun@1.3.10",
   "scripts": {
     "dev": "bun --filter '*' dev",
     "check": "bun --filter '*' check",
     "lint": "bun --filter '*' lint",
     "clean": "bun --filter '*' clean && rm -rf node_modules bun.lock packages/*/dist packages/*/tsconfig.tsbuildinfo",
+    "restart": "bun clean && bun i && bun package:build",
     "mobile": "bun run --cwd apps/mobile start",
     "mobile:build": "bun run --cwd apps/mobile build",
     "mobile:ios": "bun run --cwd apps/mobile ios",
@@ -36,7 +38,10 @@
     "web:build": "bun run --cwd apps/web build",
     "web:check": "bun run --cwd apps/web check",
     "marketing": "bun run --cwd apps/marketing dev",
-    "marketing:build": "bun run --cwd apps/marketing build"
+    "marketing:build": "bun run --cwd apps/marketing build",
+    "mock-data:ios": "xcrun simctl openurl booted laughtrack://seed-mock-data",
+    "mock-data:android": "adb shell am start -a android.intent.action.VIEW -d laughtrack://seed-mock-data com.rtvcl.laughtrack",
+    "mock-data": "bun run mock-data:ios"
   },
   "devDependencies": {
     "babel-jest": "^30.2.0",

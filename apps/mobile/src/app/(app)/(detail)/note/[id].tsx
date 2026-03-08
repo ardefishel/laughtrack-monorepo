@@ -2,6 +2,7 @@ import { Icon } from '@/components/ui/ion-icon'
 import { NOTE_TABLE, PREMISE_TABLE } from '@/database/constants'
 import { Note as NoteModel } from '@/database/models/note'
 import { Premise as PremiseModel } from '@/database/models/premise'
+import { noteModelToDomain } from '@/database/mappers/noteMapper'
 import type { Note } from '@/types'
 import { timeAgo } from '@/lib/time-ago'
 import { useDatabase } from '@nozbe/watermelondb/react'
@@ -9,15 +10,6 @@ import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 import { Button, TextArea } from 'heroui-native'
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native'
-
-function toNote(model: NoteModel): Note {
-    return {
-        id: model.id,
-        content: model.content,
-        createdAt: model.createdAt,
-        updatedAt: model.updatedAt,
-    }
-}
 
 export default function NoteDetail() {
     const router = useRouter()
@@ -44,7 +36,7 @@ export default function NoteDetail() {
             .findAndObserve(id)
             .subscribe((result: NoteModel) => {
                 setNoteState({ note: result, key: result.updatedAt.getTime() })
-                setNoteData(toNote(result))
+                setNoteData(noteModelToDomain(result))
                 setContent(result.content)
             })
 

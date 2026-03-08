@@ -1,10 +1,8 @@
-import { Card, PressableFeedback } from "heroui-native";
-import { Icon } from "@/components/ui/ion-icon";
-import { useRef } from "react";
-import { Animated, Pressable, Text, View } from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
-import type { Note } from "@/types";
-import { timeAgo } from "@/lib/time-ago";
+import { SwipeableRow } from '@/components/ui/swipeable-row'
+import type { Note } from '@/types'
+import { timeAgo } from '@/lib/time-ago'
+import { Card, PressableFeedback } from 'heroui-native'
+import { Text, View } from 'react-native'
 
 interface RecentNoteCardProps {
     note: Note;
@@ -25,7 +23,6 @@ function getPreview(content: string) {
 
 export function RecentNoteCard({ note, onPress, onDelete }: RecentNoteCardProps) {
     const preview = getPreview(note.content);
-    const swipeableRef = useRef<Swipeable>(null);
 
     const card = (
         <PressableFeedback onPress={onPress}>
@@ -44,46 +41,11 @@ export function RecentNoteCard({ note, onPress, onDelete }: RecentNoteCardProps)
         </PressableFeedback>
     )
 
-    if (!onDelete) return card
-
-    const renderRightActions = (
-        _progress: Animated.AnimatedInterpolation<number>,
-        dragX: Animated.AnimatedInterpolation<number>,
-    ) => {
-        const scale = dragX.interpolate({
-            inputRange: [-80, 0],
-            outputRange: [1, 0.5],
-            extrapolate: "clamp",
-        });
-
-        return (
-            <Pressable
-                onPress={() => {
-                    swipeableRef.current?.close();
-                    onDelete();
-                }}
-                className="bg-danger rounded-xl items-center justify-center ml-3"
-                style={{ width: 72 }}
-            >
-                <Animated.View
-                    style={{ transform: [{ scale }] }}
-                    className="items-center gap-1"
-                >
-                    <Icon name="trash-outline" size={20} className="text-white" />
-                    <Text className="text-white text-[10px] font-semibold">Delete</Text>
-                </Animated.View>
-            </Pressable>
-        )
-    }
-
     return (
-        <Swipeable
-            ref={swipeableRef}
-            renderRightActions={renderRightActions}
-            overshootRight={false}
-            friction={2}
+        <SwipeableRow
+            actions={onDelete ? [{ key: 'delete', icon: 'trash-outline', label: 'Delete', color: 'bg-danger', onPress: onDelete }] : []}
         >
             {card}
-        </Swipeable>
+        </SwipeableRow>
     )
 }

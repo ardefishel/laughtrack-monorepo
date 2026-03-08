@@ -1,8 +1,9 @@
 import { SelectBitsModal } from '@/features/material/components/select-bits-modal'
 import { parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
-import { router, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 
 export default function SetlistAddBitModal() {
+    const router = useRouter()
     const { selected: selectedParam } = useLocalSearchParams<{ selected?: string }>()
     const initialSelectedIds = parseCsvParam(selectedParam)
 

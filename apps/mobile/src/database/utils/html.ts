@@ -7,7 +7,7 @@ const HTML_ENTITY_MAP: Record<string, string> = {
     '&#39;': "'",
 }
 
-function decodeHtmlEntities(value: string): string {
+export function decodeHtmlEntities(value: string): string {
     return value.replace(/&nbsp;|&amp;|&lt;|&gt;|&quot;|&#39;/g, (match) => HTML_ENTITY_MAP[match] ?? match)
 }
 

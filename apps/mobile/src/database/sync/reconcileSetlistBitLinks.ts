@@ -3,6 +3,7 @@ import { dbLogger } from '@/lib/loggers'
 import { BIT_TABLE, SETLIST_TABLE } from '../constants'
 import { Bit as BitModel } from '../models/bit'
 import { Setlist as SetlistModel } from '../models/setlist'
+import { normalizedIds, areEqualIds } from '../utils/ids'
 import { parseStringArrayJson } from '../utils/json'
 
 
@@ -29,15 +30,6 @@ function parseSetlistBitIds(value: string): string[] {
         })
         return []
     }
-}
-
-function normalizedIds(value: string[]): string[] {
-    return [...new Set(value)].sort((a, b) => a.localeCompare(b))
-}
-
-function areEqualIds(left: string[], right: string[]): boolean {
-    if (left.length !== right.length) return false
-    return left.every((value, index) => value === right[index])
 }
 
 export async function reconcileSetlistBitLinks(database: Database): Promise<number> {

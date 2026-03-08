@@ -6,7 +6,7 @@ import { Premise as PremiseModel } from '@/database/models/premise'
 import { dbLogger } from '@/lib/loggers'
 import type { BitStatus } from '@/types'
 import { useDatabase } from '@nozbe/watermelondb/react'
-import { router, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 const BIT_STATUS_VALUES: BitStatus[] = ['draft', 'rework', 'tested', 'final', 'dead']
@@ -16,6 +16,7 @@ function isBitStatus(value: string): value is BitStatus {
 }
 
 export function useBitForm() {
+    const router = useRouter()
     const { id, metaStatus, metaTags, metaPremiseId, metaNonce, fromSetlist } = useLocalSearchParams<{
         id: string
         metaStatus?: string
