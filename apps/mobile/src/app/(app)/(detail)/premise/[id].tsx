@@ -4,17 +4,10 @@ import { Icon } from '@/components/ui/ion-icon'
 import { attitudeConfig } from '@/config/attitudes'
 import { PREMISE_STATUS_OPTIONS } from '@/config/premise-statuses'
 import { usePremiseForm } from '@/features/premise/hooks/use-premise-form'
-import type { Attitude, PremiseStatus } from '@/types'
 import { useNavigation } from 'expo-router'
-import { Button, Select, TextArea } from 'heroui-native'
+import { Button, PressableFeedback, TextArea } from 'heroui-native'
 import { useLayoutEffect } from 'react'
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native'
-
-const ATTITUDE_OPTIONS = Object.entries(attitudeConfig).map(([key, config]) => ({
-    value: key as Attitude,
-    label: config.label,
-    emoji: config.emoji,
-}))
 
 export default function PremiseFormScreen() {
     const navigation = useNavigation('/(app)')
@@ -23,10 +16,10 @@ export default function PremiseFormScreen() {
         content,
         setContent,
         status,
-        setStatus,
+        openStatusPicker,
         attitude,
-        setAttitude,
         clearAttitude,
+        openAttitudePicker,
         tags,
         setTags,
         bitIds,
@@ -72,88 +65,52 @@ export default function PremiseFormScreen() {
 
                 <View className='gap-2'>
                     <Text className='text-muted text-xs tracking-[2px] font-semibold uppercase'>Status</Text>
-                    <Select
-                        presentation='bottom-sheet'
-                        value={{
-                            value: status,
-                            label: PREMISE_STATUS_OPTIONS.find((item) => item.value === status)?.label ?? '',
-                        }}
-                        onValueChange={(option) => {
-                            const selected = Array.isArray(option) ? option[0] : option
-                            setStatus(selected.value as PremiseStatus)
-                        }}
+                    <PressableFeedback
+                        onPress={openStatusPicker}
+                        accessibilityRole='button'
+                        accessibilityLabel='Choose premise status'
                     >
-                        <Select.Trigger>
-                            <View className='flex-row items-center gap-2 flex-1'>
-                                <View
-                                    className={`size-2.5 rounded-full ${PREMISE_STATUS_OPTIONS.find((item) => item.value === status)?.dotClass}`}
-                                />
-                                <Select.Value placeholder='Select status' />
-                            </View>
-                            <Select.TriggerIndicator />
-                        </Select.Trigger>
-                        <Select.Portal>
-                            <Select.Overlay />
-                            <Select.Content presentation='bottom-sheet'>
-                                <Select.ListLabel>Status</Select.ListLabel>
-                                {PREMISE_STATUS_OPTIONS.map((option) => (
-                                    <Select.Item key={option.value} value={option.value} label={option.label}>
-                                        {({ isSelected }) => (
-                                            <View className='flex-row items-center gap-3 flex-1'>
-                                                <View className={`size-2.5 rounded-full ${option.dotClass}`} />
-                                                <Text className='text-foreground flex-1'>{option.label}</Text>
-                                                {isSelected && <Select.ItemIndicator />}
-                                            </View>
-                                        )}
-                                    </Select.Item>
-                                ))}
-                            </Select.Content>
-                        </Select.Portal>
-                    </Select>
+                        <View className='min-h-12 flex-row items-center gap-3 rounded-xl border border-separator bg-field px-4 py-3'>
+                            <View
+                                className={`size-2.5 rounded-full ${PREMISE_STATUS_OPTIONS.find((item) => item.value === status)?.dotClass}`}
+                            />
+                            <Text className='text-foreground flex-1'>
+                                {PREMISE_STATUS_OPTIONS.find((item) => item.value === status)?.label ?? 'Select status'}
+                            </Text>
+                            <Icon name='chevron-down' size={18} className='text-muted' />
+                        </View>
+                    </PressableFeedback>
                 </View>
 
                 <View className='gap-2'>
                     <Text className='text-muted text-xs tracking-[2px] font-semibold uppercase'>Attitude</Text>
-                    <Select
-                        presentation='bottom-sheet'
-                        value={attitude ? { value: attitude, label: attitudeConfig[attitude].label } : undefined}
-                        onValueChange={(option) => {
-                            const selected = Array.isArray(option) ? option[0] : option
-                            setAttitude(selected.value as Attitude)
-                        }}
+                    <PressableFeedback
+                        onPress={openAttitudePicker}
+                        accessibilityRole='button'
+                        accessibilityLabel='Choose premise attitude'
                     >
-                        <Select.Trigger>
+                        <View className='min-h-12 flex-row items-center gap-3 rounded-xl border border-separator bg-field px-4 py-3'>
                             <View className='flex-row items-center gap-2 flex-1'>
-                                {attitude && <Text className='text-base'>{attitudeConfig[attitude].emoji}</Text>}
-                                <Select.Value placeholder='How does this make you feel?' />
+                                {attitude ? <Text className='text-base'>{attitudeConfig[attitude].emoji}</Text> : null}
+                                <Text className={`flex-1 ${attitude ? 'text-foreground' : 'text-muted'}`}>
+                                    {attitude ? attitudeConfig[attitude].label : 'How does this make you feel?'}
+                                </Text>
                             </View>
                             <View className='flex-row items-center gap-1'>
                                 {attitude && (
-                                    <Pressable onPress={clearAttitude} hitSlop={8}>
+                                    <Pressable
+                                        onPress={clearAttitude}
+                                        hitSlop={8}
+                                        accessibilityRole='button'
+                                        accessibilityLabel='Clear premise attitude'
+                                    >
                                         <Icon name='close-circle' size={18} className='text-muted' />
                                     </Pressable>
                                 )}
-                                <Select.TriggerIndicator />
+                                <Icon name='chevron-down' size={18} className='text-muted' />
                             </View>
-                        </Select.Trigger>
-                        <Select.Portal>
-                            <Select.Overlay />
-                            <Select.Content presentation='bottom-sheet'>
-                                <Select.ListLabel>Attitude</Select.ListLabel>
-                                {ATTITUDE_OPTIONS.map((option) => (
-                                    <Select.Item key={option.value} value={option.value} label={option.label}>
-                                        {({ isSelected }) => (
-                                            <View className='flex-row items-center gap-3 flex-1'>
-                                                <Text className='text-base'>{option.emoji}</Text>
-                                                <Text className='text-foreground flex-1'>{option.label}</Text>
-                                                {isSelected && <Select.ItemIndicator />}
-                                            </View>
-                                        )}
-                                    </Select.Item>
-                                ))}
-                            </Select.Content>
-                        </Select.Portal>
-                    </Select>
+                        </View>
+                    </PressableFeedback>
                 </View>
 
                 <View className='gap-3'>

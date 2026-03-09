@@ -3,13 +3,13 @@ import { database } from "@/database";
 import { AuthProvider } from "@/features/auth/context/auth-context";
 import { reconcilePremiseBitLinks } from "@/features/premise/services/premise-bit-links";
 import { reconcileSetlistBitLinks } from "@/features/setlist/services/setlist-bit-links";
-import { seedMockData } from "@/database/seed-mock-data";
+import { registerAppDevMenuItems } from "@/lib/dev-menu";
 import { appLogger, dbLogger, navLogger } from "@/lib/loggers";
 import { DatabaseProvider } from "@nozbe/watermelondb/react";
 import { Slot, usePathname } from "expo-router";
 import { HeroUINativeProvider } from "heroui-native";
 import { useEffect, useRef } from "react";
-import { AppState, type AppStateStatus, Linking } from "react-native";
+import { AppState, type AppStateStatus } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 
@@ -31,16 +31,7 @@ export default function RootLayout() {
     }, [])
 
     useEffect(() => {
-        if (!__DEV__) return
-
-        const handleUrl = ({ url }: { url: string }) => {
-            if (url === 'laughtrack://seed-mock-data') {
-                dbLogger.info('Deep link received: seeding mock data')
-                void seedMockData(database).catch((error: unknown) => dbLogger.error('Failed to seed mock data', error))
-            }
-        }
-        const subscription = Linking.addEventListener('url', handleUrl)
-        return () => subscription.remove()
+        registerAppDevMenuItems()
     }, [])
 
     useEffect(() => {

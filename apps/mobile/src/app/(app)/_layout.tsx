@@ -33,6 +33,8 @@ export default function AppStack() {
         <Stack.Screen name="(auth)/forgot-password" />
 
         <Stack.Screen name="(modal)/action-sheet" options={{ presentation: "formSheet" }} />
+        <Stack.Screen name="(modal)/premise-status" options={{ presentation: "formSheet", sheetAllowedDetents: [0.45], headerShown: false, contentStyle: { backgroundColor: field } }} />
+        <Stack.Screen name="(modal)/premise-attitude" options={{ presentation: "formSheet", sheetAllowedDetents: [0.7], headerShown: false, contentStyle: { backgroundColor: field } }} />
         <Stack.Screen name="(modal)/premise-filter" options={{ presentation: "formSheet", sheetAllowedDetents: [0.8], headerShown: false, contentStyle: { backgroundColor: field } }} />
         <Stack.Screen name="(modal)/bit-filter" options={{ presentation: "formSheet", sheetAllowedDetents: [0.8], headerShown: false, contentStyle: { backgroundColor: field } }} />
         <Stack.Screen name="(modal)/bit-meta" options={{ presentation: "formSheet", sheetAllowedDetents: [0.7], headerShown: false, contentStyle: { backgroundColor: field } }} />

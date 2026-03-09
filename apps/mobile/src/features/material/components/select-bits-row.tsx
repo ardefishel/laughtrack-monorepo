@@ -1,4 +1,5 @@
 import { Icon } from '@/components/ui/ion-icon'
+import { bitContentToPreview } from '@/database/mappers/bitMapper'
 import type { Bit } from '@/types'
 import { memo } from 'react'
 import { Pressable, Text, View } from 'react-native'
@@ -23,6 +24,8 @@ function SelectBitsRowComponent({ bit, isSelected, onToggle, variant, premiseId 
     const dotClass = BIT_STATUS_DOT[bit.status] ?? 'bg-muted'
     const isLinkedHere = premiseId ? bit.premiseId === premiseId : false
     const isLinkedElsewhere = !!bit.premiseId && !isLinkedHere
+    const preview = bitContentToPreview(bit.content)
+    const title = preview.title || 'Untitled bit'
 
     if (variant === 'premise') {
         return (
@@ -48,8 +51,13 @@ function SelectBitsRowComponent({ bit, isSelected, onToggle, variant, premiseId 
                             </Text>
                         </View>
                         <Text className='text-foreground text-sm leading-5' numberOfLines={3}>
-                            {bit.content}
+                            {title}
                         </Text>
+                        {preview.description ? (
+                            <Text className='text-muted text-xs leading-4' numberOfLines={2}>
+                                {preview.description}
+                            </Text>
+                        ) : null}
                     </View>
                 </View>
 
@@ -95,8 +103,13 @@ function SelectBitsRowComponent({ bit, isSelected, onToggle, variant, premiseId 
                     className='text-foreground text-sm leading-5'
                     numberOfLines={3}
                 >
-                    {bit.content}
+                    {title}
                 </Text>
+                {preview.description ? (
+                    <Text className='text-muted text-xs leading-4' numberOfLines={2}>
+                        {preview.description}
+                    </Text>
+                ) : null}
             </View>
         </Pressable>
     )

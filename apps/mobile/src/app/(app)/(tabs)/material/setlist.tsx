@@ -1,13 +1,11 @@
 import { SetlistCard } from '@/features/setlist/components/setlist-card'
+import { useSetlistList } from '@/features/setlist/hooks/use-setlist-list'
+import { deleteSetlist } from '@/features/setlist/services/delete-setlist'
 import { MaterialListScreen } from '@/features/material/components/material-list-screen'
-import { setlistModelToDomain } from '@/database/mappers/setlistMapper'
-import { SETLIST_TABLE } from '@/database/constants'
-import { Setlist as SetlistModel } from '@/database/models/setlist'
 import type { Setlist } from '@/types'
 import { parseCsvParam } from '@/features/material/filters/filter-query'
 import { useFocusEffect } from '@react-navigation/native'
 import type { FlashListRef } from '@shopify/flash-list'
-import { Q } from '@nozbe/watermelondb'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -15,49 +13,32 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 export default function SetlistListScreen() {
     const router = useRouter()
     const database = useDatabase()
+    const { setlists, refresh } = useSetlistList()
     const params = useLocalSearchParams<{ tags?: string }>()
     const [search, setSearch] = useState('')
-    const [setlists, setSetlists] = useState<Setlist[]>([])
     const listRef = useRef<FlashListRef<Setlist> | null>(null)
     const countBeforeCreateRef = useRef<number | null>(null)
 
-    const fetchSetlists = useCallback(async () => {
-        const value = await database
-            .get<SetlistModel>(SETLIST_TABLE)
-            .query(Q.sortBy('updated_at', Q.desc))
-            .fetch()
-        setSetlists(value.map(setlistModelToDomain))
-        return value.length
-    }, [database])
-
-    useEffect(() => {
-        const subscription = database
-            .get<SetlistModel>(SETLIST_TABLE)
-            .query(Q.sortBy('updated_at', Q.desc))
-            .observe()
-            .subscribe((value: SetlistModel[]) => {
-                setSetlists(value.map(setlistModelToDomain))
-            })
-
-        return () => subscription.unsubscribe()
-    }, [database])
-
     useFocusEffect(
         useCallback(() => {
-            void (async () => {
-                const count = await fetchSetlists()
+            void refresh().then((count) => {
                 const countBeforeCreate = countBeforeCreateRef.current
-
-                if (countBeforeCreate !== null && count > countBeforeCreate) {
-                    requestAnimationFrame(() => {
-                        listRef.current?.scrollToOffset({ offset: 0, animated: true })
-                    })
+                if (countBeforeCreate !== null && count <= countBeforeCreate) {
+                    countBeforeCreateRef.current = null
                 }
-
-                countBeforeCreateRef.current = null
-            })()
-        }, [fetchSetlists]),
+            })
+        }, [refresh]),
     )
+
+    useEffect(() => {
+        const countBeforeCreate = countBeforeCreateRef.current
+        if (countBeforeCreate === null || setlists.length <= countBeforeCreate) return
+
+        requestAnimationFrame(() => {
+            listRef.current?.scrollToOffset({ offset: 0, animated: true })
+        })
+        countBeforeCreateRef.current = null
+    }, [setlists.length])
 
     const filteredSetlists = useMemo(() => {
         let result = setlists
@@ -81,29 +62,26 @@ export default function SetlistListScreen() {
             pathname: '/setlist-filter',
             params: { tags: params.tags ?? '' },
         })
-    }, [params.tags])
+    }, [params.tags, router])
 
     const keyExtractor = useCallback((item: Setlist) => item.id, [])
 
     const handleFabPress = useCallback(() => {
         countBeforeCreateRef.current = setlists.length
         router.push('/setlist/new')
-    }, [setlists.length])
+    }, [setlists.length, router])
 
     const renderItem = useCallback(({ item }: { item: Setlist }) => {
         const handlePress = () => {
             router.push(`/setlist/${item.id}`)
         }
 
-        const handleDelete = () => {
-            void database.write(async () => {
-                const setlist = await database.get<SetlistModel>(SETLIST_TABLE).find(item.id)
-                await setlist.destroyPermanently()
-            })
+        const handleDelete = async () => {
+            await deleteSetlist(database, item.id)
         }
 
         return <SetlistCard setlist={item} onPress={handlePress} onDelete={handleDelete} />
-    }, [database])
+    }, [database, router])
 
     return (
         <MaterialListScreen

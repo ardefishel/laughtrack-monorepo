@@ -33,11 +33,14 @@ function SwipeableRowComponent({ actions, children }: SwipeableRowProps) {
                         <Pressable
                             key={action.key}
                             onPress={() => {
-                                swipeableRef.current?.close()
                                 action.onPress()
+                                requestAnimationFrame(() => {
+                                    swipeableRef.current?.close()
+                                })
                             }}
                             className={`${action.color} rounded-xl items-center justify-center ml-3`}
                             style={{ width: 72 }}
+                            hitSlop={8}
                         >
                             <Animated.View style={{ transform: [{ scale }] }} className="items-center gap-1">
                                 <Icon name={action.icon} size={20} className="text-white" />
