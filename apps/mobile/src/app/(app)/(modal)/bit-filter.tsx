@@ -79,10 +79,12 @@ export default function BitFilterModal() {
 
     const applyFilters = () => {
         router.back()
-        router.setParams({
-            statuses: toCsvParam(selectedStatuses),
-            tags: toCsvParam(selectedTags),
-            hasPremise: hasPremise !== null ? String(hasPremise) : '',
+        requestAnimationFrame(() => {
+            router.setParams({
+                statuses: toCsvParam(selectedStatuses),
+                tags: toCsvParam(selectedTags),
+                hasPremise: hasPremise !== null ? String(hasPremise) : '',
+            })
         })
     }
 

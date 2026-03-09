@@ -4,7 +4,7 @@ import { useBitEditor } from '@/features/bit/hooks/use-bit-editor'
 import { useBitForm } from '@/features/bit/hooks/use-bit-form'
 import { useNavigation } from 'expo-router'
 import { Button, useThemeColor } from 'heroui-native'
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { ScrollView, View } from 'react-native'
 import { EnrichedTextInput } from 'react-native-enriched'
 
@@ -24,8 +24,13 @@ export default function BitDetailScreen() {
         openBitMeta,
     } = useBitForm()
 
-    const { editorRef, stylesState, onChangeText, onChangeHtml, onChangeState, onKeyPress, syncSnapshot } =
+    const { editorRef, stylesState, onChangeText, onChangeHtml, onChangeState, onChangeSelection, onKeyPress, syncSnapshot, runParagraphCommand } =
         useBitEditor({ onContentChange: setContent })
+
+    const handleEditorSave = useCallback(async () => {
+        const latestHtml = await editorRef.current?.getHTML().catch(() => null)
+        await handleSave(latestHtml ?? undefined)
+    }, [editorRef, handleSave])
 
     const foreground = useThemeColor('foreground')
     const muted = useThemeColor('muted')
@@ -44,7 +49,7 @@ export default function BitDetailScreen() {
                         <Button.Label className='text-accent font-semibold'>Meta</Button.Label>
                     </Button>
 
-                    <Button size='sm' variant='ghost' onPress={handleSave} isDisabled={!canSave}>
+                    <Button size='sm' variant='ghost' onPress={handleEditorSave} isDisabled={!canSave}>
                         <Button.Label className='text-accent font-semibold'>
                             {isEditing ? 'Save' : 'Create'}
                         </Button.Label>
@@ -52,7 +57,7 @@ export default function BitDetailScreen() {
                 </View>
             ),
         })
-    }, [canSave, handleSave, isEditing, navigation, openBitMeta])
+    }, [canSave, handleEditorSave, isEditing, navigation, openBitMeta])
 
     return (
         <View className='flex-1 bg-background'>
@@ -77,6 +82,7 @@ export default function BitDetailScreen() {
                     onChangeText={onChangeText}
                     onChangeHtml={onChangeHtml}
                     onChangeState={onChangeState}
+                    onChangeSelection={onChangeSelection}
                     onKeyPress={onKeyPress}
                     htmlStyle={{
                         h1: { fontSize: 28, bold: true },
@@ -95,7 +101,7 @@ export default function BitDetailScreen() {
                 />
             </ScrollView>
 
-            <EditorToolbar editorRef={editorRef} stylesState={stylesState} />
+            <EditorToolbar stylesState={stylesState} onRunParagraphCommand={runParagraphCommand} />
         </View>
     )
 }

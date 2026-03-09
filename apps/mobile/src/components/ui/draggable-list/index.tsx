@@ -20,6 +20,7 @@ export interface DraggableListProps<T extends DraggableListItem> {
     onDragEnd: (data: T[]) => void
     onDelete?: (item: T) => void
     renderItemContent: (item: T, index: number | undefined) => React.ReactNode
+    ListHeaderComponent?: React.ReactElement | null
 }
 
 // ── Row ───────────────────────────────────────────────────────────────────────
@@ -89,6 +90,7 @@ export default function DraggableList<T extends DraggableListItem>({
     onDragEnd,
     onDelete,
     renderItemContent,
+    ListHeaderComponent,
 }: DraggableListProps<T>) {
     const handleDragEnd = useCallback(
         ({ data: reordered }: DragEndParams<T>) => {
@@ -122,6 +124,11 @@ export default function DraggableList<T extends DraggableListItem>({
             keyExtractor={keyExtractor}
             renderItem={renderItem}
             ItemSeparatorComponent={ItemSeparator}
+            ListHeaderComponent={ListHeaderComponent}
+            containerStyle={{ flex: 1 }}
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingBottom: 32 }}
+            keyboardShouldPersistTaps='handled'
         />
     )
 }

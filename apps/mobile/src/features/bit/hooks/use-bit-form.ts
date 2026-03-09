@@ -89,7 +89,7 @@ export function useBitForm() {
             metaPremiseId: '',
             metaNonce: '',
         })
-    }, [metaNonce, metaPremiseId, metaStatus, metaTags])
+    }, [metaNonce, metaPremiseId, metaStatus, metaTags, router])
 
     useEffect(() => {
         if (!premiseId) {
@@ -113,8 +113,8 @@ export function useBitForm() {
 
     const canSave = useMemo(() => content.trim().length > 0 && !isSaving, [content, isSaving])
 
-    const handleSave = useCallback(async () => {
-        const trimmed = content.trim()
+    const handleSave = useCallback(async (nextContent?: string) => {
+        const trimmed = (nextContent ?? content).trim()
         if (!trimmed || isSaving) return
 
         setIsSaving(true)
@@ -176,7 +176,7 @@ export function useBitForm() {
         } finally {
             setIsSaving(false)
         }
-    }, [bitModel, content, database, fromSetlist, isEditing, isSaving, premiseId, status, tags])
+    }, [bitModel, content, database, fromSetlist, isEditing, isSaving, premiseId, router, status, tags])
 
     const openBitMeta = useCallback(() => {
         router.push({
@@ -188,7 +188,7 @@ export function useBitForm() {
                 bitId: id,
             },
         })
-    }, [id, premiseId, status, tags])
+    }, [id, premiseId, router, status, tags])
 
     const editorKey = useMemo(() => {
         if (!isEditing) return 'bit-new'
