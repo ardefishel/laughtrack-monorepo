@@ -5,8 +5,8 @@ import DraggableList from '@/components/ui/draggable-list'
 import { useSetlistForm } from '@/features/setlist/hooks/use-setlist-form'
 import { useNavigation } from 'expo-router'
 import { Button } from 'heroui-native'
-import { useLayoutEffect } from 'react'
-import { KeyboardAvoidingView, Platform } from 'react-native'
+import { useLayoutEffect, useMemo } from 'react'
+import { KeyboardAvoidingView, Platform, View } from 'react-native'
 
 export default function SetlistDetailScreen() {
     const navigation = useNavigation('/(app)')
@@ -33,6 +33,21 @@ export default function SetlistDetailScreen() {
         handleConfirmNote,
     } = useSetlistForm()
 
+    const listHeader = useMemo(
+        () => (
+            <SetlistListHeader
+                description={description}
+                onDescriptionChange={setDescription}
+                tags={tags}
+                onTagsChange={setTags}
+                items={items}
+                bitCount={bitCount}
+                onOpenTypeDialog={() => setTypeDialogOpen(true)}
+            />
+        ),
+        [bitCount, description, items, setDescription, setTags, setTypeDialogOpen, tags],
+    )
+
     useLayoutEffect(() => {
         navigation.setOptions({
             headerTitle: isEditing ? 'Setlist' : 'New Setlist',
@@ -53,22 +68,15 @@ export default function SetlistDetailScreen() {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 keyboardVerticalOffset={100}
             >
-                <SetlistListHeader
-                    description={description}
-                    onDescriptionChange={setDescription}
-                    tags={tags}
-                    onTagsChange={setTags}
-                    items={items}
-                    bitCount={bitCount}
-                    onOpenTypeDialog={() => setTypeDialogOpen(true)}
-                />
-
-                <DraggableList
-                    data={items}
-                    onDragEnd={setItems}
-                    onDelete={(item) => setItems((prev) => prev.filter((entry) => entry.id !== item.id))}
-                    renderItemContent={(item) => <SetlistItemContent item={item} />}
-                />
+                <View className='flex-1'>
+                    <DraggableList
+                        data={items}
+                        onDragEnd={setItems}
+                        onDelete={(item) => setItems((prev) => prev.filter((entry) => entry.id !== item.id))}
+                        renderItemContent={(item) => <SetlistItemContent item={item} />}
+                        ListHeaderComponent={listHeader}
+                    />
+                </View>
             </KeyboardAvoidingView>
 
             <AddSetlistItemDialog

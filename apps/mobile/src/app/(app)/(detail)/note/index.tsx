@@ -1,67 +1,25 @@
 import { RecentNoteCard } from '@/features/home/components/recent-note-card';
-import { dbLogger } from '@/lib/loggers';
-import { NOTE_TABLE } from '@/database/constants';
-import { Note as NoteModel } from '@/database/models/note';
-import type { Note } from '@/types';
+import { useNoteList } from '@/features/note/hooks/use-note-list';
+import { deleteNote } from '@/features/note/services/delete-note';
 import { useFocusEffect } from '@react-navigation/native';
-import { Q } from '@nozbe/watermelondb';
 import { useDatabase } from '@nozbe/watermelondb/react';
 import { useNavigation, useRouter } from 'expo-router';
 import { Button, Input } from 'heroui-native';
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-
-function toNote(model: NoteModel): Note {
-    return {
-        id: model.id,
-        content: model.content,
-        createdAt: model.createdAt,
-        updatedAt: model.updatedAt,
-    }
-}
 
 export default function NoteList() {
     const router = useRouter()
     const navigation = useNavigation('/(app)')
     const database = useDatabase()
     const [search, setSearch] = useState('')
-    const [notes, setNotes] = useState<Note[]>([])
-
-    const loadNotes = useCallback(async () => {
-        try {
-            const value = await database
-                .get<NoteModel>(NOTE_TABLE)
-                .query(Q.sortBy('updated_at', Q.desc))
-                .fetch()
-
-            setNotes(value.map(toNote))
-        } catch (error) {
-            dbLogger.error('Failed to load notes list', error)
-        }
-    }, [database])
-
-    useEffect(() => {
-        const subscription = database
-            .get<NoteModel>(NOTE_TABLE)
-            .query(Q.sortBy('updated_at', Q.desc))
-            .observe()
-            .subscribe({
-                next: (value: NoteModel[]) => {
-                    setNotes(value.map(toNote))
-                },
-                error: (error: unknown) => {
-                    dbLogger.error('Notes list subscription failed', error)
-                },
-            })
-
-        return () => subscription.unsubscribe()
-    }, [database])
+    const { notes, refresh } = useNoteList()
 
     useFocusEffect(
         useCallback(() => {
-            void loadNotes()
-        }, [loadNotes]),
+            void refresh()
+        }, [refresh]),
     )
 
     const filteredNotes = useMemo(() => {
@@ -71,16 +29,9 @@ export default function NoteList() {
         return notes.filter((note) => note.content.toLowerCase().includes(term))
     }, [notes, search])
 
-    const handleDeleteNote = async (id: string) => {
-        try {
-            await database.write(async () => {
-                const note = await database.get<NoteModel>(NOTE_TABLE).find(id)
-                await note.destroyPermanently()
-            })
-        } catch (error) {
-            dbLogger.error('Failed to delete note from notes list', { error, noteId: id })
-        }
-    }
+    const handleDeleteNote = useCallback(async (id: string) => {
+        await deleteNote(database, id)
+    }, [database])
 
     useLayoutEffect(() => {
         navigation.setOptions({

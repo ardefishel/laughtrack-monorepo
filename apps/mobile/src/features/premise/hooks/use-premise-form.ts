@@ -14,10 +14,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 export function usePremiseForm() {
     const router = useRouter()
     const database = useDatabase()
-    const { id, selectedBits, bitsNonce } = useLocalSearchParams<{
+    const { id, selectedBits, bitsNonce, selectedStatus, statusNonce, selectedAttitude, attitudeNonce } = useLocalSearchParams<{
         id: string
         selectedBits?: string
         bitsNonce?: string
+        selectedStatus?: string
+        statusNonce?: string
+        selectedAttitude?: string
+        attitudeNonce?: string
     }>()
     const isEditing = id !== 'new'
 
@@ -149,6 +153,26 @@ export function usePremiseForm() {
         })
     }, [applySelectedBits, bitsNonce, router, selectedBits])
 
+    useEffect(() => {
+        if (typeof statusNonce !== 'string' || statusNonce.length === 0) return
+        if (typeof selectedStatus !== 'string' || selectedStatus.length === 0) return
+
+        setStatus(selectedStatus as PremiseStatus)
+        router.setParams({ selectedStatus: '', statusNonce: '' })
+    }, [router, selectedStatus, statusNonce])
+
+    useEffect(() => {
+        if (typeof attitudeNonce !== 'string' || attitudeNonce.length === 0) return
+
+        if (typeof selectedAttitude === 'string' && selectedAttitude.length > 0) {
+            setAttitude(selectedAttitude as Attitude)
+        } else {
+            setAttitude(undefined)
+        }
+
+        router.setParams({ selectedAttitude: '', attitudeNonce: '' })
+    }, [attitudeNonce, router, selectedAttitude])
+
     const handleSave = useCallback(async () => {
         const trimmed = content.trim()
         if (!canSave || !trimmed) return
@@ -197,6 +221,26 @@ export function usePremiseForm() {
         setAttitude(undefined)
     }, [])
 
+    const openStatusPicker = useCallback(() => {
+        router.push({
+            pathname: '/premise-status',
+            params: {
+                premiseId: id,
+                selectedStatus: status,
+            },
+        })
+    }, [id, router, status])
+
+    const openAttitudePicker = useCallback(() => {
+        router.push({
+            pathname: '/premise-attitude',
+            params: {
+                premiseId: id,
+                selectedAttitude: attitude ?? '',
+            },
+        })
+    }, [attitude, id, router])
+
     const openBitPicker = useCallback(() => {
         if (!isEditing || !id) return
 
@@ -221,9 +265,11 @@ export function usePremiseForm() {
         setContent,
         status,
         setStatus,
+        openStatusPicker,
         attitude,
         setAttitude,
         clearAttitude,
+        openAttitudePicker,
         tags,
         setTags,
         bitIds,

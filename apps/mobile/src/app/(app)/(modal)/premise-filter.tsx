@@ -93,10 +93,12 @@ export default function PremiseFilterModal() {
 
     const applyFilters = () => {
         router.back()
-        router.setParams({
-            statuses: toCsvParam(selectedStatuses),
-            tags: toCsvParam(selectedTags),
-            attitudes: toCsvParam(selectedAttitudes),
+        requestAnimationFrame(() => {
+            router.setParams({
+                statuses: toCsvParam(selectedStatuses),
+                tags: toCsvParam(selectedTags),
+                attitudes: toCsvParam(selectedAttitudes),
+            })
         })
     }
 

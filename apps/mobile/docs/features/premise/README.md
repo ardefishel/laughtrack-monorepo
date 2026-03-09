@@ -26,6 +26,8 @@ Out of scope:
 - `/material/premise` -> Premise list tab (`src/app/(app)/(tabs)/material/premise.tsx`)
 - `/premise/new` -> Create premise (`src/app/(app)/(detail)/premise/[id].tsx` with `id=new`)
 - `/premise/:id` -> Edit premise (`src/app/(app)/(detail)/premise/[id].tsx`)
+- `/premise-status` -> Premise status picker sheet (`src/app/(app)/(modal)/premise-status.tsx`)
+- `/premise-attitude` -> Premise attitude picker sheet (`src/app/(app)/(modal)/premise-attitude.tsx`)
 - `/premise-filter` -> Filter modal (`src/app/(app)/(modal)/premise-filter.tsx`)
 - `/premise-add-bit` -> Bit picker form sheet (`src/app/(app)/(modal)/premise-add-bit.tsx`)
 
@@ -104,6 +106,7 @@ File: `src/app/(app)/(detail)/premise/[id].tsx`
 - Save behavior:
   - edit mode: `updatePremise(...)`, then `router.back()`
   - create mode: create premise row, then `router.back()`
+- Status and attitude selection use dedicated form sheets instead of inline `Select.Portal` overlays
 - Persists:
   - `content`, `status`, `attitude`
   - `tags` as JSON string array (`tags_json`)

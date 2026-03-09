@@ -11,6 +11,7 @@ import { useCallback, useRef, useState } from 'react'
 import type {
     EnrichedTextInputInstance,
     OnChangeHtmlEvent,
+    OnChangeSelectionEvent,
     OnChangeStateEvent,
     OnChangeTextEvent,
     OnKeyPressEvent,
@@ -31,6 +32,11 @@ type UseBitEditorInput = {
     onContentChange: (nextHtml: string) => void
 }
 
+type EditorSelection = {
+    start: number
+    end: number
+}
+
 function extractTextFromChangeEvent(event: OnChangeTextEvent | OnChangeHtmlEvent): string {
     return event.value ?? ''
 }
@@ -46,6 +52,7 @@ export function useBitEditor({ onContentChange }: UseBitEditorInput) {
     const eventSequenceRef = useRef(0)
     const lastHtmlRef = useRef('')
     const lastTextRef = useRef('')
+    const selectionRef = useRef<EditorSelection>({ start: 0, end: 0 })
     const pendingHeadingEnterRef = useRef<PendingHeadingEnter | null>(null)
 
     const logEditorEvent = useCallback((event: string, payload: Record<string, unknown>) => {
@@ -186,6 +193,43 @@ export function useBitEditor({ onContentChange }: UseBitEditorInput) {
         [logEditorEvent],
     )
 
+    const onChangeSelection = useCallback((event: { nativeEvent: OnChangeSelectionEvent }) => {
+        selectionRef.current = {
+            start: event.nativeEvent.start,
+            end: event.nativeEvent.end,
+        }
+        logEditorEvent('change-selection', {
+            start: event.nativeEvent.start,
+            end: event.nativeEvent.end,
+            text: event.nativeEvent.text,
+        })
+    }, [logEditorEvent])
+
+    const runParagraphCommand = useCallback((command: 'h1' | 'h2' | 'paragraph') => {
+        const editor = editorRef.current
+        if (!editor) return
+
+        const { start, end } = selectionRef.current
+
+        editor.focus()
+        editor.setSelection(start, end)
+
+        requestAnimationFrame(() => {
+            if (command === 'h1') {
+                editor.toggleH1()
+                return
+            }
+
+            if (command === 'h2') {
+                editor.toggleH2()
+                return
+            }
+
+            if (stylesState?.h1?.isActive) editor.toggleH1()
+            if (stylesState?.h2?.isActive) editor.toggleH2()
+        })
+    }, [stylesState])
+
     const onKeyPress = useCallback(
         (event: { nativeEvent: OnKeyPressEvent }) => {
             const key = event.nativeEvent.key
@@ -223,7 +267,9 @@ export function useBitEditor({ onContentChange }: UseBitEditorInput) {
         onChangeText,
         onChangeHtml,
         onChangeState,
+        onChangeSelection,
         onKeyPress,
         syncSnapshot,
+        runParagraphCommand,
     }
 }

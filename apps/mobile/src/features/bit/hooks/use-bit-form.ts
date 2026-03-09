@@ -118,8 +118,8 @@ export function useBitForm() {
 
     const canSave = useMemo(() => content.trim().length > 0 && !isSaving, [content, isSaving])
 
-    const handleSave = useCallback(async () => {
-        const trimmed = content.trim()
+    const handleSave = useCallback(async (nextContent?: string) => {
+        const trimmed = (nextContent ?? content).trim()
         if (!trimmed || isSaving) return
 
         setIsSaving(true)

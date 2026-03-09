@@ -66,8 +66,10 @@ export default function SetlistFilterModal() {
 
     const applyFilters = () => {
         router.back()
-        router.setParams({
-            tags: toCsvParam(selectedTags),
+        requestAnimationFrame(() => {
+            router.setParams({
+                tags: toCsvParam(selectedTags),
+            })
         })
     }
 
