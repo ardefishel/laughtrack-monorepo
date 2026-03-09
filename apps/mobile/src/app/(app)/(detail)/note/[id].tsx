@@ -1,127 +1,23 @@
 import { Icon } from '@/components/ui/ion-icon'
-import { NOTE_TABLE, PREMISE_TABLE } from '@/database/constants'
-import { Note as NoteModel } from '@/database/models/note'
-import { Premise as PremiseModel } from '@/database/models/premise'
-import { noteModelToDomain } from '@/database/mappers/noteMapper'
-import type { Note } from '@/types'
-import { timeAgo } from '@/lib/time-ago'
-import { useDatabase } from '@nozbe/watermelondb/react'
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
+import { useNoteForm } from '@/features/note/hooks/use-note-form'
+import { useNavigation } from 'expo-router'
 import { Button, TextArea } from 'heroui-native'
-import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react'
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native'
+import React, { useLayoutEffect } from 'react'
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native'
 
 export default function NoteDetail() {
-    const router = useRouter()
-    const database = useDatabase()
-    const { id } = useLocalSearchParams<{ id: string }>()
-    const isEditing = id !== 'new'
-
     const navigation = useNavigation('/(app)')
-
-    const [noteState, setNoteState] = useState<{ note: NoteModel; key: number } | null>(null)
-    const [noteData, setNoteData] = useState<Note | null>(null)
-    const [content, setContent] = useState('')
-    const [isSaving, setIsSaving] = useState(false)
-
-    useEffect(() => {
-        if (!isEditing || !id) {
-            setNoteState(null)
-            setNoteData(null)
-            return
-        }
-
-        const subscription = database
-            .get<NoteModel>(NOTE_TABLE)
-            .findAndObserve(id)
-            .subscribe((result: NoteModel) => {
-                setNoteState({ note: result, key: result.updatedAt.getTime() })
-                setNoteData(noteModelToDomain(result))
-                setContent(result.content)
-            })
-
-        return () => subscription.unsubscribe()
-    }, [database, id, isEditing])
-
-    const canSave = content.trim().length > 0 && !isSaving
-
-    const handleSave = useCallback(async () => {
-        const trimmed = content.trim()
-        if (!trimmed || isSaving) return
-
-        setIsSaving(true)
-
-        try {
-            if (isEditing && noteState?.note) {
-                await noteState.note.updateContent(trimmed)
-                router.back()
-                return
-            }
-
-            await database.write(async () => {
-                await database.get<NoteModel>(NOTE_TABLE).create((note: NoteModel) => {
-                    const now = Date.now()
-                    note.content = trimmed
-                    note.createdAt = new Date(now)
-                    note.updatedAt = new Date(now)
-                })
-            })
-            router.back()
-        } finally {
-            setIsSaving(false)
-        }
-    }, [content, database, isEditing, isSaving, noteState?.note, router])
-
-    const handlePromoteToPremise = useCallback(() => {
-        if (!isEditing || !noteState?.note) return
-
-        const trimmed = content.trim()
-        if (!trimmed) return
-
-        Alert.alert(
-            'Promote to Premise',
-            'This will create a new premise from this note and delete the original note.',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Promote',
-                    onPress: async () => {
-                        setIsSaving(true)
-                        try {
-                            let premiseId = ''
-                            await database.write(async () => {
-                                const premise = await database
-                                    .get<PremiseModel>(PREMISE_TABLE)
-                                    .create((p: PremiseModel) => {
-                                        const now = Date.now()
-                                        p.content = trimmed
-                                        p.status = 'draft'
-                                        p.attitude = null
-                                        p.tagsJson = JSON.stringify([])
-                                        p.bitIdsJson = JSON.stringify([])
-                                        p.sourceNoteId = id!
-                                        p.createdAt = new Date(now)
-                                        p.updatedAt = new Date(now)
-                                    })
-                                premiseId = premise.id
-                                await noteState.note.markAsDeleted()
-                            })
-                            router.replace({ pathname: '/(app)/(detail)/premise/[id]', params: { id: premiseId } })
-                        } finally {
-                            setIsSaving(false)
-                        }
-                    },
-                },
-            ],
-        )
-    }, [content, database, id, isEditing, noteState?.note, router])
-
-    const detailMeta = noteData
-        ? (() => {
-            const value = timeAgo(noteData.updatedAt)
-            return `Updated ${value === 'Just now' ? 'just now' : value}`
-        })()
-        : null
+    const {
+        isEditing,
+        content,
+        setContent,
+        canSave,
+        detailMeta,
+        isSaving,
+        canPromoteToPremise,
+        handleSave,
+        handlePromoteToPremise,
+    } = useNoteForm()
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -156,7 +52,7 @@ export default function NoteDetail() {
                     <Text className='text-muted text-xs px-3'>{detailMeta}</Text>
                 )}
 
-                {isEditing && (
+                {canPromoteToPremise && (
                     <View className='pt-4 border-t border-separator'>
                         <Pressable
                             onPress={handlePromoteToPremise}

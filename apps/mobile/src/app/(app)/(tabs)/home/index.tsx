@@ -2,19 +2,17 @@ import { QuickNoteBar } from "@/features/home/components/quick-note-bar";
 import { RecentNoteCard } from "@/features/home/components/recent-note-card";
 import { RecentWorkCard } from "@/features/home/components/recent-work-card";
 import { useRecentWorks } from "@/features/home/hooks/use-recent-works";
+import { useNoteList } from "@/features/note/hooks/use-note-list";
+import { createNote } from "@/features/note/services/note-actions";
+import { deleteNote } from "@/features/note/services/delete-note";
 import { useKeyboardOffset } from "@/lib/use-keyboard-offset";
 import { useRouter } from "expo-router";
-import { Q } from "@nozbe/watermelondb";
 import { useDatabase } from "@nozbe/watermelondb/react";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { NOTE_TABLE } from "@/database/constants";
-import { noteModelToDomain } from "@/database/mappers/noteMapper";
-import { Note as NoteModel } from "@/database/models/note";
-import type { Note } from "@/types";
 import type { RecentWork } from "@/domain/recent-work";
 
 type WorkDetailPathname = '/(app)/(detail)/premise/[id]' | '/(app)/(detail)/bit/[id]' | '/(app)/(detail)/setlist/[id]'
@@ -30,35 +28,15 @@ export default function Index() {
   const router = useRouter()
   const database = useDatabase()
   const recentWorks = useRecentWorks()
+  const { notes: recentNotes, refresh: refreshRecentNotes } = useNoteList(6)
   const keyboardOffset = useKeyboardOffset()
 
-  const [recentNotes, setRecentNotes] = useState<Note[]>([])
   const [isCreatingQuickNote, setIsCreatingQuickNote] = useState(false)
-
-  const fetchRecentNotes = useCallback(async () => {
-    const value = await database
-      .get<NoteModel>(NOTE_TABLE)
-      .query(Q.sortBy('updated_at', Q.desc), Q.take(6))
-      .fetch()
-    setRecentNotes(value.map(noteModelToDomain))
-  }, [database])
-
-  useEffect(() => {
-    const subscription = database
-      .get<NoteModel>(NOTE_TABLE)
-      .query(Q.sortBy('updated_at', Q.desc), Q.take(6))
-      .observe()
-      .subscribe((notes: NoteModel[]) => {
-        setRecentNotes(notes.map(noteModelToDomain))
-      })
-
-    return () => subscription.unsubscribe()
-  }, [database])
 
   useFocusEffect(
     useCallback(() => {
-      void fetchRecentNotes()
-    }, [fetchRecentNotes]),
+      void refreshRecentNotes()
+    }, [refreshRecentNotes]),
   )
 
   const handleQuickCreate = useCallback(async (content: string) => {
@@ -67,14 +45,7 @@ export default function Index() {
 
     setIsCreatingQuickNote(true)
     try {
-      await database.write(async () => {
-        await database.get<NoteModel>(NOTE_TABLE).create((note) => {
-          const now = Date.now()
-          note.content = trimmed
-          note.createdAt = new Date(now)
-          note.updatedAt = new Date(now)
-        })
-      })
+      await createNote(database, trimmed)
     } finally {
       setIsCreatingQuickNote(false)
     }
@@ -89,10 +60,7 @@ export default function Index() {
   }, [router])
 
   const handleDeleteNote = useCallback(async (id: string) => {
-    await database.write(async () => {
-      const note = await database.get<NoteModel>(NOTE_TABLE).find(id)
-      await note.destroyPermanently()
-    })
+    await deleteNote(database, id)
   }, [database])
 
   const quickNoteStyle = useMemo(() => ({
