@@ -4,6 +4,7 @@ import { Note as NoteModel } from '@/database/models/note'
 import { Premise as PremiseModel } from '@/database/models/premise'
 import { noteModelToDomain } from '@/database/mappers/noteMapper'
 import type { Note } from '@/types'
+import { dbLogger } from '@/lib/loggers'
 import { timeAgo } from '@/lib/time-ago'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
@@ -34,10 +35,15 @@ export default function NoteDetail() {
         const subscription = database
             .get<NoteModel>(NOTE_TABLE)
             .findAndObserve(id)
-            .subscribe((result: NoteModel) => {
-                setNoteState({ note: result, key: result.updatedAt.getTime() })
-                setNoteData(noteModelToDomain(result))
-                setContent(result.content)
+            .subscribe({
+                next: (result: NoteModel) => {
+                    setNoteState({ note: result, key: result.updatedAt.getTime() })
+                    setNoteData(noteModelToDomain(result))
+                    setContent(result.content)
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('Note detail subscription failed', { error, noteId: id })
+                },
             })
 
         return () => subscription.unsubscribe()
@@ -67,10 +73,17 @@ export default function NoteDetail() {
                 })
             })
             router.back()
+        } catch (error) {
+            dbLogger.error('Failed to save note', {
+                error,
+                noteId: isEditing ? noteState?.note.id ?? id : 'new',
+                isEditing,
+                contentLength: trimmed.length,
+            })
         } finally {
             setIsSaving(false)
         }
-    }, [content, database, isEditing, isSaving, noteState?.note, router])
+    }, [content, database, id, isEditing, isSaving, noteState?.note, router])
 
     const handlePromoteToPremise = useCallback(() => {
         if (!isEditing || !noteState?.note) return
@@ -107,6 +120,13 @@ export default function NoteDetail() {
                                 await noteState.note.markAsDeleted()
                             })
                             router.replace({ pathname: '/(app)/(detail)/premise/[id]', params: { id: premiseId } })
+                        } catch (error) {
+                            dbLogger.error('Failed to promote note to premise', {
+                                error,
+                                noteId: noteState.note.id,
+                                sourceId: id,
+                                contentLength: trimmed.length,
+                            })
                         } finally {
                             setIsSaving(false)
                         }

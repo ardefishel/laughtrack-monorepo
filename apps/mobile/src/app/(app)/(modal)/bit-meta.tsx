@@ -3,6 +3,7 @@ import { BIT_STATUS_OPTIONS } from '@/config/bit-statuses'
 import { PREMISE_TABLE } from '@/database/constants'
 import { premiseModelToDomain } from '@/database/mappers/premiseMapper'
 import { Premise as PremiseModel } from '@/database/models/premise'
+import { dbLogger } from '@/lib/loggers'
 import type { BitStatus } from '@/types'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -31,12 +32,17 @@ export default function BitMetaModal() {
             .get<PremiseModel>(PREMISE_TABLE)
             .query()
             .observe()
-            .subscribe((value: PremiseModel[]) => {
-                setPremises(
-                    value
-                        .map(premiseModelToDomain)
-                        .map((premise) => ({ id: premise.id, content: premise.content })),
-                )
+            .subscribe({
+                next: (value: PremiseModel[]) => {
+                    setPremises(
+                        value
+                            .map(premiseModelToDomain)
+                            .map((premise) => ({ id: premise.id, content: premise.content })),
+                    )
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('BitMeta failed to observe premise options', error)
+                },
             })
 
         return () => subscription.unsubscribe()

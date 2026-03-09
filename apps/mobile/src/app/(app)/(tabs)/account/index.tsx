@@ -3,6 +3,7 @@ import { Icon } from '@/components/ui/ion-icon'
 import { SafeAreaView } from '@/components/ui/safe-area-view'
 import { AppConfig } from '@/config/app'
 import { database } from '@/database'
+import { uiLogger } from '@/lib/loggers'
 import { performSync } from '@/lib/sync'
 import { useRouter } from 'expo-router'
 import { Button, ListGroup, Separator } from 'heroui-native'
@@ -19,6 +20,14 @@ export default function AccountScreen() {
     const { user, isAuthenticated, signOut } = useAuth()
     const [isSyncing, setIsSyncing] = useState(false)
     const avatarInitial = user?.name?.trim().charAt(0).toUpperCase() || 'G'
+
+    const openExternalUrl = useCallback(async (url: string) => {
+        try {
+            await Linking.openURL(url)
+        } catch (error) {
+            uiLogger.error('Account screen failed to open external link', { error, url })
+        }
+    }, [])
 
     const handleSync = useCallback(async () => {
         if (!isAuthenticated) {
@@ -39,7 +48,7 @@ export default function AccountScreen() {
         } finally {
             setIsSyncing(false)
         }
-    }, [isAuthenticated])
+    }, [isAuthenticated, router])
 
     const handleSignOut = useCallback(async () => {
         Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
@@ -87,7 +96,7 @@ export default function AccountScreen() {
                 {/* Information */}
                 <Text className="text-sm text-muted mb-2 ml-2">Information</Text>
                 <ListGroup className="mb-6">
-                    <ListGroup.Item onPress={() => void Linking.openURL(TERMS_OF_SERVICE_URL)}>
+                    <ListGroup.Item onPress={() => void openExternalUrl(TERMS_OF_SERVICE_URL)}>
                         <ListGroup.ItemPrefix>
                             <Icon name="document-text-outline" size={22} className="text-foreground" />
                         </ListGroup.ItemPrefix>
@@ -97,7 +106,7 @@ export default function AccountScreen() {
                         <ListGroup.ItemSuffix />
                     </ListGroup.Item>
                     <Separator className="mx-4" />
-                    <ListGroup.Item onPress={() => void Linking.openURL(PRIVACY_POLICY_URL)}>
+                    <ListGroup.Item onPress={() => void openExternalUrl(PRIVACY_POLICY_URL)}>
                         <ListGroup.ItemPrefix>
                             <Icon name="shield-checkmark-outline" size={22} className="text-foreground" />
                         </ListGroup.ItemPrefix>

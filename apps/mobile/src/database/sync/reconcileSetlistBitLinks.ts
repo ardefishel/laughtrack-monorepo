@@ -24,7 +24,7 @@ function parseSetlistBitIds(value: string): string[] {
             )
             .map((entry) => entry.bitId)
     } catch (error) {
-        dbLogger.debug('parseSetlistBitIds failed', {
+        dbLogger.warn('parseSetlistBitIds failed', {
             valueLength: value.length,
             error,
         })

@@ -24,7 +24,7 @@ function parseSetlistTagNamesJson(value: string): string[] {
             })
             .filter((entry): entry is string => typeof entry === 'string')
     } catch (error) {
-        dbLogger.debug('parseSetlistTagNamesJson failed', {
+        dbLogger.warn('parseSetlistTagNamesJson failed', {
             valueLength: value.length,
             error,
         })
@@ -107,7 +107,7 @@ function parseSetlistItemsJson(value: string, fallbackCreatedAt: Date, fallbackU
             })
             .filter((entry): entry is SetlistItem => entry !== null)
     } catch (error) {
-        dbLogger.debug('parseSetlistItemsJson failed', {
+        dbLogger.warn('parseSetlistItemsJson failed', {
             valueLength: value.length,
             error,
         })

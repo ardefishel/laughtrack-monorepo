@@ -3,6 +3,7 @@ import { MaterialListScreen } from '@/features/material/components/material-list
 import { setlistModelToDomain } from '@/database/mappers/setlistMapper'
 import { SETLIST_TABLE } from '@/database/constants'
 import { Setlist as SetlistModel } from '@/database/models/setlist'
+import { dbLogger } from '@/lib/loggers'
 import type { Setlist } from '@/types'
 import { parseCsvParam } from '@/features/material/filters/filter-query'
 import { useFocusEffect } from '@react-navigation/native'
@@ -22,12 +23,17 @@ export default function SetlistListScreen() {
     const countBeforeCreateRef = useRef<number | null>(null)
 
     const fetchSetlists = useCallback(async () => {
-        const value = await database
-            .get<SetlistModel>(SETLIST_TABLE)
-            .query(Q.sortBy('updated_at', Q.desc))
-            .fetch()
-        setSetlists(value.map(setlistModelToDomain))
-        return value.length
+        try {
+            const value = await database
+                .get<SetlistModel>(SETLIST_TABLE)
+                .query(Q.sortBy('updated_at', Q.desc))
+                .fetch()
+            setSetlists(value.map(setlistModelToDomain))
+            return value.length
+        } catch (error) {
+            dbLogger.error('SetlistList failed to fetch setlists', error)
+            return 0
+        }
     }, [database])
 
     useEffect(() => {
@@ -35,8 +41,13 @@ export default function SetlistListScreen() {
             .get<SetlistModel>(SETLIST_TABLE)
             .query(Q.sortBy('updated_at', Q.desc))
             .observe()
-            .subscribe((value: SetlistModel[]) => {
-                setSetlists(value.map(setlistModelToDomain))
+            .subscribe({
+                next: (value: SetlistModel[]) => {
+                    setSetlists(value.map(setlistModelToDomain))
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('SetlistList setlists subscription failed', error)
+                },
             })
 
         return () => subscription.unsubscribe()
@@ -81,14 +92,14 @@ export default function SetlistListScreen() {
             pathname: '/setlist-filter',
             params: { tags: params.tags ?? '' },
         })
-    }, [params.tags])
+    }, [params.tags, router])
 
     const keyExtractor = useCallback((item: Setlist) => item.id, [])
 
     const handleFabPress = useCallback(() => {
         countBeforeCreateRef.current = setlists.length
         router.push('/setlist/new')
-    }, [setlists.length])
+    }, [setlists.length, router])
 
     const renderItem = useCallback(({ item }: { item: Setlist }) => {
         const handlePress = () => {
@@ -96,14 +107,20 @@ export default function SetlistListScreen() {
         }
 
         const handleDelete = () => {
-            void database.write(async () => {
-                const setlist = await database.get<SetlistModel>(SETLIST_TABLE).find(item.id)
-                await setlist.destroyPermanently()
-            })
+            void (async () => {
+                try {
+                    await database.write(async () => {
+                        const setlist = await database.get<SetlistModel>(SETLIST_TABLE).find(item.id)
+                        await setlist.destroyPermanently()
+                    })
+                } catch (error) {
+                    dbLogger.error('SetlistList failed to delete setlist', { error, setlistId: item.id })
+                }
+            })()
         }
 
         return <SetlistCard setlist={item} onPress={handlePress} onDelete={handleDelete} />
-    }, [database])
+    }, [database, router])
 
     return (
         <MaterialListScreen

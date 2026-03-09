@@ -3,6 +3,7 @@ import { Icon } from '@/components/ui/ion-icon'
 import { SETLIST_TABLE } from '@/database/constants'
 import { parseSetlistTagNames } from '@/database/mappers/setlistMapper'
 import { Setlist as SetlistModel } from '@/database/models/setlist'
+import { dbLogger } from '@/lib/loggers'
 import { parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -25,16 +26,21 @@ export default function SetlistFilterModal() {
             .get<SetlistModel>(SETLIST_TABLE)
             .query()
             .observe()
-            .subscribe((setlists: SetlistModel[]) => {
-                const tagSet = new Set<string>()
+            .subscribe({
+                next: (setlists: SetlistModel[]) => {
+                    const tagSet = new Set<string>()
 
-                for (const setlist of setlists) {
-                    for (const tag of parseSetlistTagNames(setlist.tagsJson)) {
-                        tagSet.add(tag)
+                    for (const setlist of setlists) {
+                        for (const tag of parseSetlistTagNames(setlist.tagsJson)) {
+                            tagSet.add(tag)
+                        }
                     }
-                }
 
-                setAvailableTags([...tagSet].sort((a, b) => a.localeCompare(b)))
+                    setAvailableTags([...tagSet].sort((a, b) => a.localeCompare(b)))
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('SetlistFilter failed to observe available tags', error)
+                },
             })
 
         return () => subscription.unsubscribe()

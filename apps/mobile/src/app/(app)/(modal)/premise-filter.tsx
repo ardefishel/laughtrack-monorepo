@@ -5,6 +5,7 @@ import { PREMISE_STATUS_OPTIONS } from '@/config/premise-statuses'
 import { PREMISE_TABLE } from '@/database/constants'
 import { parsePremiseTagNames } from '@/database/mappers/premiseMapper'
 import { Premise as PremiseModel } from '@/database/models/premise'
+import { dbLogger } from '@/lib/loggers'
 import type { Attitude, PremiseStatus } from '@/types'
 import { parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
 import { useDatabase } from '@nozbe/watermelondb/react'
@@ -26,15 +27,20 @@ export default function PremiseFilterModal() {
             .get<PremiseModel>(PREMISE_TABLE)
             .query()
             .observe()
-            .subscribe((premises: PremiseModel[]) => {
-                const uniqueTags = new Set<string>()
-                for (const premise of premises) {
-                    const tagNames = parsePremiseTagNames(premise.tagsJson)
-                    for (const tagName of tagNames) {
-                        uniqueTags.add(tagName)
+            .subscribe({
+                next: (premises: PremiseModel[]) => {
+                    const uniqueTags = new Set<string>()
+                    for (const premise of premises) {
+                        const tagNames = parsePremiseTagNames(premise.tagsJson)
+                        for (const tagName of tagNames) {
+                            uniqueTags.add(tagName)
+                        }
                     }
-                }
-                setAllTags([...uniqueTags].sort((a, b) => a.localeCompare(b)))
+                    setAllTags([...uniqueTags].sort((a, b) => a.localeCompare(b)))
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('PremiseFilter failed to observe available tags', error)
+                },
             })
 
         return () => subscription.unsubscribe()

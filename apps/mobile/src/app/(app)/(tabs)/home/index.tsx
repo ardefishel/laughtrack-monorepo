@@ -2,6 +2,7 @@ import { QuickNoteBar } from "@/features/home/components/quick-note-bar";
 import { RecentNoteCard } from "@/features/home/components/recent-note-card";
 import { RecentWorkCard } from "@/features/home/components/recent-work-card";
 import { useRecentWorks } from "@/features/home/hooks/use-recent-works";
+import { dbLogger } from "@/lib/loggers";
 import { useKeyboardOffset } from "@/lib/use-keyboard-offset";
 import { useRouter } from "expo-router";
 import { Q } from "@nozbe/watermelondb";
@@ -36,11 +37,15 @@ export default function Index() {
   const [isCreatingQuickNote, setIsCreatingQuickNote] = useState(false)
 
   const fetchRecentNotes = useCallback(async () => {
-    const value = await database
-      .get<NoteModel>(NOTE_TABLE)
-      .query(Q.sortBy('updated_at', Q.desc), Q.take(6))
-      .fetch()
-    setRecentNotes(value.map(noteModelToDomain))
+    try {
+      const value = await database
+        .get<NoteModel>(NOTE_TABLE)
+        .query(Q.sortBy('updated_at', Q.desc), Q.take(6))
+        .fetch()
+      setRecentNotes(value.map(noteModelToDomain))
+    } catch (error) {
+      dbLogger.error('Failed to fetch recent notes for home screen', error)
+    }
   }, [database])
 
   useEffect(() => {
@@ -48,8 +53,13 @@ export default function Index() {
       .get<NoteModel>(NOTE_TABLE)
       .query(Q.sortBy('updated_at', Q.desc), Q.take(6))
       .observe()
-      .subscribe((notes: NoteModel[]) => {
-        setRecentNotes(notes.map(noteModelToDomain))
+      .subscribe({
+        next: (notes: NoteModel[]) => {
+          setRecentNotes(notes.map(noteModelToDomain))
+        },
+        error: (error: unknown) => {
+          dbLogger.error('Recent notes subscription failed on home screen', error)
+        },
       })
 
     return () => subscription.unsubscribe()
@@ -75,6 +85,8 @@ export default function Index() {
           note.updatedAt = new Date(now)
         })
       })
+    } catch (error) {
+      dbLogger.error('Failed to create quick note', { error, contentLength: trimmed.length })
     } finally {
       setIsCreatingQuickNote(false)
     }
@@ -89,10 +101,14 @@ export default function Index() {
   }, [router])
 
   const handleDeleteNote = useCallback(async (id: string) => {
-    await database.write(async () => {
-      const note = await database.get<NoteModel>(NOTE_TABLE).find(id)
-      await note.destroyPermanently()
-    })
+    try {
+      await database.write(async () => {
+        const note = await database.get<NoteModel>(NOTE_TABLE).find(id)
+        await note.destroyPermanently()
+      })
+    } catch (error) {
+      dbLogger.error('Failed to delete quick note from home screen', { error, noteId: id })
+    }
   }, [database])
 
   const quickNoteStyle = useMemo(() => ({

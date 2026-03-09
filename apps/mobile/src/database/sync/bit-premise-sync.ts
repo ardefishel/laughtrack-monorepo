@@ -25,7 +25,7 @@ export async function syncBitPremiseRelation(input: {
                     model.updatedAt = new Date()
                 })
             } catch (error) {
-                dbLogger.debug('syncBitPremiseRelation failed to unlink premise relation', {
+                dbLogger.warn('syncBitPremiseRelation failed to unlink premise relation', {
                     bitId,
                     previousPremiseId,
                     error,
@@ -47,7 +47,7 @@ export async function syncBitPremiseRelation(input: {
                     model.updatedAt = new Date()
                 })
             } catch (error) {
-                dbLogger.debug('syncBitPremiseRelation failed to link premise relation', {
+                dbLogger.warn('syncBitPremiseRelation failed to link premise relation', {
                     bitId,
                     nextPremiseId,
                     error,

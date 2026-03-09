@@ -1,4 +1,5 @@
 import { RecentNoteCard } from '@/features/home/components/recent-note-card';
+import { dbLogger } from '@/lib/loggers';
 import { NOTE_TABLE } from '@/database/constants';
 import { Note as NoteModel } from '@/database/models/note';
 import type { Note } from '@/types';
@@ -28,12 +29,16 @@ export default function NoteList() {
     const [notes, setNotes] = useState<Note[]>([])
 
     const loadNotes = useCallback(async () => {
-        const value = await database
-            .get<NoteModel>(NOTE_TABLE)
-            .query(Q.sortBy('updated_at', Q.desc))
-            .fetch()
+        try {
+            const value = await database
+                .get<NoteModel>(NOTE_TABLE)
+                .query(Q.sortBy('updated_at', Q.desc))
+                .fetch()
 
-        setNotes(value.map(toNote))
+            setNotes(value.map(toNote))
+        } catch (error) {
+            dbLogger.error('Failed to load notes list', error)
+        }
     }, [database])
 
     useEffect(() => {
@@ -41,8 +46,13 @@ export default function NoteList() {
             .get<NoteModel>(NOTE_TABLE)
             .query(Q.sortBy('updated_at', Q.desc))
             .observe()
-            .subscribe((value: NoteModel[]) => {
-                setNotes(value.map(toNote))
+            .subscribe({
+                next: (value: NoteModel[]) => {
+                    setNotes(value.map(toNote))
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('Notes list subscription failed', error)
+                },
             })
 
         return () => subscription.unsubscribe()
@@ -62,10 +72,14 @@ export default function NoteList() {
     }, [notes, search])
 
     const handleDeleteNote = async (id: string) => {
-        await database.write(async () => {
-            const note = await database.get<NoteModel>(NOTE_TABLE).find(id)
-            await note.destroyPermanently()
-        })
+        try {
+            await database.write(async () => {
+                const note = await database.get<NoteModel>(NOTE_TABLE).find(id)
+                await note.destroyPermanently()
+            })
+        } catch (error) {
+            dbLogger.error('Failed to delete note from notes list', { error, noteId: id })
+        }
     }
 
     useLayoutEffect(() => {

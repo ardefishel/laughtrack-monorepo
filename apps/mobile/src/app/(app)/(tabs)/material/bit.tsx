@@ -25,12 +25,17 @@ export default function BitListScreen() {
     const countBeforeCreateRef = useRef<number | null>(null)
 
     const fetchBits = useCallback(async () => {
-        const value = await database
-            .get<BitModel>(BIT_TABLE)
-            .query(Q.sortBy('updated_at', Q.desc))
-            .fetch()
-        setBits(value.map(bitModelToDomain))
-        return value.length
+        try {
+            const value = await database
+                .get<BitModel>(BIT_TABLE)
+                .query(Q.sortBy('updated_at', Q.desc))
+                .fetch()
+            setBits(value.map(bitModelToDomain))
+            return value.length
+        } catch (error) {
+            dbLogger.error('BitList failed to fetch bits', error)
+            return 0
+        }
     }, [database])
 
     useEffect(() => {
@@ -38,8 +43,13 @@ export default function BitListScreen() {
             .get<BitModel>(BIT_TABLE)
             .query(Q.sortBy('updated_at', Q.desc))
             .observe()
-            .subscribe((value: BitModel[]) => {
-                setBits(value.map(bitModelToDomain))
+            .subscribe({
+                next: (value: BitModel[]) => {
+                    setBits(value.map(bitModelToDomain))
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('BitList bits subscription failed', error)
+                },
             })
 
         return () => subscription.unsubscribe()
@@ -93,14 +103,14 @@ export default function BitListScreen() {
             pathname: '/bit-filter',
             params: { statuses: params.statuses ?? '', tags: params.tags ?? '', hasPremise: params.hasPremise ?? '' },
         })
-    }, [params.hasPremise, params.statuses, params.tags])
+    }, [params.hasPremise, params.statuses, params.tags, router])
 
     const keyExtractor = useCallback((item: Bit) => item.id, [])
 
     const handleFabPress = useCallback(() => {
         countBeforeCreateRef.current = bits.length
         router.push('/bit/new')
-    }, [bits.length])
+    }, [bits.length, router])
 
     const renderItem = useCallback(({ item }: { item: Bit }) => {
         const handlePress = () => {
@@ -108,33 +118,37 @@ export default function BitListScreen() {
         }
 
         const handleDelete = async () => {
-            await database.write(async () => {
-                const bit = await database.get<BitModel>(BIT_TABLE).find(item.id)
+            try {
+                await database.write(async () => {
+                    const bit = await database.get<BitModel>(BIT_TABLE).find(item.id)
 
-                if (bit.premiseId) {
-                    try {
-                        const premise = await database.get<PremiseModel>(PREMISE_TABLE).find(bit.premiseId)
-                        const currentBitIds = parseStringArrayJson(premise.bitIdsJson).filter((id) => id !== bit.id)
+                    if (bit.premiseId) {
+                        try {
+                            const premise = await database.get<PremiseModel>(PREMISE_TABLE).find(bit.premiseId)
+                            const currentBitIds = parseStringArrayJson(premise.bitIdsJson).filter((id) => id !== bit.id)
 
-                        await premise.update((model) => {
-                            model.bitIdsJson = JSON.stringify(currentBitIds)
-                            model.updatedAt = new Date()
-                        })
-                    } catch (error) {
-                        dbLogger.debug('BitList delete ignored dangling premise relation', {
-                            bitId: bit.id,
-                            premiseId: bit.premiseId,
-                            error,
-                        })
+                            await premise.update((model) => {
+                                model.bitIdsJson = JSON.stringify(currentBitIds)
+                                model.updatedAt = new Date()
+                            })
+                        } catch (error) {
+                            dbLogger.debug('BitList delete ignored dangling premise relation', {
+                                bitId: bit.id,
+                                premiseId: bit.premiseId,
+                                error,
+                            })
+                        }
                     }
-                }
 
-                await bit.destroyPermanently()
-            })
+                    await bit.destroyPermanently()
+                })
+            } catch (error) {
+                dbLogger.error('BitList failed to delete bit', { error, bitId: item.id })
+            }
         }
 
         return <BitCard bit={item} onPress={handlePress} onDelete={handleDelete} />
-    }, [database])
+    }, [database, router])
 
     return (
         <MaterialListScreen

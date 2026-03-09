@@ -4,6 +4,7 @@ import { BIT_STATUS_OPTIONS } from '@/config/bit-statuses'
 import { BIT_TABLE } from '@/database/constants'
 import { Bit as BitModel } from '@/database/models/bit'
 import { parseBitTagNames } from '@/database/mappers/bitMapper'
+import { dbLogger } from '@/lib/loggers'
 import type { BitStatus } from '@/types'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { parseBooleanParam, parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
@@ -33,16 +34,21 @@ export default function BitFilterModal() {
             .get<BitModel>(BIT_TABLE)
             .query()
             .observe()
-            .subscribe((bits: BitModel[]) => {
-                const tagSet = new Set<string>()
+            .subscribe({
+                next: (bits: BitModel[]) => {
+                    const tagSet = new Set<string>()
 
-                for (const bit of bits) {
-                    for (const tag of parseBitTagNames(bit.tagsJson)) {
-                        tagSet.add(tag)
+                    for (const bit of bits) {
+                        for (const tag of parseBitTagNames(bit.tagsJson)) {
+                            tagSet.add(tag)
+                        }
                     }
-                }
 
-                setAvailableTags([...tagSet].sort((a, b) => a.localeCompare(b)))
+                    setAvailableTags([...tagSet].sort((a, b) => a.localeCompare(b)))
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('BitFilter failed to observe available tags', error)
+                },
             })
 
         return () => subscription.unsubscribe()

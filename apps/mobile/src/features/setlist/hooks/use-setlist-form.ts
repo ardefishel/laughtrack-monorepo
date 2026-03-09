@@ -116,17 +116,24 @@ export function useSetlistForm() {
         const subscription = database
             .get<SetlistModel>(SETLIST_TABLE)
             .findAndObserve(id)
-            .subscribe((result: SetlistModel) => {
-                const domainSetlist = setlistModelToDomain(result)
-                setSetlistState({
-                    setlist: result,
-                    _key: result.updatedAt.getTime(),
-                })
-                setDescription(domainSetlist.description)
-                setTags((domainSetlist.tags ?? []).map((tag) => tag.name))
-                void hydrateItemsWithBits(domainSetlist.items).then((nextItems) => {
-                    setItems(nextItems)
-                })
+            .subscribe({
+                next: (result: SetlistModel) => {
+                    const domainSetlist = setlistModelToDomain(result)
+                    setSetlistState({
+                        setlist: result,
+                        _key: result.updatedAt.getTime(),
+                    })
+                    setDescription(domainSetlist.description)
+                    setTags((domainSetlist.tags ?? []).map((tag) => tag.name))
+                    void hydrateItemsWithBits(domainSetlist.items).then((nextItems) => {
+                        setItems(nextItems)
+                    }).catch((error: unknown) => {
+                        dbLogger.error('SetlistDetail failed to hydrate setlist items', { error, setlistId: id })
+                    })
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('SetlistDetail subscription failed', { error, setlistId: id })
+                },
             })
 
         return () => subscription.unsubscribe()
@@ -146,44 +153,52 @@ export function useSetlistForm() {
         }
 
         void (async () => {
-            const foundModels = await Promise.all(
-                incomingIds.map(async (bitId) => {
-                    try {
-                        return await database.get<BitModel>(BIT_TABLE).find(bitId)
-                    } catch (error) {
-                        dbLogger.debug('SetlistDetail add bits ignored missing model', { bitId, error })
-                        return null
-                    }
-                }),
-            )
-
-            const foundBits = foundModels
-                .filter((model): model is BitModel => model !== null)
-                .map(bitModelToDomain)
-
-            const newItems: SetlistItem[] = foundBits.map((bit, idx) => ({
-                id: `new-bit-${Date.now()}-${idx}`,
-                type: 'bit',
-                bitId: bit.id,
-                bit,
-            }))
-
-            setItems((prev) => {
-                const existingBitIds = new Set(
-                    prev
-                        .filter((item): item is Extract<SetlistItem, { type: 'bit' }> => item.type === 'bit')
-                        .map((item) => item.bitId),
+            try {
+                const foundModels = await Promise.all(
+                    incomingIds.map(async (bitId) => {
+                        try {
+                            return await database.get<BitModel>(BIT_TABLE).find(bitId)
+                        } catch (error) {
+                            dbLogger.debug('SetlistDetail add bits ignored missing model', { bitId, error })
+                            return null
+                        }
+                    }),
                 )
-                const dedupedIncomingItems = newItems.filter(
-                    (item): item is Extract<SetlistItem, { type: 'bit' }> =>
-                        item.type === 'bit' && !existingBitIds.has(item.bitId),
-                )
-                return [...prev, ...dedupedIncomingItems]
-            })
 
-            router.setParams({ addedBits: '', addedBitsNonce: '' })
+                const foundBits = foundModels
+                    .filter((model): model is BitModel => model !== null)
+                    .map(bitModelToDomain)
+
+                const newItems: SetlistItem[] = foundBits.map((bit, idx) => ({
+                    id: `new-bit-${Date.now()}-${idx}`,
+                    type: 'bit',
+                    bitId: bit.id,
+                    bit,
+                }))
+
+                setItems((prev) => {
+                    const existingBitIds = new Set(
+                        prev
+                            .filter((item): item is Extract<SetlistItem, { type: 'bit' }> => item.type === 'bit')
+                            .map((item) => item.bitId),
+                    )
+                    const dedupedIncomingItems = newItems.filter(
+                        (item): item is Extract<SetlistItem, { type: 'bit' }> =>
+                            item.type === 'bit' && !existingBitIds.has(item.bitId),
+                    )
+                    return [...prev, ...dedupedIncomingItems]
+                })
+            } catch (error) {
+                dbLogger.error('SetlistDetail failed to append selected bits', {
+                    error,
+                    setlistId: id,
+                    incomingCount: incomingIds.length,
+                })
+            } finally {
+                router.setParams({ addedBits: '', addedBitsNonce: '' })
+            }
         })()
-    }, [addedBits, addedBitsNonce, database])
+    }, [addedBits, addedBitsNonce, database, id, router])
 
     const handleSave = useCallback(async () => {
         const trimmedDescription = description.trim()
@@ -236,7 +251,7 @@ export function useSetlistForm() {
                                 model.updatedAt = now
                             })
                         } catch (error) {
-                            dbLogger.debug('SetlistDetail save ignored failed bit update', { bitId, error })
+                            dbLogger.warn('SetlistDetail save ignored failed bit update', { bitId, error })
                             continue
                         }
                     }
@@ -270,7 +285,7 @@ export function useSetlistForm() {
                             model.updatedAt = now
                         })
                     } catch (error) {
-                        dbLogger.debug('SetlistDetail save ignored failed created setlist relation update', {
+                        dbLogger.warn('SetlistDetail save ignored failed created setlist relation update', {
                             bitId,
                             error,
                         })
@@ -280,10 +295,19 @@ export function useSetlistForm() {
             })
 
             router.back()
+        } catch (error) {
+            dbLogger.error('SetlistDetail failed to save setlist', {
+                error,
+                setlistId: isEditing ? id : 'new',
+                isEditing,
+                bitCount: nextBitIds.length,
+                itemCount: persistedItems.length,
+                tagCount: tags.length,
+            })
         } finally {
             setIsSaving(false)
         }
-    }, [database, description, id, isEditing, isSaving, items, setlistModel, tags])
+    }, [database, description, id, isEditing, isSaving, items, router, setlistModel, tags])
 
     const handleChooseBit = useCallback(() => {
         setTypeDialogOpen(false)
@@ -298,7 +322,7 @@ export function useSetlistForm() {
                 selected,
             },
         })
-    }, [items])
+    }, [items, router])
 
     const handleChooseNote = useCallback(() => {
         setTypeDialogOpen(false)

@@ -7,6 +7,7 @@ import { Bit } from '@/database/models/bit'
 import { Setlist } from '@/database/models/setlist'
 import { stripHtmlToLines } from '@/database/utils/html'
 import type { RecentWork } from '@/domain/recent-work'
+import { dbLogger } from '@/lib/loggers'
 
 const MAX_RECENT_WORKS = 5
 
@@ -35,42 +36,57 @@ export function useRecentWorks() {
             .get<Premise>(PREMISE_TABLE)
             .query(...recentQuery)
             .observe()
-            .subscribe((items) => {
-                latestPremises.current = items.map((p) => ({
-                    id: p.id,
-                    type: 'premise' as const,
-                    title: p.content,
-                    updatedAt: p.updatedAt,
-                }))
-                setRecentWorks(mergeAndSort(latestPremises.current, latestBits.current, latestSetlists.current))
+            .subscribe({
+                next: (items) => {
+                    latestPremises.current = items.map((p) => ({
+                        id: p.id,
+                        type: 'premise' as const,
+                        title: p.content,
+                        updatedAt: p.updatedAt,
+                    }))
+                    setRecentWorks(mergeAndSort(latestPremises.current, latestBits.current, latestSetlists.current))
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('Recent premises subscription failed', error)
+                },
             })
 
         const bitSub = database
             .get<Bit>(BIT_TABLE)
             .query(...recentQuery)
             .observe()
-            .subscribe((items) => {
-                latestBits.current = items.map((b) => ({
-                    id: b.id,
-                    type: 'bit' as const,
-                    title: stripHtmlToLines(b.content).join(' '),
-                    updatedAt: b.updatedAt,
-                }))
-                setRecentWorks(mergeAndSort(latestPremises.current, latestBits.current, latestSetlists.current))
+            .subscribe({
+                next: (items) => {
+                    latestBits.current = items.map((b) => ({
+                        id: b.id,
+                        type: 'bit' as const,
+                        title: stripHtmlToLines(b.content).join(' '),
+                        updatedAt: b.updatedAt,
+                    }))
+                    setRecentWorks(mergeAndSort(latestPremises.current, latestBits.current, latestSetlists.current))
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('Recent bits subscription failed', error)
+                },
             })
 
         const setlistSub = database
             .get<Setlist>(SETLIST_TABLE)
             .query(...recentQuery)
             .observe()
-            .subscribe((items) => {
-                latestSetlists.current = items.map((s) => ({
-                    id: s.id,
-                    type: 'set' as const,
-                    title: s.description,
-                    updatedAt: s.updatedAt,
-                }))
-                setRecentWorks(mergeAndSort(latestPremises.current, latestBits.current, latestSetlists.current))
+            .subscribe({
+                next: (items) => {
+                    latestSetlists.current = items.map((s) => ({
+                        id: s.id,
+                        type: 'set' as const,
+                        title: s.description,
+                        updatedAt: s.updatedAt,
+                    }))
+                    setRecentWorks(mergeAndSort(latestPremises.current, latestBits.current, latestSetlists.current))
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('Recent setlists subscription failed', error)
+                },
             })
 
         return () => {

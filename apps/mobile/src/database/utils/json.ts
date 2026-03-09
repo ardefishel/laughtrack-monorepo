@@ -10,7 +10,7 @@ export function parseStringArrayJson(value: string): string[] {
         if (!Array.isArray(parsed)) return []
         return parsed.filter((entry): entry is string => typeof entry === 'string')
     } catch (error) {
-        dbLogger.debug('parseStringArrayJson failed', {
+        dbLogger.warn('parseStringArrayJson failed', {
             valueLength: value.length,
             error,
         })

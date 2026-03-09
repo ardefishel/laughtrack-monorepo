@@ -3,6 +3,7 @@ import { MaterialListScreen } from '@/features/material/components/material-list
 import { premiseModelToDomain } from '@/database/mappers/premiseMapper'
 import { PREMISE_TABLE } from '@/database/constants'
 import { Premise as PremiseModel } from '@/database/models/premise'
+import { dbLogger } from '@/lib/loggers'
 import type { Attitude, Premise, PremiseStatus } from '@/types'
 import { parseCsvParam } from '@/features/material/filters/filter-query'
 import { useFocusEffect } from '@react-navigation/native'
@@ -22,12 +23,17 @@ export default function PremiseListScreen() {
     const countBeforeCreateRef = useRef<number | null>(null)
 
     const fetchPremises = useCallback(async () => {
-        const value = await database
-            .get<PremiseModel>(PREMISE_TABLE)
-            .query(Q.sortBy('updated_at', Q.desc))
-            .fetch()
-        setPremises(value.map(premiseModelToDomain))
-        return value.length
+        try {
+            const value = await database
+                .get<PremiseModel>(PREMISE_TABLE)
+                .query(Q.sortBy('updated_at', Q.desc))
+                .fetch()
+            setPremises(value.map(premiseModelToDomain))
+            return value.length
+        } catch (error) {
+            dbLogger.error('PremiseList failed to fetch premises', error)
+            return 0
+        }
     }, [database])
 
     useEffect(() => {
@@ -35,8 +41,13 @@ export default function PremiseListScreen() {
             .get<PremiseModel>(PREMISE_TABLE)
             .query(Q.sortBy('updated_at', Q.desc))
             .observe()
-            .subscribe((value: PremiseModel[]) => {
-                setPremises(value.map(premiseModelToDomain))
+            .subscribe({
+                next: (value: PremiseModel[]) => {
+                    setPremises(value.map(premiseModelToDomain))
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('PremiseList premises subscription failed', error)
+                },
             })
 
         return () => subscription.unsubscribe()
@@ -90,14 +101,14 @@ export default function PremiseListScreen() {
             pathname: '/premise-filter',
             params: { statuses: params.statuses ?? '', tags: params.tags ?? '', attitudes: params.attitudes ?? '' },
         })
-    }, [params.attitudes, params.statuses, params.tags])
+    }, [params.attitudes, params.statuses, params.tags, router])
 
     const keyExtractor = useCallback((item: Premise) => item.id, [])
 
     const handleFabPress = useCallback(() => {
         countBeforeCreateRef.current = premises.length
         router.push('/premise/new')
-    }, [premises.length])
+    }, [premises.length, router])
 
     const renderItem = useCallback(({ item }: { item: Premise }) => {
         const handlePress = () => {
@@ -105,14 +116,18 @@ export default function PremiseListScreen() {
         }
 
         const handleDelete = async () => {
-            await database.write(async () => {
-                const premise = await database.get<PremiseModel>(PREMISE_TABLE).find(item.id)
-                await premise.destroyPermanently()
-            })
+            try {
+                await database.write(async () => {
+                    const premise = await database.get<PremiseModel>(PREMISE_TABLE).find(item.id)
+                    await premise.destroyPermanently()
+                })
+            } catch (error) {
+                dbLogger.error('PremiseList failed to delete premise', { error, premiseId: item.id })
+            }
         }
 
         return <PremiseCard premise={item} onPress={handlePress} onDelete={handleDelete} />
-    }, [database])
+    }, [database, router])
 
     return (
         <MaterialListScreen

@@ -54,15 +54,20 @@ export function useBitForm() {
         const subscription = database
             .get<BitModel>(BIT_TABLE)
             .findAndObserve(id)
-            .subscribe((result: BitModel) => {
-                const bit = bitModelToDomain(result)
-                setBitModel(result)
-                setContent(bit.content)
-                setEditorInitialValue(bit.content)
-                setEditorRevision(result.updatedAt.getTime())
-                setStatus(bit.status)
-                setTags((bit.tags ?? []).map((tag) => tag.name))
-                setPremiseId(bit.premiseId ?? null)
+            .subscribe({
+                next: (result: BitModel) => {
+                    const bit = bitModelToDomain(result)
+                    setBitModel(result)
+                    setContent(bit.content)
+                    setEditorInitialValue(bit.content)
+                    setEditorRevision(result.updatedAt.getTime())
+                    setStatus(bit.status)
+                    setTags((bit.tags ?? []).map((tag) => tag.name))
+                    setPremiseId(bit.premiseId ?? null)
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('BitDetail subscription failed', { error, bitId: id })
+                },
             })
 
         return () => subscription.unsubscribe()
@@ -89,7 +94,7 @@ export function useBitForm() {
             metaPremiseId: '',
             metaNonce: '',
         })
-    }, [metaNonce, metaPremiseId, metaStatus, metaTags])
+    }, [metaNonce, metaPremiseId, metaStatus, metaTags, router])
 
     useEffect(() => {
         if (!premiseId) {
@@ -173,10 +178,19 @@ export function useBitForm() {
                     })
                 })
             }
+        } catch (error) {
+            dbLogger.error('BitDetail failed to save bit', {
+                error,
+                bitId: isEditing ? bitModel?.id ?? id : 'new',
+                isEditing,
+                premiseId,
+                tagCount: tags.length,
+                fromSetlist,
+            })
         } finally {
             setIsSaving(false)
         }
-    }, [bitModel, content, database, fromSetlist, isEditing, isSaving, premiseId, status, tags])
+    }, [bitModel, content, database, fromSetlist, id, isEditing, isSaving, premiseId, router, status, tags])
 
     const openBitMeta = useCallback(() => {
         router.push({
@@ -188,7 +202,7 @@ export function useBitForm() {
                 bitId: id,
             },
         })
-    }, [id, premiseId, status, tags])
+    }, [id, premiseId, router, status, tags])
 
     const editorKey = useMemo(() => {
         if (!isEditing) return 'bit-new'

@@ -45,15 +45,20 @@ export function usePremiseForm() {
         const subscription = database
             .get<PremiseModel>(PREMISE_TABLE)
             .findAndObserve(id)
-            .subscribe((result: PremiseModel) => {
-                const premise = premiseModelToDomain(result)
-                setPremiseModel(result)
-                setContent(premise.content)
-                setStatus(premise.status)
-                setAttitude(premise.attitude)
-                setTags((premise.tags ?? []).map((tag) => tag.name))
-                setBitIds(premise.bitIds ?? [])
-                setUpdatedAt(premise.updatedAt)
+            .subscribe({
+                next: (result: PremiseModel) => {
+                    const premise = premiseModelToDomain(result)
+                    setPremiseModel(result)
+                    setContent(premise.content)
+                    setStatus(premise.status)
+                    setAttitude(premise.attitude)
+                    setTags((premise.tags ?? []).map((tag) => tag.name))
+                    setBitIds(premise.bitIds ?? [])
+                    setUpdatedAt(premise.updatedAt)
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('PremiseDetail subscription failed', { error, premiseId: id })
+                },
             })
 
         return () => subscription.unsubscribe()
@@ -72,57 +77,66 @@ export function usePremiseForm() {
 
         if (idsToUnlink.length === 0 && idsToLink.length === 0) return
 
-        await database.write(async () => {
-            for (const bitId of idsToUnlink) {
-                try {
-                    const bit = await database.get<BitModel>(BIT_TABLE).find(bitId)
-                    if (bit.premiseId !== id) continue
+        try {
+            await database.write(async () => {
+                for (const bitId of idsToUnlink) {
+                    try {
+                        const bit = await database.get<BitModel>(BIT_TABLE).find(bitId)
+                        if (bit.premiseId !== id) continue
 
-                    await bit.update((model) => {
-                        model.premiseId = null
+                        await bit.update((model) => {
+                            model.premiseId = null
+                            model.updatedAt = new Date()
+                        })
+                    } catch (error) {
+                        dbLogger.warn('PremiseForm applySelectedBits ignored unlink failure', {
+                            bitId,
+                            premiseId: id,
+                            error,
+                        })
+                    }
+                }
+
+                for (const bitId of idsToLink) {
+                    try {
+                        const bit = await database.get<BitModel>(BIT_TABLE).find(bitId)
+
+                        await bit.update((model) => {
+                            model.premiseId = id
+                            model.updatedAt = new Date()
+                        })
+                    } catch (error) {
+                        dbLogger.warn('PremiseForm applySelectedBits ignored link failure', {
+                            bitId,
+                            premiseId: id,
+                            error,
+                        })
+                    }
+                }
+
+                try {
+                    const premise = await database.get<PremiseModel>(PREMISE_TABLE).find(id)
+                    await premise.update((model) => {
+                        model.bitIdsJson = JSON.stringify(nextBitIds)
                         model.updatedAt = new Date()
                     })
                 } catch (error) {
-                    dbLogger.debug('PremiseForm applySelectedBits ignored unlink failure', {
-                        bitId,
+                    dbLogger.warn('PremiseForm applySelectedBits ignored premise update failure', {
                         premiseId: id,
                         error,
                     })
                 }
-            }
+            })
 
-            for (const bitId of idsToLink) {
-                try {
-                    const bit = await database.get<BitModel>(BIT_TABLE).find(bitId)
-
-                    await bit.update((model) => {
-                        model.premiseId = id
-                        model.updatedAt = new Date()
-                    })
-                } catch (error) {
-                    dbLogger.debug('PremiseForm applySelectedBits ignored link failure', {
-                        bitId,
-                        premiseId: id,
-                        error,
-                    })
-                }
-            }
-
-            try {
-                const premise = await database.get<PremiseModel>(PREMISE_TABLE).find(id)
-                await premise.update((model) => {
-                    model.bitIdsJson = JSON.stringify(nextBitIds)
-                    model.updatedAt = new Date()
-                })
-            } catch (error) {
-                dbLogger.debug('PremiseForm applySelectedBits ignored premise update failure', {
-                    premiseId: id,
-                    error,
-                })
-            }
-        })
-
-        await reconcilePremiseBitLinks(database)
+            await reconcilePremiseBitLinks(database)
+        } catch (error) {
+            dbLogger.error('PremiseForm failed to apply selected bits', {
+                error,
+                premiseId: id,
+                unlinkCount: idsToUnlink.length,
+                linkCount: idsToLink.length,
+            })
+        }
     }, [bitIds, database, id, isEditing])
 
     useEffect(() => {
@@ -165,10 +179,19 @@ export function usePremiseForm() {
                 })
             })
             router.back()
+        } catch (error) {
+            dbLogger.error('PremiseDetail failed to save premise', {
+                error,
+                premiseId: isEditing ? premiseModel?.id ?? id : 'new',
+                isEditing,
+                attitude,
+                status,
+                tagCount: tags.length,
+            })
         } finally {
             setIsSaving(false)
         }
-    }, [attitude, canSave, content, database, isEditing, premiseModel, router, status, tags])
+    }, [attitude, canSave, content, database, id, isEditing, premiseModel, router, status, tags])
 
     const clearAttitude = useCallback(() => {
         setAttitude(undefined)

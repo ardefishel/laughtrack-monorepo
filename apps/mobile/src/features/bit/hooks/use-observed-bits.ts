@@ -1,6 +1,7 @@
 import { BIT_TABLE } from '@/database/constants'
 import { bitModelToDomain } from '@/database/mappers/bitMapper'
 import { Bit as BitModel } from '@/database/models/bit'
+import { dbLogger } from '@/lib/loggers'
 import type { Bit } from '@/types'
 import { Q } from '@nozbe/watermelondb'
 import { useDatabase } from '@nozbe/watermelondb/react'
@@ -15,8 +16,13 @@ export function useObservedBits(): Bit[] {
             .get<BitModel>(BIT_TABLE)
             .query(Q.sortBy('updated_at', Q.desc))
             .observe()
-            .subscribe((value: BitModel[]) => {
-                setBits(value.map(bitModelToDomain))
+            .subscribe({
+                next: (value: BitModel[]) => {
+                    setBits(value.map(bitModelToDomain))
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('useObservedBits subscription failed', error)
+                },
             })
 
         return () => subscription.unsubscribe()
