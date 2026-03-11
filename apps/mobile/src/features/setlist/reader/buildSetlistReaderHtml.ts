@@ -1,4 +1,4 @@
-import { stripHtmlWrapper } from '@laughtrack/html-utils'
+import { sanitizeHtml, stripHtmlWrapper } from '@laughtrack/html-utils'
 import type { SetlistItem } from '@/types'
 
 interface ThemeColors {
@@ -18,7 +18,7 @@ export function buildSetlistReaderHtml(
         .map((item, index) => {
             if (item.type === 'bit') {
                 const rawHtml = item.bit?.content ?? ''
-                const content = stripHtmlWrapper(rawHtml)
+                const content = sanitizeHtml(stripHtmlWrapper(rawHtml))
                 const title = item.bit ? '' : '<p class="empty">Untitled bit</p>'
                 const divider = index > 0 ? '<hr/>' : ''
                 return `${divider}<section class="bit">${title}${content}</section>`

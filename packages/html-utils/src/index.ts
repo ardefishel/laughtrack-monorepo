@@ -69,3 +69,67 @@ export function combineHtmlContents(contents: string[]): string {
     }
     return `<html><body>${validContents.join('<br><br>')}</body></html>`;
 }
+
+const DANGEROUS_TAGS = [
+    'script', 'style', 'iframe', 'object', 'embed', 'form',
+    'input', 'textarea', 'select', 'button', 'link', 'meta', 'base',
+];
+
+const ALLOWED_TAGS: Record<string, boolean> = {
+    'p': true, 'br': true, 'b': true, 'strong': true, 'i': true, 'em': true, 'u': true, 's': true, 'strike': true,
+    'ul': true, 'ol': true, 'li': true, 'blockquote': true, 'code': true, 'pre': true,
+    'h1': true, 'h2': true, 'h3': true, 'span': true, 'div': true, 'a': true, 'hr': true,
+};
+
+const SAFE_HREF_PROTOCOL = /^(?:https?:|mailto:)/i;
+
+export function sanitizeHtml(html: string): string {
+    if (!html || html.length === 0) {
+        return '';
+    }
+
+    // Remove dangerous tags and their contents
+    let result = html;
+    for (const tag of DANGEROUS_TAGS) {
+        const pattern = new RegExp(`<${tag}\\b[^>]*>[\\s\\S]*?<\\/${tag}>`, 'gi');
+        result = result.replace(pattern, '');
+        // Also remove self-closing / unclosed dangerous tags
+        result = result.replace(new RegExp(`<${tag}\\b[^>]*\\/?>`, 'gi'), '');
+    }
+
+    // Remove all on* event handler attributes
+    result = result.replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+
+    // Process remaining tags: allow safe tags, strip unsafe ones
+    result = result.replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\b([^>]*)?\/?>/g, (match, tagName: string, attrs: string) => {
+        const tag = tagName.toLowerCase();
+
+        if (!ALLOWED_TAGS[tag]) {
+            return '';
+        }
+
+        const isClosing = match.charAt(1) === '/';
+        const isSelfClosing = match.charAt(match.length - 2) === '/';
+
+        if (isClosing) {
+            return `</${tag}>`;
+        }
+
+        // For <a> tags, preserve safe href attributes only
+        if (tag === 'a' && attrs) {
+            const hrefMatch = attrs.match(/\bhref\s*=\s*(?:"([^"]*)"|'([^']*)')/i);
+            if (hrefMatch) {
+                const href = hrefMatch[1] ?? hrefMatch[2] ?? '';
+                if (SAFE_HREF_PROTOCOL.test(href.trim())) {
+                    return `<a href="${href}"${isSelfClosing ? '/>' : '>'}`;
+                }
+            }
+            return `<a${isSelfClosing ? '/>' : '>'}`;
+        }
+
+        // Strip all attributes from other allowed tags
+        return `<${tag}${isSelfClosing ? '/>' : '>'}`;
+    });
+
+    return result;
+}
