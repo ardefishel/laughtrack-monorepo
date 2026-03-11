@@ -27,7 +27,17 @@ export default function SetlistReaderScreen() {
     const html = useMemo(() => {
         let parsed: SetlistItem[] = []
         try {
-            parsed = JSON.parse(itemsJson || '[]') as SetlistItem[]
+            const raw = JSON.parse(itemsJson || '[]')
+            if (!Array.isArray(raw)) {
+                uiLogger.debug('SetlistReader items payload is not an array')
+                parsed = []
+            } else {
+                parsed = raw.filter(
+                    (item: unknown): item is SetlistItem =>
+                        typeof item === 'object' && item !== null && 'type' in item &&
+                        (item.type === 'bit' || item.type === 'set-note')
+                )
+            }
         } catch (error) {
             uiLogger.debug('SetlistReader failed to parse items payload', {
                 itemsJson,
@@ -52,7 +62,7 @@ export default function SetlistReaderScreen() {
                 style={{ backgroundColor: 'transparent' }}
                 scrollEnabled
                 showsVerticalScrollIndicator={false}
-                originWhitelist={['*']}
+                originWhitelist={['about:blank']}
             />
         </View>
     )

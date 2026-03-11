@@ -21,6 +21,8 @@ const googleIosUrlScheme =
     ? `com.googleusercontent.apps.${googleIosClientId.replace(IOS_CLIENT_ID_SUFFIX, '')}`
     : undefined
 
+const isDev = process.env.EAS_BUILD_PROFILE === 'development' || !process.env.EAS_BUILD_PROFILE
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: APP_CONFIG.name,
@@ -77,9 +79,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         ios: {
           infoPlist: {
-            NSAppTransportSecurity: {
-              NSAllowsLocalNetworking: true,
-            },
+            ...(isDev ? { NSAppTransportSecurity: { NSAllowsLocalNetworking: true } } : {}),
             ITSAppUsesNonExemptEncryption: false
           },
         },
