@@ -26,15 +26,22 @@ const hasRole = (user: User | null, targetRole: string) => {
     .includes(targetRole)
 }
 
+async function loadSession(headers: Headers) {
+  const sessionResult = await auth.api.getSession({ headers })
+  if (!sessionResult) return null
+  return {
+    user: sessionResult.user as User,
+    session: sessionResult.session as Session,
+  }
+}
+
 export const authMiddleware = createMiddleware<AuthEnv>(async (c, next) => {
   try {
-    const sessionResult = await auth.api.getSession({
-      headers: c.req.raw.headers,
-    })
+    const result = await loadSession(c.req.raw.headers)
 
-    if (sessionResult) {
-      c.set('user', sessionResult.user as User)
-      c.set('session', sessionResult.session as Session)
+    if (result) {
+      c.set('user', result.user)
+      c.set('session', result.session)
     } else {
       c.set('user', null)
       c.set('session', null)
@@ -50,16 +57,14 @@ export const authMiddleware = createMiddleware<AuthEnv>(async (c, next) => {
 
 export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
   try {
-    const sessionResult = await auth.api.getSession({
-      headers: c.req.raw.headers,
-    })
+    const result = await loadSession(c.req.raw.headers)
 
-    if (!sessionResult) {
+    if (!result) {
       return c.json({ error: 'Unauthorized' }, 401)
     }
 
-    c.set('user', sessionResult.user as User)
-    c.set('session', sessionResult.session as Session)
+    c.set('user', result.user)
+    c.set('session', result.session)
     await next()
     return
   } catch {
@@ -69,20 +74,18 @@ export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
 
 export const requireAdmin = createMiddleware<AuthEnv>(async (c, next) => {
   try {
-    const sessionResult = await auth.api.getSession({
-      headers: c.req.raw.headers,
-    })
+    const result = await loadSession(c.req.raw.headers)
 
-    if (!sessionResult) {
+    if (!result) {
       return c.json({ error: 'Unauthorized' }, 401)
     }
 
-    if (!hasRole(sessionResult.user as User, ADMIN_ROLE)) {
+    if (!hasRole(result.user, ADMIN_ROLE)) {
       return c.json({ error: 'Forbidden' }, 403)
     }
 
-    c.set('user', sessionResult.user as User)
-    c.set('session', sessionResult.session as Session)
+    c.set('user', result.user)
+    c.set('session', result.session)
     await next()
     return
   } catch {
