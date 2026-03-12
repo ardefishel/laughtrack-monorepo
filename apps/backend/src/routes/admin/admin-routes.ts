@@ -1,11 +1,33 @@
 import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { z } from 'zod'
 import { db } from '../../db'
 import { bits, notes, premises, setlists, users } from '../../db/schema'
 import { errorResponse, paginatedResponse, successResponse } from '../../lib/response'
 import { requireAdmin, requireAuth } from '../../middlewares/auth'
 
 const webRoutes = new Hono()
+
+const paginationSchema = z.object({
+    page: z.coerce.number().int().min(1).default(1),
+    limit: z.coerce.number().int().min(1).max(100).default(20),
+    userId: z.string().optional(),
+})
+
+const updateUserSchema = z.object({
+    name: z.string().min(1).max(255).optional(),
+    email: z.string().email().optional(),
+    role: z.enum(['user', 'admin']).optional(),
+    banned: z.boolean().optional(),
+    banReason: z.string().max(1000).nullable().optional(),
+})
+
+function parsePagination(query: Record<string, string>) {
+    const result = paginationSchema.safeParse(query)
+    if (!result.success) return null
+    const { page, limit, userId } = result.data
+    return { page, limit, offset: (page - 1) * limit, userId }
+}
 
 webRoutes.get('/stats', requireAuth, async (c) => {
     const [userCount] = await db.select({ count: count() }).from(users)
@@ -26,9 +48,9 @@ webRoutes.get('/stats', requireAuth, async (c) => {
 })
 
 webRoutes.get('/users', requireAdmin, async (c) => {
-    const page = Number(c.req.query('page') || '1')
-    const limit = Number(c.req.query('limit') || '20')
-    const offset = (page - 1) * limit
+    const params = parsePagination(c.req.query())
+    if (!params) return c.json(errorResponse('Invalid pagination parameters'), 400)
+    const { page, limit, offset } = params
 
     const [totalResult] = await db.select({ count: count() }).from(users)
 
@@ -100,18 +122,15 @@ webRoutes.get('/users/:id', requireAdmin, async (c) => {
 
 webRoutes.put('/users/:id', requireAdmin, async (c) => {
     const userId = c.req.param('id')
-    const body = await c.req.json<{
-        name?: string
-        email?: string
-        role?: string
-        banned?: boolean
-        banReason?: string | null
-    }>()
-
-    const validRoles = ['user', 'admin']
-    if (body.role !== undefined && !validRoles.includes(body.role)) {
-        return c.json(errorResponse('Invalid role. Must be one of: user, admin', 400), 400)
+    const rawBody = await c.req.json()
+    const parseResult = updateUserSchema.safeParse(rawBody)
+    if (!parseResult.success) {
+        return c.json(errorResponse('Invalid request body', 400, parseResult.error.errors.map((e) => ({
+            path: e.path.join('.'),
+            message: e.message,
+        }))), 400)
     }
+    const body = parseResult.data
 
     const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.id, userId))
     if (!existing) return c.json(errorResponse('User not found', 404), 404)
@@ -144,10 +163,9 @@ webRoutes.put('/users/:id', requireAdmin, async (c) => {
 })
 
 webRoutes.get('/notes', requireAuth, async (c) => {
-    const page = Number(c.req.query('page') || '1')
-    const limit = Number(c.req.query('limit') || '20')
-    const userId = c.req.query('userId')
-    const offset = (page - 1) * limit
+    const params = parsePagination(c.req.query())
+    if (!params) return c.json(errorResponse('Invalid pagination parameters'), 400)
+    const { page, limit, offset, userId } = params
 
     const conditions = [eq(notes.isDeleted, false)]
     if (userId) conditions.push(eq(notes.userId, userId))
@@ -180,10 +198,9 @@ webRoutes.get('/notes', requireAuth, async (c) => {
 })
 
 webRoutes.get('/bits', requireAuth, async (c) => {
-    const page = Number(c.req.query('page') || '1')
-    const limit = Number(c.req.query('limit') || '20')
-    const userId = c.req.query('userId')
-    const offset = (page - 1) * limit
+    const params = parsePagination(c.req.query())
+    if (!params) return c.json(errorResponse('Invalid pagination parameters'), 400)
+    const { page, limit, offset, userId } = params
 
     const conditions = [eq(bits.isDeleted, false)]
     if (userId) conditions.push(eq(bits.userId, userId))
@@ -219,10 +236,9 @@ webRoutes.get('/bits', requireAuth, async (c) => {
 })
 
 webRoutes.get('/premises', requireAuth, async (c) => {
-    const page = Number(c.req.query('page') || '1')
-    const limit = Number(c.req.query('limit') || '20')
-    const userId = c.req.query('userId')
-    const offset = (page - 1) * limit
+    const params = parsePagination(c.req.query())
+    if (!params) return c.json(errorResponse('Invalid pagination parameters'), 400)
+    const { page, limit, offset, userId } = params
 
     const conditions = [eq(premises.isDeleted, false)]
     if (userId) conditions.push(eq(premises.userId, userId))
@@ -258,10 +274,9 @@ webRoutes.get('/premises', requireAuth, async (c) => {
 })
 
 webRoutes.get('/setlists', requireAuth, async (c) => {
-    const page = Number(c.req.query('page') || '1')
-    const limit = Number(c.req.query('limit') || '20')
-    const userId = c.req.query('userId')
-    const offset = (page - 1) * limit
+    const params = parsePagination(c.req.query())
+    if (!params) return c.json(errorResponse('Invalid pagination parameters'), 400)
+    const { page, limit, offset, userId } = params
 
     const conditions = [eq(setlists.isDeleted, false)]
     if (userId) conditions.push(eq(setlists.userId, userId))
