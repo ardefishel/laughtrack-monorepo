@@ -1,7 +1,8 @@
 import { connectDatabase, disconnectDatabase } from "./db"
 import app from './index'
 // Server startup
-const PORT = Number(process.env.PORT) ?? 3000
+const parsedPort = Number(process.env.PORT)
+const PORT = Number.isFinite(parsedPort) ? parsedPort : 3000
 
 async function startServer() {
     await connectDatabase()
