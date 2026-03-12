@@ -3,11 +3,11 @@ import { Hono } from 'hono'
 import { db } from '../../db'
 import { bits, notes, premises, setlists, users } from '../../db/schema'
 import { errorResponse, paginatedResponse, successResponse } from '../../lib/response'
-import { requireAdmin, requireAuth } from '../../middlewares/auth'
+import { requireAdmin } from '../../middlewares/auth'
 
 const webRoutes = new Hono()
 
-webRoutes.get('/stats', requireAuth, async (c) => {
+webRoutes.get('/stats', requireAdmin, async (c) => {
     const [userCount] = await db.select({ count: count() }).from(users)
     const [noteCount] = await db.select({ count: count() }).from(notes).where(eq(notes.isDeleted, false))
     const [bitCount] = await db.select({ count: count() }).from(bits).where(eq(bits.isDeleted, false))
@@ -143,7 +143,7 @@ webRoutes.put('/users/:id', requireAdmin, async (c) => {
     return c.json(successResponse(updated))
 })
 
-webRoutes.get('/notes', requireAuth, async (c) => {
+webRoutes.get('/notes', requireAdmin, async (c) => {
     const page = Number(c.req.query('page') || '1')
     const limit = Number(c.req.query('limit') || '20')
     const userId = c.req.query('userId')
@@ -179,7 +179,7 @@ webRoutes.get('/notes', requireAuth, async (c) => {
     return c.json(paginatedResponse(mapped, { page, limit, total: totalResult.count }))
 })
 
-webRoutes.get('/bits', requireAuth, async (c) => {
+webRoutes.get('/bits', requireAdmin, async (c) => {
     const page = Number(c.req.query('page') || '1')
     const limit = Number(c.req.query('limit') || '20')
     const userId = c.req.query('userId')
@@ -218,7 +218,7 @@ webRoutes.get('/bits', requireAuth, async (c) => {
     return c.json(paginatedResponse(mapped, { page, limit, total: totalResult.count }))
 })
 
-webRoutes.get('/premises', requireAuth, async (c) => {
+webRoutes.get('/premises', requireAdmin, async (c) => {
     const page = Number(c.req.query('page') || '1')
     const limit = Number(c.req.query('limit') || '20')
     const userId = c.req.query('userId')
@@ -257,7 +257,7 @@ webRoutes.get('/premises', requireAuth, async (c) => {
     return c.json(paginatedResponse(mapped, { page, limit, total: totalResult.count }))
 })
 
-webRoutes.get('/setlists', requireAuth, async (c) => {
+webRoutes.get('/setlists', requireAdmin, async (c) => {
     const page = Number(c.req.query('page') || '1')
     const limit = Number(c.req.query('limit') || '20')
     const userId = c.req.query('userId')
