@@ -68,7 +68,7 @@ webRoutes.get('/users/:id', requireAdmin, async (c) => {
         .from(users)
         .where(eq(users.id, userId))
 
-    if (!user) return c.json(errorResponse('User not found', 404), 404)
+    if (!user) return c.json(errorResponse('User not found'), 404)
 
     const [noteCount] = await db
         .select({ count: count() })
@@ -110,11 +110,11 @@ webRoutes.put('/users/:id', requireAdmin, async (c) => {
 
     const validRoles = ['user', 'admin']
     if (body.role !== undefined && !validRoles.includes(body.role)) {
-        return c.json(errorResponse('Invalid role. Must be one of: user, admin', 400), 400)
+        return c.json(errorResponse('Invalid role. Must be one of: user, admin'), 400)
     }
 
     const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.id, userId))
-    if (!existing) return c.json(errorResponse('User not found', 404), 404)
+    if (!existing) return c.json(errorResponse('User not found'), 404)
 
     const updates: Record<string, unknown> = { updatedAt: new Date() }
     if (body.name !== undefined) updates.name = body.name

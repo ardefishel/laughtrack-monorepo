@@ -109,6 +109,7 @@ export function createNamespacedLogger(namespace: LogNamespace): Logger {
 
 export const defaultLogger: Logger = new NodeLogger('default');
 export const dbLogger = createNamespacedLogger('db');
+export const serverLogger = createNamespacedLogger('server');
 export const hooksLogger = createNamespacedLogger('hooks');
 export const uiLogger = createNamespacedLogger('ui');
 export const networkLogger = createNamespacedLogger('network');
