@@ -48,7 +48,7 @@ export default function ForgotPassword() {
         } finally {
             setIsLoading(false)
         }
-    }, [email])
+    }, [email, router])
 
     return (
         <AuthContainer title='Reset Password' subtitle='Enter your email to receive a reset link'>
