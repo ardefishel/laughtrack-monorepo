@@ -29,7 +29,6 @@ export function paginatedResponse<T>(
 
 export function errorResponse(
   message: string,
-  _status: number = 400,
   details?: Record<string, string>[]
 ) {
   return {

@@ -90,7 +90,7 @@ webRoutes.get('/users/:id', requireAdmin, async (c) => {
         .from(users)
         .where(eq(users.id, userId))
 
-    if (!user) return c.json(errorResponse('User not found', 404), 404)
+    if (!user) return c.json(errorResponse('User not found'), 404)
 
     const [noteCount] = await db
         .select({ count: count() })
@@ -133,7 +133,7 @@ webRoutes.put('/users/:id', requireAdmin, async (c) => {
     const body = parseResult.data
 
     const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.id, userId))
-    if (!existing) return c.json(errorResponse('User not found', 404), 404)
+    if (!existing) return c.json(errorResponse('User not found'), 404)
 
     const updates: Record<string, unknown> = { updatedAt: new Date() }
     if (body.name !== undefined) updates.name = body.name
