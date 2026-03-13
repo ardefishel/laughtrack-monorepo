@@ -1,4 +1,5 @@
 import { createMiddleware } from 'hono/factory'
+import { HTTPException } from 'hono/http-exception'
 import { ZodError } from 'zod'
 
 type ErrorEnv = {
@@ -14,6 +15,16 @@ export const errorMiddleware = () => {
       await next()
     } catch (error) {
       const requestId = c.get('requestId') ?? 'unknown'
+
+      if (error instanceof HTTPException) {
+        return c.json(
+          {
+            error: error.message,
+            requestId,
+          },
+          error.status
+        )
+      }
 
       if (error instanceof ZodError) {
         return c.json(
@@ -34,10 +45,10 @@ export const errorMiddleware = () => {
 
         return c.json(
           {
-            error: error.message,
+            error: 'Internal server error',
             requestId,
           },
-          error.message === 'Unauthorized' ? 401 : 500
+          500
         )
       }
 
