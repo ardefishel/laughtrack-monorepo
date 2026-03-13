@@ -30,11 +30,13 @@ function parsePagination(query: Record<string, string>) {
 }
 
 webRoutes.get('/stats', requireAdmin, async (c) => {
-    const [userCount] = await db.select({ count: count() }).from(users)
-    const [noteCount] = await db.select({ count: count() }).from(notes).where(eq(notes.isDeleted, false))
-    const [bitCount] = await db.select({ count: count() }).from(bits).where(eq(bits.isDeleted, false))
-    const [premiseCount] = await db.select({ count: count() }).from(premises).where(eq(premises.isDeleted, false))
-    const [setlistCount] = await db.select({ count: count() }).from(setlists).where(eq(setlists.isDeleted, false))
+    const [[userCount], [noteCount], [bitCount], [premiseCount], [setlistCount]] = await Promise.all([
+        db.select({ count: count() }).from(users),
+        db.select({ count: count() }).from(notes).where(eq(notes.isDeleted, false)),
+        db.select({ count: count() }).from(bits).where(eq(bits.isDeleted, false)),
+        db.select({ count: count() }).from(premises).where(eq(premises.isDeleted, false)),
+        db.select({ count: count() }).from(setlists).where(eq(setlists.isDeleted, false)),
+    ])
 
     return c.json(
         successResponse({
@@ -92,22 +94,12 @@ webRoutes.get('/users/:id', requireAdmin, async (c) => {
 
     if (!user) return c.json(errorResponse('User not found'), 404)
 
-    const [noteCount] = await db
-        .select({ count: count() })
-        .from(notes)
-        .where(and(eq(notes.userId, userId), eq(notes.isDeleted, false)))
-    const [bitCount] = await db
-        .select({ count: count() })
-        .from(bits)
-        .where(and(eq(bits.userId, userId), eq(bits.isDeleted, false)))
-    const [premiseCount] = await db
-        .select({ count: count() })
-        .from(premises)
-        .where(and(eq(premises.userId, userId), eq(premises.isDeleted, false)))
-    const [setlistCount] = await db
-        .select({ count: count() })
-        .from(setlists)
-        .where(and(eq(setlists.userId, userId), eq(setlists.isDeleted, false)))
+    const [[noteCount], [bitCount], [premiseCount], [setlistCount]] = await Promise.all([
+        db.select({ count: count() }).from(notes).where(and(eq(notes.userId, userId), eq(notes.isDeleted, false))),
+        db.select({ count: count() }).from(bits).where(and(eq(bits.userId, userId), eq(bits.isDeleted, false))),
+        db.select({ count: count() }).from(premises).where(and(eq(premises.userId, userId), eq(premises.isDeleted, false))),
+        db.select({ count: count() }).from(setlists).where(and(eq(setlists.userId, userId), eq(setlists.isDeleted, false))),
+    ])
 
     return c.json(
         successResponse({
