@@ -1,13 +1,15 @@
-import type { OnChangeStateEvent } from 'react-native-enriched'
+import type { EnrichedTextInputInstance, OnChangeStateEvent } from 'react-native-enriched'
 import { KeyboardStickyView } from 'react-native-keyboard-controller'
 import { Pressable, Text, View } from 'react-native'
+import type { RefObject } from 'react'
 
 type EditorToolbarProps = {
+    editorRef: RefObject<EnrichedTextInputInstance | null>
     stylesState: OnChangeStateEvent | null
-    onRunParagraphCommand: (command: 'h1' | 'h2' | 'paragraph') => void
+    onFormattingIntent: (kind: 'h1' | 'h2' | 'paragraph') => void
 }
 
-export function EditorToolbar({ stylesState, onRunParagraphCommand }: EditorToolbarProps) {
+export function EditorToolbar({ editorRef, stylesState, onFormattingIntent }: EditorToolbarProps) {
     const isH1Active = stylesState?.h1?.isActive ?? false
     const isH2Active = stylesState?.h2?.isActive ?? false
     const isParagraphActive = !isH1Active && !isH2Active
@@ -15,13 +17,31 @@ export function EditorToolbar({ stylesState, onRunParagraphCommand }: EditorTool
     return (
         <KeyboardStickyView offset={{ closed: 0, opened: 0 }} className='absolute bottom-0 right-0 left-0'>
             <View className='flex-row items-center gap-2 px-4 py-2.5 bg-surface border-t border-separator'>
-                <ToolbarButton label='H1' isActive={isH1Active} onPress={() => onRunParagraphCommand('h1')} />
-                <ToolbarButton label='H2' isActive={isH2Active} onPress={() => onRunParagraphCommand('h2')} />
+                <ToolbarButton
+                    label='H1'
+                    isActive={isH1Active}
+                    onPress={() => {
+                        onFormattingIntent('h1')
+                        editorRef.current?.toggleH1()
+                    }}
+                />
+                <ToolbarButton
+                    label='H2'
+                    isActive={isH2Active}
+                    onPress={() => {
+                        onFormattingIntent('h2')
+                        editorRef.current?.toggleH2()
+                    }}
+                />
                 <View className='w-px h-5 bg-separator mx-1' />
                 <ToolbarButton
                     label='P'
                     isActive={isParagraphActive}
-                    onPress={() => onRunParagraphCommand('paragraph')}
+                    onPress={() => {
+                        onFormattingIntent('paragraph')
+                        if (isH1Active) editorRef.current?.toggleH1()
+                        if (isH2Active) editorRef.current?.toggleH2()
+                    }}
                 />
             </View>
         </KeyboardStickyView>

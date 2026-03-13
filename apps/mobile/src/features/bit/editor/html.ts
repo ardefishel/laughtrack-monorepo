@@ -36,6 +36,22 @@ export function countLogicalBreaks(html: string): number {
     return (blockMatches?.length ?? 0) + (breakMatches?.length ?? 0)
 }
 
+function extractBlockTagSequence(html: string): string[] {
+    const matches = html.match(/<(h[1-6]|p|div|li)(?=\s|>)/gi)
+    return matches?.map((match) => match.slice(1).toLowerCase()) ?? []
+}
+
+export function didExpandHeadingStyleAcrossBlocks(previousHtml: string, nextHtml: string, heading: string): boolean {
+    const previousBlocks = extractBlockTagSequence(previousHtml)
+    const nextBlocks = extractBlockTagSequence(nextHtml)
+
+    if (previousBlocks.length < 2 || previousBlocks.length !== nextBlocks.length) return false
+    if (!nextBlocks.every((block) => block === heading)) return false
+    if (previousBlocks.every((block) => block === heading)) return false
+
+    return previousBlocks.includes(heading) && previousBlocks.some((block) => block !== heading)
+}
+
 /**
  * Test whether the HTML ends with a heading block of the given type.
  */

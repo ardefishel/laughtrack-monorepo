@@ -24,8 +24,16 @@ export default function BitDetailScreen() {
         openBitMeta,
     } = useBitForm()
 
-    const { editorRef, stylesState, onChangeText, onChangeHtml, onChangeState, onChangeSelection, onKeyPress, syncSnapshot, runParagraphCommand } =
-        useBitEditor({ onContentChange: setContent })
+    const {
+        editorRef,
+        stylesState,
+        onChangeText,
+        onChangeHtml,
+        onChangeState,
+        onKeyPress,
+        markFormattingIntent,
+        syncSnapshot,
+    } = useBitEditor({ onContentChange: setContent })
 
     const handleEditorSave = useCallback(async () => {
         const latestHtml = await editorRef.current?.getHTML().catch(() => null)
@@ -82,7 +90,6 @@ export default function BitDetailScreen() {
                     onChangeText={onChangeText}
                     onChangeHtml={onChangeHtml}
                     onChangeState={onChangeState}
-                    onChangeSelection={onChangeSelection}
                     onKeyPress={onKeyPress}
                     htmlStyle={{
                         h1: { fontSize: 28, bold: true },
@@ -101,7 +108,7 @@ export default function BitDetailScreen() {
                 />
             </ScrollView>
 
-            <EditorToolbar stylesState={stylesState} onRunParagraphCommand={runParagraphCommand} />
+            <EditorToolbar editorRef={editorRef} stylesState={stylesState} onFormattingIntent={markFormattingIntent} />
         </View>
     )
 }

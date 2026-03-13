@@ -2,6 +2,7 @@ import { uiLogger } from '@/lib/loggers'
 import {
     appendParagraphAfterTrailingHeading,
     countLogicalBreaks,
+    didExpandHeadingStyleAcrossBlocks,
     extractTextFromHtml,
     hasSingleParagraphBlock,
     hasTrailingHeadingBlock,
@@ -11,7 +12,6 @@ import { useCallback, useRef, useState } from 'react'
 import type {
     EnrichedTextInputInstance,
     OnChangeHtmlEvent,
-    OnChangeSelectionEvent,
     OnChangeStateEvent,
     OnChangeTextEvent,
     OnKeyPressEvent,
@@ -32,10 +32,13 @@ type UseBitEditorInput = {
     onContentChange: (nextHtml: string) => void
 }
 
-type EditorSelection = {
-    start: number
-    end: number
+type FormattingIntent = {
+    kind: 'h1' | 'h2' | 'paragraph'
+    armedAtMs: number
 }
+
+const FORMATTING_INTENT_WINDOW_MS = 1500
+const TYPING_ACTIVITY_WINDOW_MS = 750
 
 function extractTextFromChangeEvent(event: OnChangeTextEvent | OnChangeHtmlEvent): string {
     return event.value ?? ''
@@ -52,7 +55,8 @@ export function useBitEditor({ onContentChange }: UseBitEditorInput) {
     const eventSequenceRef = useRef(0)
     const lastHtmlRef = useRef('')
     const lastTextRef = useRef('')
-    const selectionRef = useRef<EditorSelection>({ start: 0, end: 0 })
+    const lastKeyPressAtRef = useRef(0)
+    const formattingIntentRef = useRef<FormattingIntent | null>(null)
     const pendingHeadingEnterRef = useRef<PendingHeadingEnter | null>(null)
 
     const logEditorEvent = useCallback((event: string, payload: Record<string, unknown>) => {
@@ -68,7 +72,27 @@ export function useBitEditor({ onContentChange }: UseBitEditorInput) {
     const syncSnapshot = useCallback((html: string) => {
         lastHtmlRef.current = html
         lastTextRef.current = extractTextFromHtml(html)
+        formattingIntentRef.current = null
         pendingHeadingEnterRef.current = null
+    }, [])
+
+    const markFormattingIntent = useCallback((kind: FormattingIntent['kind']) => {
+        formattingIntentRef.current = {
+            kind,
+            armedAtMs: Date.now(),
+        }
+    }, [])
+
+    const consumeFormattingIntent = useCallback((): FormattingIntent | null => {
+        const intent = formattingIntentRef.current
+        if (!intent) return null
+
+        if (Date.now() - intent.armedAtMs > FORMATTING_INTENT_WINDOW_MS) {
+            formattingIntentRef.current = null
+            return null
+        }
+
+        return intent
     }, [])
 
     const attemptHeadingEnterRecovery = useCallback(
@@ -161,17 +185,47 @@ export function useBitEditor({ onContentChange }: UseBitEditorInput) {
             const html = extractHtmlFromChangeEvent(event.nativeEvent)
             const repairedHtml = attemptHeadingEnterRecovery(html)
             const nextHtml = repairedHtml ?? html
+            const previousHtml = lastHtmlRef.current
+            const previousText = lastTextRef.current
+            const nextText = extractTextFromHtml(nextHtml)
+            const activeHeading = activeHeadingRef.current
+            const formattingIntent = consumeFormattingIntent()
+            const hadRecentKeyPress = Date.now() - lastKeyPressAtRef.current <= TYPING_ACTIVITY_WINDOW_MS
+            const shouldRejectUnexpectedHeadingExpansion =
+                previousHtml.length > 0 &&
+                repairedHtml === null &&
+                pendingHeadingEnterRef.current === null &&
+                activeHeading !== null &&
+                formattingIntent === null &&
+                !hadRecentKeyPress &&
+                normalizeEditorText(previousText) === normalizeEditorText(nextText) &&
+                didExpandHeadingStyleAcrossBlocks(previousHtml, nextHtml, activeHeading)
+
+            if (shouldRejectUnexpectedHeadingExpansion) {
+                logEditorEvent('change-html-rejected', {
+                    activeHeading,
+                    htmlLength: nextHtml.length,
+                    html: nextHtml,
+                    previousHtml,
+                })
+                editorRef.current?.setValue(previousHtml)
+                return
+            }
+
             lastHtmlRef.current = nextHtml
             logEditorEvent('change-html', {
-                activeHeading: activeHeadingRef.current,
+                activeHeading,
                 htmlLength: nextHtml.length,
                 html: nextHtml,
                 wasRepaired: repairedHtml !== null,
             })
             onContentChange(nextHtml)
-            lastTextRef.current = extractTextFromHtml(nextHtml)
+            lastTextRef.current = nextText
+            if (formattingIntent !== null) {
+                formattingIntentRef.current = null
+            }
         },
-        [attemptHeadingEnterRecovery, logEditorEvent, onContentChange],
+        [attemptHeadingEnterRecovery, consumeFormattingIntent, logEditorEvent, onContentChange],
     )
 
     const onChangeState = useCallback(
@@ -193,47 +247,11 @@ export function useBitEditor({ onContentChange }: UseBitEditorInput) {
         [logEditorEvent],
     )
 
-    const onChangeSelection = useCallback((event: { nativeEvent: OnChangeSelectionEvent }) => {
-        selectionRef.current = {
-            start: event.nativeEvent.start,
-            end: event.nativeEvent.end,
-        }
-        logEditorEvent('change-selection', {
-            start: event.nativeEvent.start,
-            end: event.nativeEvent.end,
-            text: event.nativeEvent.text,
-        })
-    }, [logEditorEvent])
-
-    const runParagraphCommand = useCallback((command: 'h1' | 'h2' | 'paragraph') => {
-        const editor = editorRef.current
-        if (!editor) return
-
-        const { start, end } = selectionRef.current
-
-        editor.focus()
-        editor.setSelection(start, end)
-
-        requestAnimationFrame(() => {
-            if (command === 'h1') {
-                editor.toggleH1()
-                return
-            }
-
-            if (command === 'h2') {
-                editor.toggleH2()
-                return
-            }
-
-            if (stylesState?.h1?.isActive) editor.toggleH1()
-            if (stylesState?.h2?.isActive) editor.toggleH2()
-        })
-    }, [stylesState])
-
     const onKeyPress = useCallback(
         (event: { nativeEvent: OnKeyPressEvent }) => {
             const key = event.nativeEvent.key
             const activeHeading = activeHeadingRef.current
+            lastKeyPressAtRef.current = Date.now()
             const sequence = logEditorEvent('key-press', {
                 key,
                 activeHeading,
@@ -267,9 +285,8 @@ export function useBitEditor({ onContentChange }: UseBitEditorInput) {
         onChangeText,
         onChangeHtml,
         onChangeState,
-        onChangeSelection,
         onKeyPress,
+        markFormattingIntent,
         syncSnapshot,
-        runParagraphCommand,
     }
 }
