@@ -30,7 +30,7 @@ export default function SignIn() {
         } finally {
             setIsLoading(false)
         }
-    }, [email, password, signIn])
+    }, [email, password, signIn, router])
 
     const handleGoogleSignIn = useCallback(async () => {
         setIsGoogleLoading(true)
@@ -44,7 +44,7 @@ export default function SignIn() {
         } finally {
             setIsGoogleLoading(false)
         }
-    }, [signInWithGoogle])
+    }, [signInWithGoogle, router])
 
     return (
         <AuthContainer title='Welcome Back' subtitle='Sign in to your account'>

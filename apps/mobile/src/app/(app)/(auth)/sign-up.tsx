@@ -42,7 +42,7 @@ export default function SignUp() {
         } finally {
             setIsLoading(false)
         }
-    }, [name, email, password, confirmPassword, signUp])
+    }, [name, email, password, confirmPassword, signUp, router])
 
     const handleGoogleSignIn = useCallback(async () => {
         setIsGoogleLoading(true)
@@ -56,7 +56,7 @@ export default function SignUp() {
         } finally {
             setIsGoogleLoading(false)
         }
-    }, [signInWithGoogle])
+    }, [signInWithGoogle, router])
 
     return (
         <AuthContainer title='Create Account' subtitle='Sign up to get started'>
