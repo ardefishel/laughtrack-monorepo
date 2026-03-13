@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, bigint } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, boolean, bigint, index } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
 // Users table
@@ -69,7 +69,9 @@ export const notes = pgTable('notes', {
   serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
   lastModified: timestamp('last_modified').notNull().defaultNow(),
   isDeleted: boolean('is_deleted').notNull().default(false),
-})
+}, (table) => [
+  index('notes_user_sync_idx').on(table.userId, table.isDeleted, table.lastModified),
+])
 
 export const bits = pgTable('bits', {
   id: text('id').primaryKey(),
@@ -84,7 +86,9 @@ export const bits = pgTable('bits', {
   serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
   lastModified: timestamp('last_modified').notNull().defaultNow(),
   isDeleted: boolean('is_deleted').notNull().default(false),
-})
+}, (table) => [
+  index('bits_user_sync_idx').on(table.userId, table.isDeleted, table.lastModified),
+])
 
 export const premises = pgTable('premises', {
   id: text('id').primaryKey(),
@@ -100,7 +104,9 @@ export const premises = pgTable('premises', {
   serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
   lastModified: timestamp('last_modified').notNull().defaultNow(),
   isDeleted: boolean('is_deleted').notNull().default(false),
-})
+}, (table) => [
+  index('premises_user_sync_idx').on(table.userId, table.isDeleted, table.lastModified),
+])
 
 export const setlists = pgTable('setlists', {
   id: text('id').primaryKey(),
@@ -113,7 +119,9 @@ export const setlists = pgTable('setlists', {
   serverCreatedAt: timestamp('server_created_at').notNull().defaultNow(),
   lastModified: timestamp('last_modified').notNull().defaultNow(),
   isDeleted: boolean('is_deleted').notNull().default(false),
-})
+}, (table) => [
+  index('setlists_user_sync_idx').on(table.userId, table.isDeleted, table.lastModified),
+])
 
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
