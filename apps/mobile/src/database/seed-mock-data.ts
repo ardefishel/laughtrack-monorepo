@@ -74,7 +74,7 @@ type MockBit = {
 
 const MOCK_BITS: MockBit[] = [
     {
-        content: '<html>\n<p><b>The WiFi Apocalypse</b></p>\n<p>So the WiFi goes out for <b>five minutes</b>, right? Five minutes. And suddenly I\'m sitting at the dinner table making eye contact with my family like a <i>Victorian ghost</i>.</p>\n<p>My wife\'s like "how was your day?" and I\'m like "I don\'t know, I usually just text you that from the other room."</p>\n<p>We sat there in silence for a bit. I could hear the <b>clock ticking</b>. I didn\'t even know we had a clock.</p>\n</html>',
+        content: '<html>\n<p><b>The WiFi Apocalypse</b></p>\n<p>So the WiFi goes out for <b>five minutes</b>, right? Five minutes. And suddenly I\'m sitting at the dinner table making eye contact with my family like a <i>Victorian ghost</i>.</p>\n<blockquote><p>My wife goes, "How was your day?"</p><p>And I\'m like, "I don\'t know, I usually just text you that from the other room."</p></blockquote>\n<p>We sat there in silence for a bit. I could hear the <b>clock ticking</b>. I didn\'t even know we had a clock.</p>\n</html>',
         status: 'final',
         tags: tags('Technology', 'Family', 'Crowd Favorite'),
     },
@@ -84,7 +84,7 @@ const MOCK_BITS: MockBit[] = [
         tags: tags('Animals', 'Work', 'Relatable'),
     },
     {
-        content: '<html>\n<p><b>The Parking Saga</b></p>\n<p>I tried parallel parking downtown. Three-point turn became a <b>thirteen-point turn</b>.</p>\n<p>An old lady on the sidewalk started directing me like she\'s <i>landing a 747</i>. Hand signals and everything.</p>\n<p>By the end she\'s applauding. The people at the café are watching. I take a bow through the windshield.</p>\n<p>We\'re getting <b>brunch next Saturday</b>. She texts me motivational quotes now.</p>\n</html>',
+        content: '<html>\n<p><b>The Parking Saga</b></p>\n<p>I tried parallel parking downtown. Three-point turn became a <b>thirteen-point turn</b>.</p>\n<p>My parking strategy has three phases:</p>\n<ol><li>Pull up with confidence I absolutely do not have.</li><li>Reverse like I understand geometry.</li><li>Accept help from a stranger who has now become my coach.</li></ol>\n<p>An old lady on the sidewalk started directing me like she\'s <i>landing a 747</i>. Hand signals and everything.</p>\n<p>By the end she\'s applauding. The people at the café are watching. I take a bow through the windshield.</p>\n<p>We\'re getting <b>brunch next Saturday</b>. She texts me motivational quotes now.</p>\n</html>',
         status: 'tested',
         tags: tags('Driving', 'City Life', 'Storytelling'),
     },
@@ -94,12 +94,12 @@ const MOCK_BITS: MockBit[] = [
         tags: tags('Language', 'Observations'),
     },
     {
-        content: '<html>\n<p><b>Autocorrect Runs My Life</b></p>\n<p>Autocorrect has <b>too much power</b>. I texted my boss "on my way" and it sent <i>"on my waffle."</i></p>\n<p>He just replied <b>"nice, what kind?"</b></p>\n<p>Didn\'t even question it. That\'s how little faith people have in my communication skills.</p>\n<p>Now every Monday he asks me about waffles. I have to <i>keep the lie going</i>. I\'ve become a waffle guy. I don\'t even like waffles.</p>\n</html>',
+        content: '<html>\n<p><b>Autocorrect Runs My Life</b></p>\n<p>Autocorrect has <b>too much power</b>. I texted my boss "on my way" and it sent <i>"on my waffle."</i></p>\n<p>He just replied <b>"nice, what kind?"</b></p>\n<p>Didn\'t even question it. That\'s how little faith people have in my communication skills.</p>\n<p>Now every Monday he asks me about waffles. I have to <u>keep the lie going</u>. I\'ve become the <s>on my way</s> waffle guy. I don\'t even like waffles.</p>\n</html>',
         status: 'final',
         tags: tags('Technology', 'Work'),
     },
     {
-        content: '<html>\n<p><b>The Grocery Store Heist</b></p>\n<p>Every time I go to the grocery store I bring a list. A <b>responsible, adult list</b>. Eggs, milk, bread.</p>\n<p>I come home with:</p>\n<p>• Four artisanal cheeses<br>• A pineapple<br>• Something called <i>"truffle honey"</i><br>• A candle that smells like "weekend"</p>\n<p>The list is still in my pocket. <b>Untouched.</b> Like a ransom note I ignored.</p>\n</html>',
+        content: '<html>\n<p><b>The Grocery Store Heist</b></p>\n<p>Every time I go to the grocery store I bring a <u>responsible, adult list</u>. Eggs, milk, bread.</p>\n<p>I come home with:</p>\n<ul><li>Four artisanal cheeses</li><li>A pineapple</li><li>Something called <i>"truffle honey"</i></li><li>A candle that smells like "weekend"</li></ul>\n<p>The list is still in my pocket. <b>Untouched.</b> Like a ransom note I ignored.</p>\n</html>',
         status: 'rework',
         tags: tags('Food', 'Self-Control'),
     },

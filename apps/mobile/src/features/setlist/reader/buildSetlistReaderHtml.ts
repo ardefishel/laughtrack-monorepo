@@ -63,6 +63,8 @@ export function buildSetlistReaderHtml(
     color: ${colors.muted};
     font-style: italic;
   }
+  blockquote p { margin: 0; }
+  blockquote p + p { margin-top: 8px; }
   code {
     font-family: 'SF Mono', 'Menlo', monospace;
     font-size: 15px;

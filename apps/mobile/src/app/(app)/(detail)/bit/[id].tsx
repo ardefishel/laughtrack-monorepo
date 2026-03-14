@@ -80,7 +80,7 @@ export default function BitDetailScreen() {
 
             <ScrollView
                 className='flex-1'
-                contentContainerClassName='px-4 pt-4 pb-28'
+                contentContainerClassName='px-4 pt-4 pb-32'
                 keyboardShouldPersistTaps='handled'
             >
                 <EnrichedTextInput
@@ -94,6 +94,24 @@ export default function BitDetailScreen() {
                     htmlStyle={{
                         h1: { fontSize: 28, bold: true },
                         h2: { fontSize: 22, bold: true },
+                        blockquote: {
+                            borderColor: accent,
+                            borderWidth: 3,
+                            gapWidth: 12,
+                            color: muted,
+                        },
+                        ol: {
+                            gapWidth: 10,
+                            marginLeft: 20,
+                            markerColor: foreground,
+                            markerFontWeight: '600',
+                        },
+                        ul: {
+                            gapWidth: 10,
+                            marginLeft: 20,
+                            bulletColor: foreground,
+                            bulletSize: 7,
+                        },
                     }}
                     style={{
                         fontSize: 17,
