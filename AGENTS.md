@@ -13,8 +13,8 @@ Root scripts:
 - Docker: `bun run docker:up`, `bun run docker:down`, `bun run docker:logs`
 
 Testing status:
-- Mobile currently has no configured test runner or `test` script in `apps/mobile/package.json`.
-- Treat `bun run mobile:test` as unavailable until a mobile test command is added.
+- Mobile tests run via `bun run mobile:test` (`apps/mobile` -> `bun run test`).
+- Current mobile coverage includes Jest unit tests for pure app logic and WatermelonDB-backed sync tests under `apps/mobile/src/**/*.test.ts`.
 
 Architecture: Expo Router pages in `apps/mobile/src/app/`; reusable UI in `apps/mobile/src/components/ui/`; feature modules (components, hooks, services) in `apps/mobile/src/features/`.
 Data: WatermelonDB models in `apps/mobile/src/database/models/`, schema metadata in `apps/mobile/src/database/schemas/`, sync/reconciliation in `apps/mobile/src/database/sync/`, DB utilities in `apps/mobile/src/database/utils/`; app utilities/types/logging in `apps/mobile/src/lib/`.
