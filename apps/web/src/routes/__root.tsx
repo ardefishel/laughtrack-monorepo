@@ -30,8 +30,8 @@ export const Route = createRootRoute({
 const navItems = [
   { to: '/', label: 'Dashboard', icon: '◉', adminOnly: false },
   { to: '/users', label: 'Users', icon: '◎', adminOnly: true },
-  { to: '/jokes', label: 'Jokes', icon: '◈', adminOnly: false },
-  { to: '/sets', label: 'Sets', icon: '◇', adminOnly: false },
+  { to: '/bits', label: 'Bits', icon: '◈', adminOnly: false },
+  { to: '/setlists', label: 'Setlists', icon: '◇', adminOnly: false },
 ] as const
 
 function RootComponent() {

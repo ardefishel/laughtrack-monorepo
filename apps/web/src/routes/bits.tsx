@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/sets')({
+export const Route = createFileRoute('/bits')({
   component: () => <Outlet />,
 })

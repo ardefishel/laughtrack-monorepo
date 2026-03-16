@@ -184,18 +184,18 @@ function UserDetailPage() {
 
       <div className="flex gap-3">
         <Link
-          to="/jokes"
+          to="/bits"
           search={{ page: 1, userId: user.id }}
           className="px-4 py-2 text-sm rounded-lg border border-border text-muted hover:text-accent hover:border-accent/30 transition-colors"
         >
-          View Jokes →
+          View Bits →
         </Link>
         <Link
-          to="/sets"
+          to="/setlists"
           search={{ page: 1, userId: user.id }}
           className="px-4 py-2 text-sm rounded-lg border border-border text-muted hover:text-accent hover:border-accent/30 transition-colors"
         >
-          View Sets →
+          View Setlists →
         </Link>
       </div>
     </div>

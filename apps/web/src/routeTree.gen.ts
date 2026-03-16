@@ -10,25 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UsersRouteImport } from './routes/users'
-import { Route as SetsRouteImport } from './routes/sets'
+import { Route as SetlistsRouteImport } from './routes/setlists'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as JokesRouteImport } from './routes/jokes'
+import { Route as BitsRouteImport } from './routes/bits'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UsersIndexRouteImport } from './routes/users.index'
-import { Route as SetsIndexRouteImport } from './routes/sets.index'
-import { Route as JokesIndexRouteImport } from './routes/jokes.index'
+import { Route as SetlistsIndexRouteImport } from './routes/setlists.index'
+import { Route as BitsIndexRouteImport } from './routes/bits.index'
 import { Route as UsersIdRouteImport } from './routes/users.$id'
-import { Route as SetsIdRouteImport } from './routes/sets.$id'
-import { Route as JokesIdRouteImport } from './routes/jokes.$id'
 
 const UsersRoute = UsersRouteImport.update({
   id: '/users',
   path: '/users',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SetsRoute = SetsRouteImport.update({
-  id: '/sets',
-  path: '/sets',
+const SetlistsRoute = SetlistsRouteImport.update({
+  id: '/setlists',
+  path: '/setlists',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -36,9 +34,9 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const JokesRoute = JokesRouteImport.update({
-  id: '/jokes',
-  path: '/jokes',
+const BitsRoute = BitsRouteImport.update({
+  id: '/bits',
+  path: '/bits',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -51,113 +49,85 @@ const UsersIndexRoute = UsersIndexRouteImport.update({
   path: '/',
   getParentRoute: () => UsersRoute,
 } as any)
-const SetsIndexRoute = SetsIndexRouteImport.update({
+const SetlistsIndexRoute = SetlistsIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => SetsRoute,
+  getParentRoute: () => SetlistsRoute,
 } as any)
-const JokesIndexRoute = JokesIndexRouteImport.update({
+const BitsIndexRoute = BitsIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => JokesRoute,
+  getParentRoute: () => BitsRoute,
 } as any)
 const UsersIdRoute = UsersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => UsersRoute,
 } as any)
-const SetsIdRoute = SetsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => SetsRoute,
-} as any)
-const JokesIdRoute = JokesIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => JokesRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/jokes': typeof JokesRouteWithChildren
+  '/bits': typeof BitsRouteWithChildren
   '/login': typeof LoginRoute
-  '/sets': typeof SetsRouteWithChildren
+  '/setlists': typeof SetlistsRouteWithChildren
   '/users': typeof UsersRouteWithChildren
-  '/jokes/$id': typeof JokesIdRoute
-  '/sets/$id': typeof SetsIdRoute
   '/users/$id': typeof UsersIdRoute
-  '/jokes/': typeof JokesIndexRoute
-  '/sets/': typeof SetsIndexRoute
+  '/bits/': typeof BitsIndexRoute
+  '/setlists/': typeof SetlistsIndexRoute
   '/users/': typeof UsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/jokes/$id': typeof JokesIdRoute
-  '/sets/$id': typeof SetsIdRoute
   '/users/$id': typeof UsersIdRoute
-  '/jokes': typeof JokesIndexRoute
-  '/sets': typeof SetsIndexRoute
+  '/bits': typeof BitsIndexRoute
+  '/setlists': typeof SetlistsIndexRoute
   '/users': typeof UsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/jokes': typeof JokesRouteWithChildren
+  '/bits': typeof BitsRouteWithChildren
   '/login': typeof LoginRoute
-  '/sets': typeof SetsRouteWithChildren
+  '/setlists': typeof SetlistsRouteWithChildren
   '/users': typeof UsersRouteWithChildren
-  '/jokes/$id': typeof JokesIdRoute
-  '/sets/$id': typeof SetsIdRoute
   '/users/$id': typeof UsersIdRoute
-  '/jokes/': typeof JokesIndexRoute
-  '/sets/': typeof SetsIndexRoute
+  '/bits/': typeof BitsIndexRoute
+  '/setlists/': typeof SetlistsIndexRoute
   '/users/': typeof UsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/jokes'
+    | '/bits'
     | '/login'
-    | '/sets'
+    | '/setlists'
     | '/users'
-    | '/jokes/$id'
-    | '/sets/$id'
     | '/users/$id'
-    | '/jokes/'
-    | '/sets/'
+    | '/bits/'
+    | '/setlists/'
     | '/users/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/login'
-    | '/jokes/$id'
-    | '/sets/$id'
-    | '/users/$id'
-    | '/jokes'
-    | '/sets'
-    | '/users'
+  to: '/' | '/login' | '/users/$id' | '/bits' | '/setlists' | '/users'
   id:
     | '__root__'
     | '/'
-    | '/jokes'
+    | '/bits'
     | '/login'
-    | '/sets'
+    | '/setlists'
     | '/users'
-    | '/jokes/$id'
-    | '/sets/$id'
     | '/users/$id'
-    | '/jokes/'
-    | '/sets/'
+    | '/bits/'
+    | '/setlists/'
     | '/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  JokesRoute: typeof JokesRouteWithChildren
+  BitsRoute: typeof BitsRouteWithChildren
   LoginRoute: typeof LoginRoute
-  SetsRoute: typeof SetsRouteWithChildren
+  SetlistsRoute: typeof SetlistsRouteWithChildren
   UsersRoute: typeof UsersRouteWithChildren
 }
 
@@ -170,11 +140,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sets': {
-      id: '/sets'
-      path: '/sets'
-      fullPath: '/sets'
-      preLoaderRoute: typeof SetsRouteImport
+    '/setlists': {
+      id: '/setlists'
+      path: '/setlists'
+      fullPath: '/setlists'
+      preLoaderRoute: typeof SetlistsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -184,11 +154,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/jokes': {
-      id: '/jokes'
-      path: '/jokes'
-      fullPath: '/jokes'
-      preLoaderRoute: typeof JokesRouteImport
+    '/bits': {
+      id: '/bits'
+      path: '/bits'
+      fullPath: '/bits'
+      preLoaderRoute: typeof BitsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -205,19 +175,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersIndexRouteImport
       parentRoute: typeof UsersRoute
     }
-    '/sets/': {
-      id: '/sets/'
+    '/setlists/': {
+      id: '/setlists/'
       path: '/'
-      fullPath: '/sets/'
-      preLoaderRoute: typeof SetsIndexRouteImport
-      parentRoute: typeof SetsRoute
+      fullPath: '/setlists/'
+      preLoaderRoute: typeof SetlistsIndexRouteImport
+      parentRoute: typeof SetlistsRoute
     }
-    '/jokes/': {
-      id: '/jokes/'
+    '/bits/': {
+      id: '/bits/'
       path: '/'
-      fullPath: '/jokes/'
-      preLoaderRoute: typeof JokesIndexRouteImport
-      parentRoute: typeof JokesRoute
+      fullPath: '/bits/'
+      preLoaderRoute: typeof BitsIndexRouteImport
+      parentRoute: typeof BitsRoute
     }
     '/users/$id': {
       id: '/users/$id'
@@ -226,46 +196,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersIdRouteImport
       parentRoute: typeof UsersRoute
     }
-    '/sets/$id': {
-      id: '/sets/$id'
-      path: '/$id'
-      fullPath: '/sets/$id'
-      preLoaderRoute: typeof SetsIdRouteImport
-      parentRoute: typeof SetsRoute
-    }
-    '/jokes/$id': {
-      id: '/jokes/$id'
-      path: '/$id'
-      fullPath: '/jokes/$id'
-      preLoaderRoute: typeof JokesIdRouteImport
-      parentRoute: typeof JokesRoute
-    }
   }
 }
 
-interface JokesRouteChildren {
-  JokesIdRoute: typeof JokesIdRoute
-  JokesIndexRoute: typeof JokesIndexRoute
+interface BitsRouteChildren {
+  BitsIndexRoute: typeof BitsIndexRoute
 }
 
-const JokesRouteChildren: JokesRouteChildren = {
-  JokesIdRoute: JokesIdRoute,
-  JokesIndexRoute: JokesIndexRoute,
+const BitsRouteChildren: BitsRouteChildren = {
+  BitsIndexRoute: BitsIndexRoute,
 }
 
-const JokesRouteWithChildren = JokesRoute._addFileChildren(JokesRouteChildren)
+const BitsRouteWithChildren = BitsRoute._addFileChildren(BitsRouteChildren)
 
-interface SetsRouteChildren {
-  SetsIdRoute: typeof SetsIdRoute
-  SetsIndexRoute: typeof SetsIndexRoute
+interface SetlistsRouteChildren {
+  SetlistsIndexRoute: typeof SetlistsIndexRoute
 }
 
-const SetsRouteChildren: SetsRouteChildren = {
-  SetsIdRoute: SetsIdRoute,
-  SetsIndexRoute: SetsIndexRoute,
+const SetlistsRouteChildren: SetlistsRouteChildren = {
+  SetlistsIndexRoute: SetlistsIndexRoute,
 }
 
-const SetsRouteWithChildren = SetsRoute._addFileChildren(SetsRouteChildren)
+const SetlistsRouteWithChildren = SetlistsRoute._addFileChildren(
+  SetlistsRouteChildren,
+)
 
 interface UsersRouteChildren {
   UsersIdRoute: typeof UsersIdRoute
@@ -281,9 +235,9 @@ const UsersRouteWithChildren = UsersRoute._addFileChildren(UsersRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  JokesRoute: JokesRouteWithChildren,
+  BitsRoute: BitsRouteWithChildren,
   LoginRoute: LoginRoute,
-  SetsRoute: SetsRouteWithChildren,
+  SetlistsRoute: SetlistsRouteWithChildren,
   UsersRoute: UsersRouteWithChildren,
 }
 export const routeTree = rootRouteImport

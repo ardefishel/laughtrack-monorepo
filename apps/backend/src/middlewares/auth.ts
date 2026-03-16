@@ -1,6 +1,7 @@
 import { createMiddleware } from 'hono/factory'
 import { auth } from '../auth'
 import type { User, Session } from '../auth'
+import { errorResponse } from '../lib/response'
 
 type AuthEnv = {
   Variables: {
@@ -60,7 +61,7 @@ export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
     const result = await loadSession(c.req.raw.headers)
 
     if (!result) {
-      return c.json({ error: 'Unauthorized' }, 401)
+      return c.json(errorResponse('Unauthorized'), 401)
     }
 
     c.set('user', result.user)
@@ -68,7 +69,7 @@ export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
     await next()
     return
   } catch {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json(errorResponse('Unauthorized'), 401)
   }
 })
 
@@ -77,11 +78,11 @@ export const requireAdmin = createMiddleware<AuthEnv>(async (c, next) => {
     const result = await loadSession(c.req.raw.headers)
 
     if (!result) {
-      return c.json({ error: 'Unauthorized' }, 401)
+      return c.json(errorResponse('Unauthorized'), 401)
     }
 
     if (!hasRole(result.user, ADMIN_ROLE)) {
-      return c.json({ error: 'Forbidden' }, 403)
+      return c.json(errorResponse('Forbidden'), 403)
     }
 
     c.set('user', result.user)
@@ -89,6 +90,6 @@ export const requireAdmin = createMiddleware<AuthEnv>(async (c, next) => {
     await next()
     return
   } catch {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json(errorResponse('Unauthorized'), 401)
   }
 })
