@@ -1,5 +1,6 @@
 import { useAuth } from '@/features/auth/context/auth-context'
 import { AuthContainer } from '@/features/auth/components/container'
+import { buildVerifyPendingRoute } from '@/features/auth/utils/verification-flow'
 import { Icon } from '@/components/ui/ion-icon'
 import { useRouter } from 'expo-router'
 import { Button, Input, TextField } from 'heroui-native'
@@ -33,9 +34,7 @@ export default function SignUp() {
         try {
             const result = await signUp(email.trim(), password, name.trim())
             if (result.success) {
-                Alert.alert('Account Created', 'You can now sign in.', [
-                    { text: 'OK', onPress: () => router.back() }
-                ])
+                router.replace(buildVerifyPendingRoute(email, 'signup'))
             } else {
                 Alert.alert('Sign Up Failed', result.error ?? 'Please try again.')
             }

@@ -9,7 +9,7 @@ import { DatabaseProvider } from "@nozbe/watermelondb/react";
 import { Slot, usePathname } from "expo-router";
 import { HeroUINativeProvider } from "heroui-native";
 import { useEffect, useRef } from "react";
-import { AppState, type AppStateStatus } from "react-native";
+import { AppState, type AppStateStatus, InteractionManager } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 
@@ -21,13 +21,17 @@ export default function RootLayout() {
     useEffect(() => {
         appLogger.info('App cold start')
 
-        void reconcilePremiseBitLinks(database)
-            .then((count) => dbLogger.info(`Reconciled premise-bit links: ${count} updated`))
-            .catch((error: unknown) => dbLogger.error('Failed to reconcile premise-bit links', error))
+        const task = InteractionManager.runAfterInteractions(() => {
+            void reconcilePremiseBitLinks(database)
+                .then((count) => dbLogger.info(`Reconciled premise-bit links: ${count} updated`))
+                .catch((error: unknown) => dbLogger.error('Failed to reconcile premise-bit links', error))
 
-        void reconcileSetlistBitLinks(database)
-            .then((count) => dbLogger.info(`Reconciled setlist-bit links: ${count} updated`))
-            .catch((error: unknown) => dbLogger.error('Failed to reconcile setlist-bit links', error))
+            void reconcileSetlistBitLinks(database)
+                .then((count) => dbLogger.info(`Reconciled setlist-bit links: ${count} updated`))
+                .catch((error: unknown) => dbLogger.error('Failed to reconcile setlist-bit links', error))
+        })
+
+        return () => task.cancel()
     }, [])
 
     useEffect(() => {

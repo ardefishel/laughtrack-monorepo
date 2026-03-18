@@ -37,8 +37,6 @@
     "web": "bun run --cwd apps/web dev",
     "web:build": "bun run --cwd apps/web build",
     "web:check": "bun run --cwd apps/web check",
-    "marketing": "bun run --cwd apps/marketing dev",
-    "marketing:build": "bun run --cwd apps/marketing build",
     "mock-data:ios": "xcrun simctl openurl booted laughtrack://seed-mock-data",
     "mock-data:android": "adb shell am start -a android.intent.action.VIEW -d laughtrack://seed-mock-data com.rtvcl.laughtrack",
     "mock-data": "bun run mock-data:ios"

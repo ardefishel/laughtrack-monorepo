@@ -2,51 +2,9 @@ import { SetlistSchema, type Setlist, type SetlistItem, type SetlistNote } from 
 import { dbLogger } from '@/lib/loggers'
 import type { Setlist as SetlistModel } from '../models/setlist'
 import type { SetlistRecord } from '../schemas/setlistSchema'
+import { toValidDate } from '../utils/dates'
+import { parseStringArrayJson } from '../utils/json'
 import { tagNamesToTags } from '../utils/tags'
-
-function parseSetlistTagNamesJson(value: string): string[] {
-    try {
-        const parsed = JSON.parse(value)
-        if (!Array.isArray(parsed)) return []
-
-        return parsed
-            .map((entry) => {
-                if (typeof entry === 'string') return entry
-                if (
-                    entry &&
-                    typeof entry === 'object' &&
-                    'name' in entry &&
-                    typeof entry.name === 'string'
-                ) {
-                    return entry.name
-                }
-                return null
-            })
-            .filter((entry): entry is string => typeof entry === 'string')
-    } catch (error) {
-        dbLogger.warn('parseSetlistTagNamesJson failed', {
-            valueLength: value.length,
-            error,
-        })
-        return []
-    }
-}
-
-
-function toValidDate(value: unknown, fallback: Date): Date {
-    if (value instanceof Date && !Number.isNaN(value.getTime())) {
-        return value
-    }
-
-    if (typeof value === 'string' || typeof value === 'number') {
-        const parsed = new Date(value)
-        if (!Number.isNaN(parsed.getTime())) {
-            return parsed
-        }
-    }
-
-    return fallback
-}
 
 function parseSetlistItemsJson(value: string, fallbackCreatedAt: Date, fallbackUpdatedAt: Date): SetlistItem[] {
     try {
@@ -123,7 +81,7 @@ function toDomain(input: {
     createdAt: Date
     updatedAt: Date
 }): Setlist {
-    const tagNames = parseSetlistTagNamesJson(input.tagsJson)
+    const tagNames = parseStringArrayJson(input.tagsJson)
     const items = parseSetlistItemsJson(input.itemsJson, input.createdAt, input.updatedAt)
 
     return SetlistSchema.parse({
@@ -165,4 +123,4 @@ export const domainToSetlistRecord = (setlist: Setlist): SetlistRecord => ({
     updated_at: setlist.updatedAt.getTime(),
 })
 
-export const parseSetlistTagNames = parseSetlistTagNamesJson
+export const parseSetlistTagNames = parseStringArrayJson

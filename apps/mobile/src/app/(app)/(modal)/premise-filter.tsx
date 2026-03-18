@@ -5,101 +5,45 @@ import { PREMISE_STATUS_OPTIONS } from '@/config/premise-statuses'
 import { PREMISE_TABLE } from '@/database/constants'
 import { parsePremiseTagNames } from '@/database/mappers/premiseMapper'
 import { Premise as PremiseModel } from '@/database/models/premise'
-import { dbLogger } from '@/lib/loggers'
 import type { Attitude, PremiseStatus } from '@/types'
 import { parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
-import { useDatabase } from '@nozbe/watermelondb/react'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useSetToggle } from '@/features/material/hooks/use-set-toggle'
+import { useAvailableTags } from '@/features/material/hooks/use-available-tags'
+import { useFilterModal } from '@/features/material/hooks/use-filter-modal'
+import { useLocalSearchParams } from 'expo-router'
 import { Checkbox, Chip, PressableFeedback } from 'heroui-native'
-import { useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import { Text, View } from 'react-native'
 
 const ALL_ATTITUDES = Object.entries(attitudeConfig) as [Attitude, { label: string; emoji: string }][]
 
 export default function PremiseFilterModal() {
-    const router = useRouter()
-    const database = useDatabase()
     const params = useLocalSearchParams<{ statuses?: string; tags?: string; attitudes?: string }>()
-    const [allTags, setAllTags] = useState<string[]>([])
 
-    useEffect(() => {
-        const subscription = database
-            .get<PremiseModel>(PREMISE_TABLE)
-            .query()
-            .observe()
-            .subscribe({
-                next: (premises: PremiseModel[]) => {
-                    const uniqueTags = new Set<string>()
-                    for (const premise of premises) {
-                        const tagNames = parsePremiseTagNames(premise.tagsJson)
-                        for (const tagName of tagNames) {
-                            uniqueTags.add(tagName)
-                        }
-                    }
-                    setAllTags([...uniqueTags].sort((a, b) => a.localeCompare(b)))
-                },
-                error: (error: unknown) => {
-                    dbLogger.error('PremiseFilter failed to observe available tags', error)
-                },
-            })
+    const { selected: selectedStatuses, toggle: toggleStatus, clear: clearStatuses } = useSetToggle<PremiseStatus>(
+        parseCsvParam(params.statuses) as PremiseStatus[],
+    )
+    const { selected: selectedTags, toggle: toggleTag, clear: clearTags } = useSetToggle<string>(
+        parseCsvParam(params.tags),
+    )
+    const { selected: selectedAttitudes, toggle: toggleAttitude, clear: clearAttitudes } = useSetToggle<Attitude>(
+        parseCsvParam(params.attitudes) as Attitude[],
+    )
 
-        return () => subscription.unsubscribe()
-    }, [database])
+    const allTags = useAvailableTags<PremiseModel>(PREMISE_TABLE, parsePremiseTagNames)
 
-    const [selectedStatuses, setSelectedStatuses] = useState<Set<PremiseStatus>>(() => {
-        return new Set(parseCsvParam(params.statuses) as PremiseStatus[])
-    })
+    const buildParams = useCallback(() => ({
+        statuses: toCsvParam(selectedStatuses),
+        tags: toCsvParam(selectedTags),
+        attitudes: toCsvParam(selectedAttitudes),
+    }), [selectedStatuses, selectedTags, selectedAttitudes])
 
-    const [selectedTags, setSelectedTags] = useState<Set<string>>(() => {
-        return new Set(parseCsvParam(params.tags))
-    })
-
-    const [selectedAttitudes, setSelectedAttitudes] = useState<Set<Attitude>>(() => {
-        return new Set(parseCsvParam(params.attitudes) as Attitude[])
-    })
-
-    const toggleStatus = (status: PremiseStatus) => {
-        setSelectedStatuses((prev) => {
-            const next = new Set(prev)
-            if (next.has(status)) next.delete(status)
-            else next.add(status)
-            return next
-        })
-    }
-
-    const toggleTag = (tag: string) => {
-        setSelectedTags((prev) => {
-            const next = new Set(prev)
-            if (next.has(tag)) next.delete(tag)
-            else next.add(tag)
-            return next
-        })
-    }
-
-    const toggleAttitude = (attitude: Attitude) => {
-        setSelectedAttitudes((prev) => {
-            const next = new Set(prev)
-            if (next.has(attitude)) next.delete(attitude)
-            else next.add(attitude)
-            return next
-        })
-    }
+    const { applyFilters } = useFilterModal(buildParams)
 
     const clearAll = () => {
-        setSelectedStatuses(new Set())
-        setSelectedTags(new Set())
-        setSelectedAttitudes(new Set())
-    }
-
-    const applyFilters = () => {
-        router.back()
-        requestAnimationFrame(() => {
-            router.setParams({
-                statuses: toCsvParam(selectedStatuses),
-                tags: toCsvParam(selectedTags),
-                attitudes: toCsvParam(selectedAttitudes),
-            })
-        })
+        clearStatuses()
+        clearTags()
+        clearAttitudes()
     }
 
     const activeCount = selectedStatuses.size + selectedTags.size + selectedAttitudes.size

@@ -117,7 +117,7 @@ webRoutes.put('/users/:id', requireAdmin, async (c) => {
     const rawBody = await c.req.json()
     const parseResult = updateUserSchema.safeParse(rawBody)
     if (!parseResult.success) {
-        return c.json(errorResponse('Invalid request body', 400, parseResult.error.errors.map((e) => ({
+        return c.json(errorResponse('Invalid request body', parseResult.error.errors.map((e) => ({
             path: e.path.join('.'),
             message: e.message,
         }))), 400)

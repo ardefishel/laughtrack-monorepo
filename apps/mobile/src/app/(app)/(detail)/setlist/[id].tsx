@@ -2,10 +2,10 @@ import { AddSetlistItemDialog } from '@/features/setlist/components/add-setlist-
 import { SetlistItemContent } from '@/features/setlist/components/setlist-item-content'
 import { SetlistListHeader } from '@/features/setlist/components/setlist-list-header'
 import DraggableList from '@/components/ui/draggable-list'
+import { useDetailHeader } from '@/features/material/hooks/use-detail-header'
 import { useSetlistForm } from '@/features/setlist/hooks/use-setlist-form'
 import { useNavigation } from 'expo-router'
-import { Button } from 'heroui-native'
-import { useLayoutEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { KeyboardAvoidingView, Platform, View } from 'react-native'
 
 export default function SetlistDetailScreen() {
@@ -48,18 +48,13 @@ export default function SetlistDetailScreen() {
         [bitCount, description, items, setDescription, setTags, setTypeDialogOpen, tags],
     )
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerTitle: isEditing ? 'Setlist' : 'New Setlist',
-            headerRight: () => (
-                <Button size='sm' variant='ghost' onPress={handleSave} isDisabled={!canSave}>
-                    <Button.Label className='text-accent font-semibold'>
-                        {isEditing ? 'Save' : 'Create'}
-                    </Button.Label>
-                </Button>
-            ),
-        })
-    }, [navigation, isEditing, canSave, handleSave])
+    useDetailHeader({
+        navigation,
+        title: isEditing ? 'Setlist' : 'New Setlist',
+        onSave: handleSave,
+        canSave,
+        isEditing,
+    })
 
     return (
         <>

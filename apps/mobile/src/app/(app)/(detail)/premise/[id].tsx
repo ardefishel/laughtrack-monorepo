@@ -3,10 +3,10 @@ import { TagInput } from '@/features/material/components/tag-input'
 import { Icon } from '@/components/ui/ion-icon'
 import { attitudeConfig } from '@/config/attitudes'
 import { PREMISE_STATUS_OPTIONS } from '@/config/premise-statuses'
+import { useDetailHeader } from '@/features/material/hooks/use-detail-header'
 import { usePremiseForm } from '@/features/premise/hooks/use-premise-form'
 import { useNavigation } from 'expo-router'
-import { Button, PressableFeedback, TextArea } from 'heroui-native'
-import { useLayoutEffect } from 'react'
+import { PressableFeedback, TextArea } from 'heroui-native'
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native'
 
 export default function PremiseFormScreen() {
@@ -29,18 +29,13 @@ export default function PremiseFormScreen() {
         openBitPicker,
     } = usePremiseForm()
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerTitle: isEditing ? 'Edit Premise' : 'New Premise',
-            headerRight: () => (
-                <Button size='sm' variant='ghost' onPress={handleSave} isDisabled={!canSave}>
-                    <Button.Label className='text-accent font-semibold'>
-                        {isEditing ? 'Save' : 'Create'}
-                    </Button.Label>
-                </Button>
-            ),
-        })
-    }, [navigation, isEditing, canSave, handleSave])
+    useDetailHeader({
+        navigation,
+        title: isEditing ? 'Edit Premise' : 'New Premise',
+        onSave: handleSave,
+        canSave,
+        isEditing,
+    })
 
     return (
         <KeyboardAvoidingView

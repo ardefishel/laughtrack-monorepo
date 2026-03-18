@@ -6,7 +6,36 @@ import { syncLogger } from '@/lib/loggers'
 
 const SYNC_BASE_URL = API_BASE_URL
 
-function countChanges(changes: Record<string, { created?: unknown[]; updated?: unknown[]; deleted?: unknown[] }>): string {
+type SyncChanges = Record<string, { created?: unknown[]; updated?: unknown[]; deleted?: unknown[] }>
+
+type SyncPullResponse = {
+    changes: SyncChanges
+    timestamp: number
+}
+
+function isSyncChanges(value: unknown): value is SyncChanges {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+
+    return Object.values(value).every((entry) => {
+        if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return false
+
+        const candidate = entry as { created?: unknown; updated?: unknown; deleted?: unknown }
+        return (
+            (candidate.created === undefined || Array.isArray(candidate.created)) &&
+            (candidate.updated === undefined || Array.isArray(candidate.updated)) &&
+            (candidate.deleted === undefined || Array.isArray(candidate.deleted))
+        )
+    })
+}
+
+function isSyncPullResponse(value: unknown): value is SyncPullResponse {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+
+    const candidate = value as { changes?: unknown; timestamp?: unknown }
+    return isSyncChanges(candidate.changes) && typeof candidate.timestamp === 'number'
+}
+
+function countChanges(changes: SyncChanges): string {
     return Object.entries(changes)
         .map(([table, { created = [], updated = [], deleted = [] }]) => {
             const parts: string[] = []
@@ -49,14 +78,17 @@ export async function performSync(database: Database): Promise<{ success: boolea
                     throw new Error(`Pull failed (${response.status}): ${text}`)
                 }
 
-                const result = await response.json()
+                const result: unknown = await response.json()
+                if (!isSyncPullResponse(result)) {
+                    throw new Error('Pull failed: invalid sync payload')
+                }
                 const pullMs = Date.now() - pullStart
                 syncLogger.info(`Pull OK in ${pullMs}ms — ${countChanges(result.changes)}`)
                 return { changes: result.changes, timestamp: result.timestamp }
             },
             pushChanges: async ({ changes, lastPulledAt }: SyncPushArgs) => {
                 const pushStart = Date.now()
-                syncLogger.debug(`Push request — ${countChanges(changes as Record<string, { created?: unknown[]; updated?: unknown[]; deleted?: unknown[] }>)}`)
+                syncLogger.debug(`Push request — ${countChanges(changes)}`)
 
                 const response = await fetch(`${SYNC_BASE_URL}/api/mobile/sync/push`, {
                     method: 'POST',

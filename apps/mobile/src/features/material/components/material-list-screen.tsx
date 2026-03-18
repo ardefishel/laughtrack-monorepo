@@ -82,6 +82,7 @@ export function MaterialListScreen<ItemT>({
                 contentContainerStyle={contentContainerStyle}
                 ItemSeparatorComponent={itemSeparator}
                 renderItem={renderItem}
+                estimatedItemSize={120}
             />
 
             <Button className='absolute right-0 bottom-0 mr-4' style={fabStyle} onPress={onFabPress}>

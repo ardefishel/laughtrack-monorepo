@@ -36,5 +36,5 @@ Scripts:
 - Use `requireAuth` for authenticated mobile/admin routes and `requireAdmin` for admin-only operations.
 - Use Drizzle with `db` from `src/db` and keep soft-delete fields (`isDeleted`, `lastModified`) updated.
 - Sync field mapping between camelCase and snake_case remains in `src/routes/mobile/sync-routes.ts`.
-- Env vars used in backend include `DATABASE_URL`, `AUTH_SECRET`, `AUTH_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `PORT`, `NODE_ENV`, `CORS_ORIGIN`.
-- No test suite is currently configured in `apps/backend/package.json`.
+- Env vars used in backend include `DATABASE_URL`, `AUTH_SECRET`, `AUTH_URL`, `PUBLIC_WEB_URL`, `EMAIL_TRANSPORT`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM_NAME`, `SMTP_FROM_EMAIL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `PORT`, `NODE_ENV`, `CORS_ORIGIN`.
+- Backend tests run via `bun test` / `bun run check`; current coverage includes contract tests plus auth email config/mailer/resend helper tests.

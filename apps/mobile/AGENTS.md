@@ -17,9 +17,9 @@
 - Lint: `bun run lint` (alias for `expo lint`)
 
 ## Tests
-- No test runner is configured in `package.json`.
-- No test files (`*.test.*` / `*.spec.*`) found.
-- Single-test command: not available until a test framework is added.
+- Test runner: `bun run test` (Jest + `babel-jest`).
+- From repo root: `bun run mobile:test`.
+- Current test coverage includes pure utility tests and WatermelonDB-backed sync tests under `src/**/*.test.ts`.
 
 ## Key configs
 - ESLint: `eslint.config.js` (Expo flat config).
@@ -149,7 +149,6 @@
 - UI cards: `src/features/*/components/*-card.tsx`
 
 ## Known gaps
-- No test runner configured yet.
 - Some lint/typecheck issues may exist outside touched feature docs.
 
 ## Change checklist

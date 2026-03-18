@@ -5,6 +5,12 @@ import { admin } from 'better-auth/plugins'
 import { db } from '../db'
 import { corsOrigins } from '../lib/cors-origins'
 import { users, sessions, accounts, verification } from '../db/schema'
+import { createEmailVerificationUrl, getEmailConfig } from '../config/email'
+import { createMailer } from '../lib/email/mailer'
+import { defaultLogger } from '@laughtrack/logger/node'
+
+const emailConfig = getEmailConfig()
+const mailer = createMailer(emailConfig)
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -22,6 +28,25 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
+    requireEmailVerification: true,
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    sendOnSignIn: true,
+    autoSignInAfterVerification: false,
+    expiresIn: 60 * 60 * 24,
+    sendVerificationEmail: async ({ user, token }) => {
+      const verificationUrl = createEmailVerificationUrl(emailConfig.publicWebUrl, token)
+      void mailer.sendVerificationEmail({
+        to: user.email,
+        verificationUrl,
+      }).catch((error) => {
+        defaultLogger.error('Failed to queue verification email', {
+          email: user.email,
+          errorName: error instanceof Error ? error.name : 'UnknownError',
+        })
+      })
+    },
   },
   socialProviders: {
     google: {

@@ -4,6 +4,13 @@ import { Stack, useRouter } from "expo-router";
 import { useThemeColor } from "heroui-native";
 import { Pressable, Text } from "react-native";
 
+const formSheet = (field: string, detent: number) => ({
+    presentation: 'formSheet' as const,
+    sheetAllowedDetents: [detent],
+    headerShown: false,
+    contentStyle: { backgroundColor: field },
+})
+
 export default function AppStack() {
     const router = useRouter()
     const field = useThemeColor('field')
@@ -33,14 +40,14 @@ export default function AppStack() {
         <Stack.Screen name="(auth)/forgot-password" />
 
         <Stack.Screen name="(modal)/action-sheet" options={{ presentation: "formSheet" }} />
-        <Stack.Screen name="(modal)/premise-status" options={{ presentation: "formSheet", sheetAllowedDetents: [0.45], headerShown: false, contentStyle: { backgroundColor: field } }} />
-        <Stack.Screen name="(modal)/premise-attitude" options={{ presentation: "formSheet", sheetAllowedDetents: [0.7], headerShown: false, contentStyle: { backgroundColor: field } }} />
-        <Stack.Screen name="(modal)/premise-filter" options={{ presentation: "formSheet", sheetAllowedDetents: [0.8], headerShown: false, contentStyle: { backgroundColor: field } }} />
-        <Stack.Screen name="(modal)/bit-filter" options={{ presentation: "formSheet", sheetAllowedDetents: [0.8], headerShown: false, contentStyle: { backgroundColor: field } }} />
-        <Stack.Screen name="(modal)/bit-meta" options={{ presentation: "formSheet", sheetAllowedDetents: [0.7], headerShown: false, contentStyle: { backgroundColor: field } }} />
-        <Stack.Screen name="(modal)/setlist-filter" options={{ presentation: "formSheet", sheetAllowedDetents: [0.6], headerShown: false, contentStyle: { backgroundColor: field } }} />
-        <Stack.Screen name="(modal)/setlist-add-bit" options={{ presentation: "formSheet", sheetAllowedDetents: [0.85], headerShown: false, contentStyle: { backgroundColor: field } }} />
-        <Stack.Screen name="(modal)/premise-add-bit" options={{ presentation: "formSheet", sheetAllowedDetents: [0.85], headerShown: false, contentStyle: { backgroundColor: field } }} />
+        <Stack.Screen name="(modal)/premise-status" options={formSheet(field, 0.45)} />
+        <Stack.Screen name="(modal)/premise-attitude" options={formSheet(field, 0.7)} />
+        <Stack.Screen name="(modal)/premise-filter" options={formSheet(field, 0.8)} />
+        <Stack.Screen name="(modal)/bit-filter" options={formSheet(field, 0.8)} />
+        <Stack.Screen name="(modal)/bit-meta" options={formSheet(field, 0.7)} />
+        <Stack.Screen name="(modal)/setlist-filter" options={formSheet(field, 0.6)} />
+        <Stack.Screen name="(modal)/setlist-add-bit" options={formSheet(field, 0.85)} />
+        <Stack.Screen name="(modal)/premise-add-bit" options={formSheet(field, 0.85)} />
 
 
         <Stack.Screen name="(detail)/note/[id]" options={{ headerShown: true }} />

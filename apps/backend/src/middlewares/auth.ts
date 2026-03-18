@@ -1,6 +1,11 @@
 import { createMiddleware } from 'hono/factory'
+import { eq } from 'drizzle-orm'
 import { auth } from '../auth'
 import type { User, Session } from '../auth'
+import { db } from '../db'
+import { accounts } from '../db/schema'
+import { errorResponse } from '../lib/response'
+import { EMAIL_NOT_VERIFIED_CODE, requiresVerifiedEmail } from './auth-helpers'
 
 type AuthEnv = {
   Variables: {
@@ -29,10 +34,21 @@ const hasRole = (user: User | null, targetRole: string) => {
 async function loadSession(headers: Headers) {
   const sessionResult = await auth.api.getSession({ headers })
   if (!sessionResult) return null
+
+  const providerIds = await db
+    .select({ providerId: accounts.providerId })
+    .from(accounts)
+    .where(eq(accounts.userId, sessionResult.user.id))
+
   return {
     user: sessionResult.user as User,
     session: sessionResult.session as Session,
+    providerIds: providerIds.map((account) => account.providerId),
   }
+}
+
+function emailNotVerifiedResponse() {
+  return errorResponse('Email not verified', undefined, EMAIL_NOT_VERIFIED_CODE)
 }
 
 export const authMiddleware = createMiddleware<AuthEnv>(async (c, next) => {
@@ -60,7 +76,11 @@ export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
     const result = await loadSession(c.req.raw.headers)
 
     if (!result) {
-      return c.json({ error: 'Unauthorized' }, 401)
+      return c.json(errorResponse('Unauthorized'), 401)
+    }
+
+    if (requiresVerifiedEmail(result.user, result.providerIds)) {
+      return c.json(emailNotVerifiedResponse(), 403)
     }
 
     c.set('user', result.user)
@@ -68,7 +88,7 @@ export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
     await next()
     return
   } catch {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json(errorResponse('Unauthorized'), 401)
   }
 })
 
@@ -77,11 +97,15 @@ export const requireAdmin = createMiddleware<AuthEnv>(async (c, next) => {
     const result = await loadSession(c.req.raw.headers)
 
     if (!result) {
-      return c.json({ error: 'Unauthorized' }, 401)
+      return c.json(errorResponse('Unauthorized'), 401)
+    }
+
+    if (requiresVerifiedEmail(result.user, result.providerIds)) {
+      return c.json(emailNotVerifiedResponse(), 403)
     }
 
     if (!hasRole(result.user, ADMIN_ROLE)) {
-      return c.json({ error: 'Forbidden' }, 403)
+      return c.json(errorResponse('Forbidden'), 403)
     }
 
     c.set('user', result.user)
@@ -89,6 +113,6 @@ export const requireAdmin = createMiddleware<AuthEnv>(async (c, next) => {
     await next()
     return
   } catch {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json(errorResponse('Unauthorized'), 401)
   }
 })

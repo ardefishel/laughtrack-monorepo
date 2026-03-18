@@ -5,6 +5,7 @@ This folder is organized by intent so docs are easier to scan and maintain.
 ## Structure
 
 - `docs/project-overview.md` - high-level project context, setup, and architecture map
+- `docs/roadmap.md` - current ranked mobile product and engineering priorities
 - `docs/architecture/data-modeling.md` - canonical domain <-> DB modeling flow
 - `docs/features/` - feature-specific implementation docs
   - `docs/features/note/README.md`

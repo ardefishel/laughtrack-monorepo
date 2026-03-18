@@ -1,0 +1,38 @@
+import { StatsCard } from '@/components/StatsCard'
+import type { Stats } from '@/lib/api'
+import { getStats } from '@/lib/api'
+import { createFileRoute } from '@tanstack/react-router'
+
+const defaultStats: Stats = { users: 0, notes: 0, bits: 0, premises: 0, setlists: 0 }
+
+export const Route = createFileRoute('/_authed/')({
+  loader: async () => {
+    try {
+      return await getStats()
+    } catch {
+      return defaultStats
+    }
+  },
+  component: Dashboard,
+})
+
+function Dashboard() {
+  const stats = Route.useLoaderData()
+
+  return (
+    <div>
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-foreground mb-1">Dashboard</h1>
+        <p className="text-sm text-muted">Overview of your Laughtrack platform</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <StatsCard label="Users" value={stats.users} icon="👤" />
+        <StatsCard label="Notes" value={stats.notes} icon="📝" />
+        <StatsCard label="Bits" value={stats.bits} icon="😂" />
+        <StatsCard label="Premises" value={stats.premises} icon="💡" />
+        <StatsCard label="Setlists" value={stats.setlists} icon="📋" />
+      </div>
+    </div>
+  )
+}
