@@ -48,6 +48,7 @@ function AuthGate() {
   const router = useRouter()
   const currentPath = routerState.location.pathname
   const isLoginPage = currentPath === '/login'
+  const isPublicVerifyPage = currentPath === '/verify-email' || currentPath.startsWith('/verify-email/')
 
   if (isPending) {
     return (
@@ -62,12 +63,12 @@ function AuthGate() {
   const isAuthed = !!user
   const isAdmin = !!role && role === 'admin'
 
-  if (!isAuthed && !isLoginPage) {
+  if (!isAuthed && !isLoginPage && !isPublicVerifyPage) {
     router.navigate({ to: '/login' })
     return null
   }
 
-  if (!isAuthed && isLoginPage) {
+  if (!isAuthed && (isLoginPage || isPublicVerifyPage)) {
     return (
       <div
         className="min-h-screen bg-background text-foreground font-sans"

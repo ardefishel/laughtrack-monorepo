@@ -14,13 +14,17 @@ interface AuthContextType {
     user: AuthUser | null
     isAuthenticated: boolean
     isPending: boolean
-    signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
+    signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string; status?: number; code?: string }>
     signUp: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>
     signInWithGoogle: () => Promise<{ success: boolean; error?: string }>
     signOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+function normalizeAuthEmail(email: string) {
+    return email.trim().toLowerCase()
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const session = authClient.useSession()
@@ -32,11 +36,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const signIn = useCallback(async (email: string, password: string) => {
         authLogger.info('Sign-in attempt')
+        const normalizedEmail = normalizeAuthEmail(email)
         try {
-            const result = await authClient.signIn.email({ email, password })
+            const result = await authClient.signIn.email({ email: normalizedEmail, password })
             if (result.error) {
                 authLogger.warn('Sign-in failed:', result.error.message)
-                return { success: false, error: result.error.message }
+                return {
+                    success: false,
+                    error: result.error.message,
+                    status: result.error.status,
+                    code: 'code' in result.error ? String(result.error.code) : undefined,
+                }
             }
             authLogger.info('Sign-in successful')
             return { success: true }
@@ -48,8 +58,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const signUp = useCallback(async (email: string, password: string, name: string) => {
         authLogger.info('Sign-up attempt')
+        const normalizedEmail = normalizeAuthEmail(email)
         try {
-            const result = await authClient.signUp.email({ email, password, name })
+            const result = await authClient.signUp.email({ email: normalizedEmail, password, name })
             if (result.error) {
                 authLogger.warn('Sign-up failed:', result.error.message)
                 return { success: false, error: result.error.message }

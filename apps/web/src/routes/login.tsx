@@ -10,24 +10,29 @@ export const Route = createFileRoute('/login')({
 
 function Login() {
   const router = useRouter()
+  const publicVerifyUrl = '/verify-email?status=error'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [errorType, setErrorType] = useState<'generic' | 'unverified'>('generic')
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     setLoading(true)
+    const normalizedEmail = email.trim().toLowerCase()
 
     try {
-      const { data, error: signInError } = await authClient.signIn.email({
-        email,
+      const { error: signInError } = await authClient.signIn.email({
+        email: normalizedEmail,
         password,
       })
 
       if (signInError) {
-        setError(signInError.message || 'Invalid email or password')
+        const isUnverified = signInError.status === 403
+        setErrorType(isUnverified ? 'unverified' : 'generic')
+        setError(isUnverified ? 'Please verify your email before signing in.' : signInError.message || 'Invalid email or password')
         setLoading(false)
         return
       }
@@ -51,13 +56,24 @@ function Login() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <div className="px-3 py-2 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
-              {error}
+              <p>{error}</p>
+              {errorType === 'unverified' ? (
+                <a
+                  href={publicVerifyUrl}
+                  className="mt-2 inline-flex text-xs font-medium text-[#f59e0b] hover:text-[#fbbf24]"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open the verification page or request a new link
+                </a>
+              ) : null}
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-[#a1a1aa] mb-1.5">Email</label>
+            <label htmlFor="email" className="block text-xs font-medium text-[#a1a1aa] mb-1.5">Email</label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -67,8 +83,9 @@ function Login() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#a1a1aa] mb-1.5">Password</label>
+            <label htmlFor="password" className="block text-xs font-medium text-[#a1a1aa] mb-1.5">Password</label>
             <input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as UsersRouteImport } from './routes/users'
 import { Route as SetlistsRouteImport } from './routes/setlists'
 import { Route as LoginRouteImport } from './routes/login'
@@ -19,6 +20,11 @@ import { Route as SetlistsIndexRouteImport } from './routes/setlists.index'
 import { Route as BitsIndexRouteImport } from './routes/bits.index'
 import { Route as UsersIdRouteImport } from './routes/users.$id'
 
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UsersRoute = UsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/setlists': typeof SetlistsRouteWithChildren
   '/users': typeof UsersRouteWithChildren
+  '/verify-email': typeof VerifyEmailRoute
   '/users/$id': typeof UsersIdRoute
   '/bits/': typeof BitsIndexRoute
   '/setlists/': typeof SetlistsIndexRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/users/$id': typeof UsersIdRoute
   '/bits': typeof BitsIndexRoute
   '/setlists': typeof SetlistsIndexRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/setlists': typeof SetlistsRouteWithChildren
   '/users': typeof UsersRouteWithChildren
+  '/verify-email': typeof VerifyEmailRoute
   '/users/$id': typeof UsersIdRoute
   '/bits/': typeof BitsIndexRoute
   '/setlists/': typeof SetlistsIndexRoute
@@ -104,12 +113,20 @@ export interface FileRouteTypes {
     | '/login'
     | '/setlists'
     | '/users'
+    | '/verify-email'
     | '/users/$id'
     | '/bits/'
     | '/setlists/'
     | '/users/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/users/$id' | '/bits' | '/setlists' | '/users'
+  to:
+    | '/'
+    | '/login'
+    | '/verify-email'
+    | '/users/$id'
+    | '/bits'
+    | '/setlists'
+    | '/users'
   id:
     | '__root__'
     | '/'
@@ -117,6 +134,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/setlists'
     | '/users'
+    | '/verify-email'
     | '/users/$id'
     | '/bits/'
     | '/setlists/'
@@ -129,10 +147,18 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SetlistsRoute: typeof SetlistsRouteWithChildren
   UsersRoute: typeof UsersRouteWithChildren
+  VerifyEmailRoute: typeof VerifyEmailRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/users': {
       id: '/users'
       path: '/users'
@@ -239,6 +265,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SetlistsRoute: SetlistsRouteWithChildren,
   UsersRoute: UsersRouteWithChildren,
+  VerifyEmailRoute: VerifyEmailRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

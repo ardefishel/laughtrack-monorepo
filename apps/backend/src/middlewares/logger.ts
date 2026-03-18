@@ -9,6 +9,18 @@ type LoggerEnv = {
   }
 }
 
+function sanitizeRequestUrl(url: string) {
+  try {
+    const parsedUrl = new URL(url)
+    if (parsedUrl.searchParams.has('token')) {
+      parsedUrl.searchParams.set('token', '[REDACTED]')
+    }
+    return parsedUrl.toString()
+  } catch {
+    return url.replace(/([?&]token=)[^&]+/i, '$1[REDACTED]')
+  }
+}
+
 export const loggerMiddleware = () => {
   return createMiddleware<LoggerEnv>(async (c, next) => {
     const requestId = c.req.header('X-Request-ID') ?? ulid()
@@ -20,10 +32,11 @@ export const loggerMiddleware = () => {
     await next()
 
     const duration = Date.now() - startTime
+    const sanitizedUrl = sanitizeRequestUrl(c.req.url)
     const logEntry = {
       requestId,
       method: c.req.method,
-      url: c.req.url,
+      url: sanitizedUrl,
       status: c.res.status,
       duration: `${duration}ms`,
       userAgent: c.req.header('User-Agent'),
@@ -33,7 +46,9 @@ export const loggerMiddleware = () => {
       defaultLogger.info(JSON.stringify(logEntry))
     } catch {
       // Fallback logging if JSON.stringify fails
-      defaultLogger.info(`[${requestId}] ${c.req.method} ${c.req.url} ${c.res.status} ${duration}ms`)
+      defaultLogger.info(`[${requestId}] ${c.req.method} ${sanitizedUrl} ${c.res.status} ${duration}ms`)
     }
   })
 }
+
+export { sanitizeRequestUrl }

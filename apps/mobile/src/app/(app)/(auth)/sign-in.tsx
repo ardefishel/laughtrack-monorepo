@@ -1,5 +1,6 @@
 import { useAuth } from '@/features/auth/context/auth-context'
 import { AuthContainer } from '@/features/auth/components/container'
+import { buildVerifyPendingRoute, isUnverifiedEmailFailure } from '@/features/auth/utils/verification-flow'
 import { Icon } from '@/components/ui/ion-icon'
 import { useRouter } from 'expo-router'
 import { Button, Input, TextField } from 'heroui-native'
@@ -24,6 +25,8 @@ export default function SignIn() {
             const result = await signIn(email.trim(), password)
             if (result.success) {
                 router.dismissAll()
+            } else if (isUnverifiedEmailFailure(result)) {
+                router.replace(buildVerifyPendingRoute(email, 'signin'))
             } else {
                 Alert.alert('Sign In Failed', result.error ?? 'Please try again.')
             }
