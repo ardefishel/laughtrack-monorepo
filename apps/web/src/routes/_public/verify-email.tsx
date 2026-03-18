@@ -9,7 +9,7 @@ type VerifyEmailSearch = {
   status?: string
 }
 
-export const Route = createFileRoute('/verify-email')({
+export const Route = createFileRoute('/_public/verify-email')({
   validateSearch: (search: Record<string, unknown>): VerifyEmailSearch => ({
     token: typeof search.token === 'string' ? search.token : undefined,
     status: typeof search.status === 'string' ? search.status : undefined,

@@ -2,7 +2,7 @@ import { authClient } from '@/lib/auth-client'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute('/_public/login')({
   component: Login,
 })
 

@@ -3,7 +3,7 @@ import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { getUser, updateUser } from '@/lib/api'
 import type { UpdateUserPayload } from '@/lib/api'
 
-export const Route = createFileRoute('/users/$id')({
+export const Route = createFileRoute('/_authed/users/$id')({
   loader: async ({ params }) => {
     try {
       return await getUser(params.id)

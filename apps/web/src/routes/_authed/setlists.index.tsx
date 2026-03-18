@@ -11,7 +11,7 @@ function formatDate(ts: string | null): string {
   return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-export const Route = createFileRoute('/setlists/')({
+export const Route = createFileRoute('/_authed/setlists/')({
   validateSearch: (search: Record<string, unknown>) => ({
     page: Number(search.page) || 1,
     userId: (search.userId as string) || undefined,

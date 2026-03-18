@@ -12,7 +12,7 @@ function formatDate(ts: string | null): string {
   return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-export const Route = createFileRoute('/bits/')({
+export const Route = createFileRoute('/_authed/bits/')({
   validateSearch: (search: Record<string, unknown>): {
     page: number
     userId?: string

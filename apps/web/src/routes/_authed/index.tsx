@@ -5,7 +5,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 const defaultStats: Stats = { users: 0, notes: 0, bits: 0, premises: 0, setlists: 0 }
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/_authed/')({
   loader: async () => {
     try {
       return await getStats()

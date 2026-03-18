@@ -6,7 +6,7 @@ import type { User } from '@/lib/api'
 import { getUsers } from '@/lib/api'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/users/')({
+export const Route = createFileRoute('/_authed/users/')({
     validateSearch: (search: Record<string, unknown>): {
         page: number
         search?: string
