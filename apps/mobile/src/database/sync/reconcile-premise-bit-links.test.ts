@@ -3,7 +3,7 @@ import { BIT_TABLE, PREMISE_TABLE } from '../constants'
 import { Bit } from '../models/bit'
 import { Premise } from '../models/premise'
 import { createTestDatabase, teardownTestDatabase } from '../test-utils/create-test-database'
-import { reconcilePremiseBitLinks } from './reconcilePremiseBitLinks'
+import { reconcilePremiseBitLinks } from './reconcile-premise-bit-links'
 
 describe('reconcilePremiseBitLinks', () => {
     let database: Database

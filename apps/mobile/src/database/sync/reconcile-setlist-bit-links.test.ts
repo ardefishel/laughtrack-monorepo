@@ -3,7 +3,7 @@ import { BIT_TABLE, SETLIST_TABLE } from '../constants'
 import { Bit } from '../models/bit'
 import { Setlist } from '../models/setlist'
 import { createTestDatabase, teardownTestDatabase } from '../test-utils/create-test-database'
-import { reconcileSetlistBitLinks } from './reconcileSetlistBitLinks'
+import { reconcileSetlistBitLinks } from './reconcile-setlist-bit-links'
 
 describe('reconcileSetlistBitLinks', () => {
     let database: Database

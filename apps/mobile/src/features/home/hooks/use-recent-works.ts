@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Q } from '@nozbe/watermelondb'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { BIT_TABLE, PREMISE_TABLE, SETLIST_TABLE } from '@/database/constants'
+import { isValidDate } from '@/database/utils/dates'
 import { stripHtmlToLines } from '@/database/utils/html'
 import type { RecentWork } from '@/domain/recent-work'
 import { dbLogger } from '@/lib/loggers'
@@ -19,10 +20,6 @@ function mergeAndSort(
     return [...premises, ...bits, ...setlists]
         .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
         .slice(0, MAX_RECENT_WORKS)
-}
-
-function isValidDate(value: unknown): value is Date {
-    return value instanceof Date && !Number.isNaN(value.getTime())
 }
 
 function toRecentWorkOrNull(input: {

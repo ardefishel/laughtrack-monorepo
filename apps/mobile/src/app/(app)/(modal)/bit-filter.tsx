@@ -4,94 +4,46 @@ import { BIT_STATUS_OPTIONS } from '@/config/bit-statuses'
 import { BIT_TABLE } from '@/database/constants'
 import { Bit as BitModel } from '@/database/models/bit'
 import { parseBitTagNames } from '@/database/mappers/bitMapper'
-import { dbLogger } from '@/lib/loggers'
 import type { BitStatus } from '@/types'
-import { useDatabase } from '@nozbe/watermelondb/react'
 import { parseBooleanParam, parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useSetToggle } from '@/features/material/hooks/use-set-toggle'
+import { useAvailableTags } from '@/features/material/hooks/use-available-tags'
+import { useFilterModal } from '@/features/material/hooks/use-filter-modal'
+import { useLocalSearchParams } from 'expo-router'
 import { Checkbox, Chip, PressableFeedback } from 'heroui-native'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Text, View } from 'react-native'
 
 export default function BitFilterModal() {
-    const router = useRouter()
-    const database = useDatabase()
     const params = useLocalSearchParams<{ statuses?: string; tags?: string; hasPremise?: string }>()
-    const [availableTags, setAvailableTags] = useState<string[]>([])
 
-    const [selectedStatuses, setSelectedStatuses] = useState<Set<BitStatus>>(() => {
-        return new Set(parseCsvParam(params.statuses) as BitStatus[])
-    })
-
-    const [selectedTags, setSelectedTags] = useState<Set<string>>(() => {
-        return new Set(parseCsvParam(params.tags))
-    })
-
+    const { selected: selectedStatuses, toggle: toggleStatus, clear: clearStatuses } = useSetToggle<BitStatus>(
+        parseCsvParam(params.statuses) as BitStatus[],
+    )
+    const { selected: selectedTags, toggle: toggleTag, clear: clearTags } = useSetToggle<string>(
+        parseCsvParam(params.tags),
+    )
     const [hasPremise, setHasPremise] = useState<boolean | null>(() => parseBooleanParam(params.hasPremise))
 
-    useEffect(() => {
-        const subscription = database
-            .get<BitModel>(BIT_TABLE)
-            .query()
-            .observe()
-            .subscribe({
-                next: (bits: BitModel[]) => {
-                    const tagSet = new Set<string>()
-
-                    for (const bit of bits) {
-                        for (const tag of parseBitTagNames(bit.tagsJson)) {
-                            tagSet.add(tag)
-                        }
-                    }
-
-                    setAvailableTags([...tagSet].sort((a, b) => a.localeCompare(b)))
-                },
-                error: (error: unknown) => {
-                    dbLogger.error('BitFilter failed to observe available tags', error)
-                },
-            })
-
-        return () => subscription.unsubscribe()
-    }, [database])
+    const availableTags = useAvailableTags<BitModel>(BIT_TABLE, parseBitTagNames)
 
     const tagsToRender = useMemo(() => {
         if (availableTags.length > 0) return availableTags
         return [...selectedTags].sort((a, b) => a.localeCompare(b))
     }, [availableTags, selectedTags])
 
-    const toggleStatus = (status: BitStatus) => {
-        setSelectedStatuses((prev) => {
-            const next = new Set(prev)
-            if (next.has(status)) next.delete(status)
-            else next.add(status)
-            return next
-        })
-    }
+    const buildParams = useCallback(() => ({
+        statuses: toCsvParam(selectedStatuses),
+        tags: toCsvParam(selectedTags),
+        hasPremise: hasPremise !== null ? String(hasPremise) : '',
+    }), [selectedStatuses, selectedTags, hasPremise])
 
-    const toggleTag = (tag: string) => {
-        setSelectedTags((prev) => {
-            const next = new Set(prev)
-            if (next.has(tag)) next.delete(tag)
-            else next.add(tag)
-            return next
-        })
-    }
+    const { applyFilters } = useFilterModal(buildParams)
 
     const clearAll = () => {
-        setSelectedStatuses(new Set())
-        setSelectedTags(new Set())
+        clearStatuses()
+        clearTags()
         setHasPremise(null)
-    }
-
-    const applyFilters = () => {
-        router.back()
-        requestAnimationFrame(() => {
-            router.setParams({
-                statuses: toCsvParam(selectedStatuses),
-                tags: toCsvParam(selectedTags),
-                hasPremise: hasPremise !== null ? String(hasPremise) : '',
-            })
-        })
     }
 
     const activeCount = selectedStatuses.size + selectedTags.size + (hasPremise !== null ? 1 : 0)
