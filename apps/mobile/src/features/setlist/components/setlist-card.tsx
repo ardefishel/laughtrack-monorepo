@@ -1,5 +1,6 @@
 import { Icon } from '@/components/ui/ion-icon'
 import { MaterialCard } from '@/features/material/components/material-card'
+import { useI18n } from '@/i18n'
 import type { Setlist } from '@/types'
 import { timeAgo } from '@/lib/time-ago'
 import { Chip } from 'heroui-native'
@@ -13,6 +14,7 @@ interface SetlistCardProps {
 }
 
 function SetlistCardComponent({ setlist, onPress, onDelete }: SetlistCardProps) {
+    const { t } = useI18n()
     const bitCount = setlist.items.filter((item) => item.type === 'bit').length
     const hasTags = setlist.tags && setlist.tags.length > 0
 
@@ -22,7 +24,7 @@ function SetlistCardComponent({ setlist, onPress, onDelete }: SetlistCardProps) 
                 <View className="flex-row items-center gap-2">
                     <Icon name="list-outline" size={13} className="text-muted" />
                     <Text className="text-muted text-[10px] tracking-[3px] font-semibold">
-                        SETLIST
+                        {t('setlist.label')}
                     </Text>
                 </View>
                 <Text className="text-muted text-[11px]">
@@ -34,7 +36,7 @@ function SetlistCardComponent({ setlist, onPress, onDelete }: SetlistCardProps) 
                 className="text-foreground text-[17px] font-medium leading-6"
                 numberOfLines={2}
             >
-                {setlist.description || 'Untitled Setlist'}
+                {setlist.description || t('setlist.untitled')}
             </Text>
 
             <View className="flex-row items-center justify-between pt-1 border-t border-separator">

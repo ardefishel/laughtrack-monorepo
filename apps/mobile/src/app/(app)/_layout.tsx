@@ -40,6 +40,7 @@ export default function AppStack() {
         <Stack.Screen name="(auth)/forgot-password" />
 
         <Stack.Screen name="(modal)/action-sheet" options={{ presentation: "formSheet" }} />
+        <Stack.Screen name="(modal)/language-select" options={formSheet(field, 0.38)} />
         <Stack.Screen name="(modal)/premise-status" options={formSheet(field, 0.45)} />
         <Stack.Screen name="(modal)/premise-attitude" options={formSheet(field, 0.7)} />
         <Stack.Screen name="(modal)/premise-filter" options={formSheet(field, 0.8)} />

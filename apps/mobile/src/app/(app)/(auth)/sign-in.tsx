@@ -2,6 +2,7 @@ import { useAuth } from '@/features/auth/context/auth-context'
 import { AuthContainer } from '@/features/auth/components/container'
 import { buildVerifyPendingRoute, isUnverifiedEmailFailure } from '@/features/auth/utils/verification-flow'
 import { Icon } from '@/components/ui/ion-icon'
+import { useI18n } from '@/i18n'
 import { useRouter } from 'expo-router'
 import { Button, Input, TextField } from 'heroui-native'
 import { useCallback, useState } from 'react'
@@ -9,6 +10,7 @@ import { Alert, Pressable, Text, View } from 'react-native'
 
 export default function SignIn() {
     const router = useRouter()
+    const { t } = useI18n()
     const { signIn, signInWithGoogle } = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -17,7 +19,7 @@ export default function SignIn() {
 
     const handleSignIn = useCallback(async () => {
         if (!email.trim() || !password.trim()) {
-            Alert.alert('Error', 'Please fill in all fields.')
+            Alert.alert(t('auth.alerts.errorTitle'), t('auth.alerts.fillAllFields'))
             return
         }
         setIsLoading(true)
@@ -28,12 +30,12 @@ export default function SignIn() {
             } else if (isUnverifiedEmailFailure(result)) {
                 router.replace(buildVerifyPendingRoute(email, 'signin'))
             } else {
-                Alert.alert('Sign In Failed', result.error ?? 'Please try again.')
+                Alert.alert(t('auth.alerts.signInFailed'), result.error ?? t('auth.alerts.tryAgain'))
             }
         } finally {
             setIsLoading(false)
         }
-    }, [email, password, signIn, router])
+    }, [email, password, router, signIn, t])
 
     const handleGoogleSignIn = useCallback(async () => {
         setIsGoogleLoading(true)
@@ -42,19 +44,19 @@ export default function SignIn() {
             if (result.success) {
                 router.dismissAll()
             } else {
-                Alert.alert('Google Sign In Failed', result.error ?? 'Please try again.')
+                Alert.alert(t('auth.alerts.googleSignInFailed'), result.error ?? t('auth.alerts.tryAgain'))
             }
         } finally {
             setIsGoogleLoading(false)
         }
-    }, [signInWithGoogle, router])
+    }, [router, signInWithGoogle, t])
 
     return (
-        <AuthContainer title='Welcome Back' subtitle='Sign in to your account'>
+        <AuthContainer title={t('auth.signIn.title')} subtitle={t('auth.signIn.subtitle')}>
             <View className="gap-4">
                 <TextField>
                     <Input
-                        placeholder="Email"
+                        placeholder={t('auth.placeholders.email')}
                         keyboardType="email-address"
                         autoCapitalize="none"
                         value={email}
@@ -64,7 +66,7 @@ export default function SignIn() {
 
                 <TextField>
                     <Input
-                        placeholder="Password"
+                        placeholder={t('auth.placeholders.password')}
                         secureTextEntry
                         value={password}
                         onChangeText={setPassword}
@@ -75,10 +77,10 @@ export default function SignIn() {
                     onPress={() => router.push('/(app)/(auth)/forgot-password')}
                     className="self-end"
                     accessibilityRole="link"
-                    accessibilityLabel="Forgot Password"
+                    accessibilityLabel={t('auth.signIn.forgotPasswordAccessibilityLabel')}
                     variant='ghost'
                 >
-                    <Text className="text-accent text-sm">Forgot Password?</Text>
+                    <Text className="text-accent text-sm">{t('auth.signIn.forgotPassword')}</Text>
                 </Button>
 
                 <Button
@@ -86,13 +88,14 @@ export default function SignIn() {
                     onPress={handleSignIn}
                     isDisabled={isLoading || isGoogleLoading || !email.trim() || !password.trim()}
                     className="w-full"
+                    accessibilityLabel={t('auth.common.signIn')}
                 >
-                    <Button.Label>{isLoading ? 'Signing In...' : 'Sign In'}</Button.Label>
+                    <Button.Label>{isLoading ? t('auth.common.signingIn') : t('auth.common.signIn')}</Button.Label>
                 </Button>
 
                 <View className="flex-row items-center gap-3 my-4">
                     <View className="flex-1 h-px bg-border" />
-                    <Text className="text-muted text-sm">or continue with</Text>
+                    <Text className="text-muted text-sm">{t('auth.common.continueWith')}</Text>
                     <View className="flex-1 h-px bg-border" />
                 </View>
 
@@ -101,19 +104,20 @@ export default function SignIn() {
                     onPress={handleGoogleSignIn}
                     isDisabled={isGoogleLoading || isLoading}
                     className="w-full"
+                    accessibilityLabel={t('auth.common.google')}
                 >
                     <Icon
                         name="logo-google"
                         size={20}
                         className="text-foreground mr-2"
                     />
-                    <Button.Label>{isGoogleLoading ? 'Signing In...' : 'Google'}</Button.Label>
+                    <Button.Label>{isGoogleLoading ? t('auth.common.signingIn') : t('auth.common.google')}</Button.Label>
                 </Button>
 
                 <View className="flex-row justify-center gap-1 mt-4">
-                    <Text className="text-muted">Don&apos;t have an account?</Text>
-                    <Pressable onPress={() => router.push('/(app)/(auth)/sign-up')} accessibilityRole="link" accessibilityLabel="Sign Up">
-                        <Text className="text-accent">Sign Up</Text>
+                    <Text className="text-muted">{t('auth.signIn.noAccount')}</Text>
+                    <Pressable onPress={() => router.push('/(app)/(auth)/sign-up')} accessibilityRole="link" accessibilityLabel={t('auth.signIn.signUpAccessibilityLabel')}>
+                        <Text className="text-accent">{t('auth.common.signUp')}</Text>
                     </Pressable>
                 </View>
             </View>

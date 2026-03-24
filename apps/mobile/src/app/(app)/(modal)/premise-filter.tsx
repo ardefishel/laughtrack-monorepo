@@ -10,6 +10,7 @@ import { parseCsvParam, toCsvParam } from '@/features/material/filters/filter-qu
 import { useSetToggle } from '@/features/material/hooks/use-set-toggle'
 import { useAvailableTags } from '@/features/material/hooks/use-available-tags'
 import { useFilterModal } from '@/features/material/hooks/use-filter-modal'
+import { useI18n } from '@/i18n'
 import { useLocalSearchParams } from 'expo-router'
 import { Checkbox, Chip, PressableFeedback } from 'heroui-native'
 import { useCallback } from 'react'
@@ -19,6 +20,7 @@ const ALL_ATTITUDES = Object.entries(attitudeConfig) as [Attitude, { label: stri
 
 export default function PremiseFilterModal() {
     const params = useLocalSearchParams<{ statuses?: string; tags?: string; attitudes?: string }>()
+    const { t } = useI18n()
 
     const { selected: selectedStatuses, toggle: toggleStatus, clear: clearStatuses } = useSetToggle<PremiseStatus>(
         parseCsvParam(params.statuses) as PremiseStatus[],
@@ -51,7 +53,7 @@ export default function PremiseFilterModal() {
     return (
         <FilterModalShell activeCount={activeCount} onClear={clearAll} onApply={applyFilters} applyPrefix={<Icon name='funnel' size={18} />}>
                 <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                    STATUS
+                    {t('filters.status')}
                 </Text>
                 <View>
                     {PREMISE_STATUS_OPTIONS.map((status) => {
@@ -76,7 +78,7 @@ export default function PremiseFilterModal() {
                     })}
                 </View>
                 <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                    TAGS
+                    {t('filters.tags')}
                 </Text>
                 <View className="flex-row flex-wrap gap-2">
                     {allTags.map((tag) => {
@@ -95,10 +97,10 @@ export default function PremiseFilterModal() {
                     })}
                 </View>
                 {allTags.length === 0 && (
-                    <Text className="text-muted text-sm">No tags yet.</Text>
+                    <Text className="text-muted text-sm">{t('filters.noTagsYet')}</Text>
                 )}
                 <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                    ATTITUDE
+                    {t('filters.attitude')}
                 </Text>
                 <View className="flex-row flex-wrap gap-2">
                     {ALL_ATTITUDES.map(([value, config]) => {

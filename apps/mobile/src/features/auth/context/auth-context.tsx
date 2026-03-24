@@ -1,5 +1,6 @@
-import React, { createContext, useCallback, useContext, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, type ReactNode } from 'react'
 import { authClient } from '@/lib/auth-client'
+import { translate } from '@/i18n'
 import { authLogger } from '@/lib/loggers'
 import { useGoogleSignIn } from '@/features/auth/hooks/use-google-sign-in'
 
@@ -52,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return { success: true }
         } catch (error) {
             authLogger.error('Sign-in unexpected error:', error)
-            return { success: false, error: 'An unexpected error occurred' }
+            return { success: false, error: translate('auth.errors.unexpected') }
         }
     }, [])
 
@@ -69,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return { success: true }
         } catch (error) {
             authLogger.error('Sign-up unexpected error:', error)
-            return { success: false, error: 'An unexpected error occurred' }
+            return { success: false, error: translate('auth.errors.unexpected') }
         }
     }, [])
 

@@ -5,6 +5,7 @@ import { useRecentWorks } from "@/features/home/hooks/use-recent-works";
 import { useNoteList } from "@/features/note/hooks/use-note-list";
 import { createNote } from "@/features/note/services/note-actions";
 import { deleteNote } from "@/features/note/services/delete-note";
+import { useI18n } from "@/i18n";
 import { useKeyboardOffset } from "@/lib/use-keyboard-offset";
 import { useRouter } from "expo-router";
 import { useDatabase } from "@nozbe/watermelondb/react";
@@ -26,6 +27,7 @@ const WORK_DETAIL_ROUTE: Record<RecentWork['type'], WorkDetailPathname> = {
 export default function Index() {
   const inset = useSafeAreaInsets()
   const router = useRouter()
+  const { t } = useI18n()
   const database = useDatabase()
   const recentWorks = useRecentWorks()
   const { notes: recentNotes, refresh: refreshRecentNotes } = useNoteList(6)
@@ -78,7 +80,7 @@ export default function Index() {
         {recentWorks.length > 0 && (
           <View className="mt-4">
             <View className="flex flex-row items-center justify-between px-4">
-              <Text className="text-foreground text-lg font-semibold">Recent Works</Text>
+              <Text className="text-foreground text-lg font-semibold">{t('home.recentWorks')}</Text>
             </View>
             <ScrollView className="pl-4 py-4 " snapToAlignment="start" snapToInterval={260} decelerationRate="fast" horizontal showsHorizontalScrollIndicator={false}>
               {recentWorks.map((work) => (
@@ -89,16 +91,16 @@ export default function Index() {
         )}
         <View className="mt-4">
           <View className="flex flex-row items-center justify-between px-4">
-            <Text className="text-foreground text-lg font-semibold">Recent Notes</Text>
+            <Text className="text-foreground text-lg font-semibold">{t('home.recentNotes')}</Text>
             {recentNotes.length > 0 && (
-              <Pressable onPress={() => router.push("/note")}>
-                <Text className="text-accent">See all</Text>
+              <Pressable onPress={() => router.push("/note")} accessibilityRole="link" accessibilityLabel={t('home.seeAll')}>
+                <Text className="text-accent">{t('home.seeAll')}</Text>
               </Pressable>
             )}
           </View>
           <View className="px-4 pt-4 gap-4">
             {recentNotes.length === 0 ? (
-              <Text className="text-muted text-sm">No notes yet. Capture your first idea below.</Text>
+              <Text className="text-muted text-sm">{t('home.noNotes')}</Text>
             ) : (
               recentNotes.map((note) => (
                 <RecentNoteCard

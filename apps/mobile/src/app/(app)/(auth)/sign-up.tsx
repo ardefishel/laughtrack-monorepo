@@ -2,6 +2,7 @@ import { useAuth } from '@/features/auth/context/auth-context'
 import { AuthContainer } from '@/features/auth/components/container'
 import { buildVerifyPendingRoute } from '@/features/auth/utils/verification-flow'
 import { Icon } from '@/components/ui/ion-icon'
+import { useI18n } from '@/i18n'
 import { useRouter } from 'expo-router'
 import { Button, Input, TextField } from 'heroui-native'
 import { useCallback, useState } from 'react'
@@ -9,6 +10,7 @@ import { Alert, Pressable, Text, View } from 'react-native'
 
 export default function SignUp() {
     const router = useRouter()
+    const { t } = useI18n()
     const { signUp, signInWithGoogle } = useAuth()
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
@@ -19,15 +21,15 @@ export default function SignUp() {
 
     const handleSignUp = useCallback(async () => {
         if (!name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
-            Alert.alert('Error', 'Please fill in all fields.')
+            Alert.alert(t('auth.alerts.errorTitle'), t('auth.alerts.fillAllFields'))
             return
         }
         if (password !== confirmPassword) {
-            Alert.alert('Error', 'Passwords do not match.')
+            Alert.alert(t('auth.alerts.errorTitle'), t('auth.alerts.passwordsDoNotMatch'))
             return
         }
         if (password.length < 8) {
-            Alert.alert('Error', 'Password must be at least 8 characters.')
+            Alert.alert(t('auth.alerts.errorTitle'), t('auth.alerts.passwordTooShort'))
             return
         }
         setIsLoading(true)
@@ -36,12 +38,12 @@ export default function SignUp() {
             if (result.success) {
                 router.replace(buildVerifyPendingRoute(email, 'signup'))
             } else {
-                Alert.alert('Sign Up Failed', result.error ?? 'Please try again.')
+                Alert.alert(t('auth.alerts.signUpFailed'), result.error ?? t('auth.alerts.tryAgain'))
             }
         } finally {
             setIsLoading(false)
         }
-    }, [name, email, password, confirmPassword, signUp, router])
+    }, [confirmPassword, email, name, password, router, signUp, t])
 
     const handleGoogleSignIn = useCallback(async () => {
         setIsGoogleLoading(true)
@@ -50,19 +52,19 @@ export default function SignUp() {
             if (result.success) {
                 router.dismissAll()
             } else {
-                Alert.alert('Google Sign In Failed', result.error ?? 'Please try again.')
+                Alert.alert(t('auth.alerts.googleSignInFailed'), result.error ?? t('auth.alerts.tryAgain'))
             }
         } finally {
             setIsGoogleLoading(false)
         }
-    }, [signInWithGoogle, router])
+    }, [router, signInWithGoogle, t])
 
     return (
-        <AuthContainer title='Create Account' subtitle='Sign up to get started'>
+        <AuthContainer title={t('auth.signUp.title')} subtitle={t('auth.signUp.subtitle')}>
             <View className="gap-4">
                 <TextField>
                     <Input
-                        placeholder="Name"
+                        placeholder={t('auth.placeholders.name')}
                         autoCapitalize="words"
                         className="text-foreground"
                         value={name}
@@ -72,7 +74,7 @@ export default function SignUp() {
 
                 <TextField>
                     <Input
-                        placeholder="Email"
+                        placeholder={t('auth.placeholders.email')}
                         keyboardType="email-address"
                         autoCapitalize="none"
                         value={email}
@@ -82,7 +84,7 @@ export default function SignUp() {
 
                 <TextField>
                     <Input
-                        placeholder="Password"
+                        placeholder={t('auth.placeholders.password')}
                         secureTextEntry
                         value={password}
                         onChangeText={setPassword}
@@ -91,7 +93,7 @@ export default function SignUp() {
 
                 <TextField>
                     <Input
-                        placeholder="Confirm Password"
+                        placeholder={t('auth.placeholders.confirmPassword')}
                         secureTextEntry
                         value={confirmPassword}
                         onChangeText={setConfirmPassword}
@@ -110,13 +112,14 @@ export default function SignUp() {
                         !confirmPassword.trim()
                     }
                     className="w-full"
+                    accessibilityLabel={t('auth.common.signUp')}
                 >
-                    <Button.Label>{isLoading ? 'Creating Account...' : 'Sign Up'}</Button.Label>
+                    <Button.Label>{isLoading ? t('auth.signUp.createAccountLoading') : t('auth.common.signUp')}</Button.Label>
                 </Button>
 
                 <View className="flex-row items-center gap-3 my-4">
                     <View className="flex-1 h-px bg-border" />
-                    <Text className="text-muted text-sm">or continue with</Text>
+                    <Text className="text-muted text-sm">{t('auth.common.continueWith')}</Text>
                     <View className="flex-1 h-px bg-border" />
                 </View>
 
@@ -125,19 +128,20 @@ export default function SignUp() {
                     onPress={handleGoogleSignIn}
                     isDisabled={isGoogleLoading || isLoading}
                     className="w-full"
+                    accessibilityLabel={t('auth.common.google')}
                 >
                     <Icon
                         name="logo-google"
                         size={20}
                         className="text-foreground mr-2"
                     />
-                    <Button.Label>{isGoogleLoading ? 'Signing In...' : 'Google'}</Button.Label>
+                    <Button.Label>{isGoogleLoading ? t('auth.common.signingIn') : t('auth.common.google')}</Button.Label>
                 </Button>
 
                 <View className="flex-row justify-center gap-1 mt-4">
-                    <Text className="text-muted">Already have an account?</Text>
-                    <Pressable onPress={() => router.back()} accessibilityRole="link" accessibilityLabel="Sign In">
-                        <Text className="text-accent">Sign In</Text>
+                    <Text className="text-muted">{t('auth.signUp.alreadyHaveAccount')}</Text>
+                    <Pressable onPress={() => router.back()} accessibilityRole="link" accessibilityLabel={t('auth.signUp.signInAccessibilityLabel')}>
+                        <Text className="text-accent">{t('auth.common.signIn')}</Text>
                     </Pressable>
                 </View>
             </View>

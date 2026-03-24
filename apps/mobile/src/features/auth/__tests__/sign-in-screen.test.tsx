@@ -21,6 +21,31 @@ jest.mock('@/features/auth/context/auth-context', () => ({
   useAuth: () => ({ signIn: mockSignIn, signInWithGoogle: mockSignInWithGoogle }),
 }))
 
+jest.mock('@/i18n', () => ({
+  useI18n: () => ({
+    t: (key: string) => ({
+      'auth.alerts.errorTitle': 'Error',
+      'auth.alerts.fillAllFields': 'Please fill in all fields.',
+      'auth.alerts.googleSignInFailed': 'Google Sign In Failed',
+      'auth.alerts.signInFailed': 'Sign In Failed',
+      'auth.alerts.tryAgain': 'Please try again.',
+      'auth.common.continueWith': 'or continue with',
+      'auth.common.google': 'Google',
+      'auth.common.signIn': 'Sign In',
+      'auth.common.signUp': 'Sign Up',
+      'auth.common.signingIn': 'Signing In...',
+      'auth.placeholders.email': 'Email',
+      'auth.placeholders.password': 'Password',
+      'auth.signIn.forgotPassword': 'Forgot Password?',
+      'auth.signIn.forgotPasswordAccessibilityLabel': 'Forgot Password',
+      'auth.signIn.noAccount': "Don't have an account?",
+      'auth.signIn.signUpAccessibilityLabel': 'Sign Up',
+      'auth.signIn.subtitle': 'Sign in to your account',
+      'auth.signIn.title': 'Welcome Back',
+    }[key] ?? key),
+  }),
+}))
+
 jest.mock('@/features/auth/components/container', () => ({
   AuthContainer: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }))
@@ -55,13 +80,20 @@ jest.mock('heroui-native', () => {
 })
 
 describe('SignIn screen', () => {
+  let consoleErrorSpy: jest.SpyInstance
+
   beforeEach(() => {
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
     mockDismissAll.mockReset()
     mockReplace.mockReset()
     mockPush.mockReset()
     mockAlert.mockReset()
     mockSignIn.mockReset()
     mockSignInWithGoogle.mockReset()
+  })
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore()
   })
 
   it('routes unverified users into the verify-pending screen', async () => {

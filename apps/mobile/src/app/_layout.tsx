@@ -1,5 +1,6 @@
 import "@/globals.css";
 import { database } from "@/database";
+import { I18nProvider } from "@/i18n";
 import { AuthProvider } from "@/features/auth/context/auth-context";
 import { reconcilePremiseBitLinks } from "@/features/premise/services/premise-bit-links";
 import { reconcileSetlistBitLinks } from "@/features/setlist/services/setlist-bit-links";
@@ -57,14 +58,16 @@ export default function RootLayout() {
     }, [pathname])
 
     return <GestureHandlerRootView style={{ flex: 1 }}>
-        <AuthProvider>
-            <DatabaseProvider database={database}>
-                <HeroUINativeProvider config={{ devInfo: { stylingPrinciples: false } }}>
-                    <KeyboardProvider>
-                        <Slot />
-                    </KeyboardProvider>
-                </HeroUINativeProvider>
-            </DatabaseProvider>
-        </AuthProvider>
+        <I18nProvider>
+            <AuthProvider>
+                <DatabaseProvider database={database}>
+                    <HeroUINativeProvider config={{ devInfo: { stylingPrinciples: false } }}>
+                        <KeyboardProvider>
+                            <Slot />
+                        </KeyboardProvider>
+                    </HeroUINativeProvider>
+                </DatabaseProvider>
+            </AuthProvider>
+        </I18nProvider>
     </GestureHandlerRootView>
 }

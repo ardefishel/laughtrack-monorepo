@@ -1,3 +1,5 @@
+import { translate } from '@/i18n'
+
 export type VerificationFlowMode = 'signup' | 'signin'
 
 export type AuthActionResult = {
@@ -26,29 +28,29 @@ export function isUnverifiedEmailFailure(result: AuthActionResult) {
 export function getVerifyPendingCopy(mode: VerificationFlowMode) {
     if (mode === 'signin') {
         return {
-            title: 'Verify Your Email Before Sign In',
-            subtitle: 'We still need to confirm your email address',
-            body: 'Your account exists, but email verification is still pending. Open the verification email from Laughtrack, then try signing in again.',
+            title: translate('auth.verifyPending.signin.title'),
+            subtitle: translate('auth.verifyPending.signin.subtitle'),
+            body: translate('auth.verifyPending.signin.body'),
         }
     }
 
     return {
-        title: 'Verify Your Email',
-        subtitle: 'One quick step before you can sign in',
-        body: 'We sent a verification link to finish your account setup.',
+        title: translate('auth.verifyPending.signup.title'),
+        subtitle: translate('auth.verifyPending.signup.subtitle'),
+        body: translate('auth.verifyPending.signup.body'),
     }
 }
 
 export function getResendFeedback(errorMessage?: string) {
     if (errorMessage) {
         return {
-            title: 'Resend Failed',
-            message: errorMessage || 'Please try again.',
+            title: translate('auth.verifyPending.resendFailedTitle'),
+            message: errorMessage || translate('auth.alerts.tryAgain'),
         }
     }
 
     return {
-        title: 'Verification Email Sent',
-        message: 'Check your inbox for a fresh verification link.',
+        title: translate('auth.verifyPending.resendSuccessTitle'),
+        message: translate('auth.verifyPending.resendSuccessMessage'),
     }
 }
