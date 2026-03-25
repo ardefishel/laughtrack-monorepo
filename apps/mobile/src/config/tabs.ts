@@ -2,29 +2,29 @@ import { IconName } from "@/components/ui/ion-icon";
 
 interface TabItem {
   name: string;
-  title: string;
+  titleKey: string;
   icon: IconName;
 }
 
 export const TabNavigationItems: TabItem[] = [
   {
     name: "home/index",
-    title: "Home",
+    titleKey: "navigation.tabs.home",
     icon: "home-outline",
   },
   {
     name: "material",
-    title: "Material",
+    titleKey: "navigation.tabs.material",
     icon: "library-outline",
   },
   {
     name: "learn",
-    title: "Learn",
+    titleKey: "navigation.tabs.learn",
     icon: "school-outline",
   },
   {
     name: "account",
-    title: "Account",
+    titleKey: "navigation.tabs.account",
     icon: "person-circle-outline",
   },
 ]

@@ -24,6 +24,16 @@ export const enTranslations = {
         termsOfService: 'Terms of Service',
         title: 'Account',
     },
+    attitudes: {
+        angry: 'Angry',
+        confused: 'Confused',
+        disgusted: 'Disgusted',
+        embarrassed: 'Embarrassed',
+        envious: 'Envious',
+        lustful: 'Lustful',
+        proud: 'Proud',
+        scared: 'Scared',
+    },
     auth: {
         alerts: {
             emailSentMessage: 'Check your email for a password reset link.',
@@ -110,6 +120,24 @@ export const enTranslations = {
             useRecentAddress: 'Use the address you just signed up with.',
         },
     },
+    bit: {
+        detail: {
+            create: 'Create',
+            editTitle: 'Edit Bit',
+            meta: 'Meta',
+            newTitle: 'New Bit',
+            placeholder: 'Start writing your bit...',
+            save: 'Save',
+        },
+        statuses: {
+            dead: 'Dead',
+            draft: 'Draft',
+            final: 'Final',
+            rework: 'Rework',
+            tested: 'Tested',
+        },
+        untitled: 'Untitled bit',
+    },
     bitMeta: {
         cancel: 'Cancel',
         connectedToPremise: 'Connected to a premise',
@@ -122,17 +150,33 @@ export const enTranslations = {
         tags: 'Tags',
         title: 'Bit Info',
     },
+    common: {
+        delete: 'Delete',
+        none: 'None',
+        ok: 'OK',
+    },
     filters: {
+        all: 'All',
         attitude: 'Attitude',
+        hasPremise: 'Has Premise',
+        noPremise: 'No Premise',
         noTagsYet: 'No tags yet.',
         status: 'Status',
         tags: 'Tags',
     },
     home: {
         noNotes: 'No notes yet. Capture your first idea below.',
+        quickNotePlaceholder: "What's funny?...",
         recentNotes: 'Recent Notes',
         recentWorks: 'Recent Works',
         seeAll: 'See all',
+    },
+    material: {
+        variants: {
+            bit: 'Bit',
+            premise: 'Premise',
+            setlist: 'Setlist',
+        },
     },
     navigation: {
         tabs: {
@@ -142,19 +186,69 @@ export const enTranslations = {
             material: 'Material',
         },
     },
-    common: {
-        ok: 'OK',
-    },
     notes: {
+        detail: {
+            content: 'Content',
+            editTitle: 'Note Detail',
+            newTitle: 'New Note',
+            placeholder: 'Write your note idea...',
+            promoteDescription: 'Convert this note into a draft premise',
+            promoteTitle: 'Promote to Premise',
+        },
+        label: 'Note',
         list: {
             new: 'New',
             noMatches: 'No matching notes yet.',
             searchPlaceholder: 'Search notes',
             title: 'Notes',
         },
+        untitled: 'Untitled note',
+    },
+    premise: {
+        attitudeModal: {
+            accessibilityLabel: 'Set premise attitude to %{attitude}',
+            title: 'Premise Attitude',
+        },
+        detail: {
+            attitude: 'Attitude',
+            attitudePlaceholder: 'How does this make you feel?',
+            chooseAttitude: 'Choose premise attitude',
+            chooseStatus: 'Choose premise status',
+            clearAttitude: 'Clear premise attitude',
+            editTitle: 'Edit Premise',
+            newTitle: 'New Premise',
+            placeholder: "What's the funny observation or idea?",
+            selectStatus: 'Select status',
+            status: 'Status',
+            title: 'Premise',
+        },
+        statusModal: {
+            accessibilityLabel: 'Set premise status to %{status}',
+            title: 'Premise Status',
+        },
+        statuses: {
+            archived: 'Archived',
+            draft: 'Draft',
+            ready: 'Ready',
+            rework: 'Rework',
+        },
     },
     setlist: {
+        addNote: 'Add Note',
+        addNoteDescription: 'Add a stage direction or reminder',
+        addNoteDialogDescription: 'A stage direction or reminder between bits.',
+        addNotePlaceholder: 'e.g. Pause here - let it breathe.',
+        addSetItem: 'Add Set Item',
+        addToSetlist: 'Add to Setlist',
+        addToSetlistDescription: 'What would you like to add?',
+        bitsPlural: 'bits',
+        description: 'Description',
+        descriptionPlaceholder: 'e.g. Friday Club Night - 20 min set',
+        items: 'Items',
         label: 'Setlist',
+        pickBitsDescription: 'Pick one or more bits from your library',
+        read: 'Read',
+        readerTitle: 'Reader',
         untitled: 'Untitled Setlist',
     },
     tags: {

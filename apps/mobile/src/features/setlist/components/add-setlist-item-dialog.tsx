@@ -1,4 +1,5 @@
 import { Icon } from '@/components/ui/ion-icon'
+import { useI18n } from '@/i18n'
 import { Button, Dialog, Input } from 'heroui-native'
 import { KeyboardAvoidingView, Pressable, Text, View } from 'react-native'
 
@@ -25,6 +26,8 @@ export function AddSetlistItemDialog({
     onChooseNote,
     onConfirmNote,
 }: AddSetlistItemDialogProps) {
+    const { t } = useI18n()
+
     return (
         <>
             <Dialog isOpen={typeDialogOpen} onOpenChange={onTypeDialogOpenChange}>
@@ -32,8 +35,8 @@ export function AddSetlistItemDialog({
                     <Dialog.Overlay />
                     <Dialog.Content>
                         <Dialog.Close className='absolute right-4 top-4 z-10' />
-                        <Dialog.Title>Add to Setlist</Dialog.Title>
-                        <Dialog.Description>What would you like to add?</Dialog.Description>
+                        <Dialog.Title>{t('setlist.addToSetlist')}</Dialog.Title>
+                        <Dialog.Description>{t('setlist.addToSetlistDescription')}</Dialog.Description>
 
                         <View className='gap-3 mt-2'>
                             <Pressable
@@ -45,8 +48,8 @@ export function AddSetlistItemDialog({
                                 </View>
 
                                 <View className='flex-1'>
-                                    <Text className='text-foreground font-semibold text-[15px]'>Bit</Text>
-                                    <Text className='text-muted text-xs mt-0.5'>Pick one or more bits from your library</Text>
+                                    <Text className='text-foreground font-semibold text-[15px]'>{t('material.variants.bit')}</Text>
+                                    <Text className='text-muted text-xs mt-0.5'>{t('setlist.pickBitsDescription')}</Text>
                                 </View>
 
                                 <Icon name='chevron-forward' size={16} className='text-muted' />
@@ -61,8 +64,8 @@ export function AddSetlistItemDialog({
                                 </View>
 
                                 <View className='flex-1'>
-                                    <Text className='text-foreground font-semibold text-[15px]'>Note</Text>
-                                    <Text className='text-muted text-xs mt-0.5'>Add a stage direction or reminder</Text>
+                                    <Text className='text-foreground font-semibold text-[15px]'>{t('notes.label')}</Text>
+                                    <Text className='text-muted text-xs mt-0.5'>{t('setlist.addNoteDescription')}</Text>
                                 </View>
 
                                 <Icon name='chevron-forward' size={16} className='text-muted' />
@@ -78,14 +81,14 @@ export function AddSetlistItemDialog({
                     <KeyboardAvoidingView behavior='padding'>
                         <Dialog.Content>
                             <Dialog.Close className='absolute right-4 top-4 z-10' />
-                            <Dialog.Title>Add Note</Dialog.Title>
-                            <Dialog.Description>A stage direction or reminder between bits.</Dialog.Description>
+                            <Dialog.Title>{t('setlist.addNote')}</Dialog.Title>
+                            <Dialog.Description>{t('setlist.addNoteDialogDescription')}</Dialog.Description>
 
                             <View className='mt-3 gap-4'>
                                 <Input
                                     value={noteText}
                                     onChangeText={onNoteTextChange}
-                                    placeholder='e.g. Pause here - let it breathe.'
+                                    placeholder={t('setlist.addNotePlaceholder')}
                                     multiline
                                     numberOfLines={4}
                                     returnKeyType='default'
@@ -93,7 +96,7 @@ export function AddSetlistItemDialog({
                                 />
 
                                 <Button onPress={onConfirmNote} isDisabled={!noteText.trim()}>
-                                    <Button.Label>Add Note</Button.Label>
+                                    <Button.Label>{t('setlist.addNote')}</Button.Label>
                                 </Button>
                             </View>
                         </Dialog.Content>

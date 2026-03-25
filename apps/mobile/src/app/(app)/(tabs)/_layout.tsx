@@ -9,12 +9,11 @@ export default function RootLayout() {
   const { t } = useI18n()
 
   const getTabTitle = (name: string) => {
-    if (name === 'home/index') return t('navigation.tabs.home')
-    if (name === 'material') return t('navigation.tabs.material')
-    if (name === 'learn') return t('navigation.tabs.learn')
-    if (name === 'account') return t('navigation.tabs.account')
+    const item = TabNavigationItems.find((entry) => entry.name === name)
 
-    return name
+    if (!item) return name
+
+    return t(item.titleKey)
   }
 
   return <Tabs screenOptions={{

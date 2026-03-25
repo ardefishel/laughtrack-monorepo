@@ -1,5 +1,5 @@
 import { Icon } from '@/components/ui/ion-icon'
-import { BIT_STATUS_OPTIONS } from '@/config/bit-statuses'
+import { getBitStatusOptions } from '@/config/bit-statuses'
 import { PREMISE_TABLE } from '@/database/constants'
 import { premiseModelToDomain } from '@/database/mappers/premiseMapper'
 import { Premise as PremiseModel } from '@/database/models/premise'
@@ -16,6 +16,7 @@ export default function BitMetaModal() {
     const router = useRouter()
     const database = useDatabase()
     const { t } = useI18n()
+    const bitStatusOptions = useMemo(() => getBitStatusOptions(t), [t])
     const params = useLocalSearchParams<{ tags?: string; status?: string; premiseId?: string; bitId?: string }>()
 
     const initialStatus = (params.status as BitStatus | undefined) ?? 'draft'
@@ -104,7 +105,7 @@ export default function BitMetaModal() {
                         presentation="bottom-sheet"
                         value={{
                             value: status,
-                            label: BIT_STATUS_OPTIONS.find((s) => s.value === status)?.label ?? '',
+                            label: bitStatusOptions.find((s) => s.value === status)?.label ?? '',
                         }}
                         onValueChange={(option) => {
                             const selected = Array.isArray(option) ? option[0] : option
@@ -113,7 +114,7 @@ export default function BitMetaModal() {
                     >
                         <Select.Trigger>
                             <View className="flex-row items-center gap-2 flex-1">
-                                <View className={`size-2.5 rounded-full ${BIT_STATUS_OPTIONS.find((s) => s.value === status)?.dotClass}`} />
+                                <View className={`size-2.5 rounded-full ${bitStatusOptions.find((s) => s.value === status)?.dotClass}`} />
                                 <Select.Value placeholder={t('bitMeta.selectStatus')} />
                             </View>
                             <Select.TriggerIndicator />
@@ -122,7 +123,7 @@ export default function BitMetaModal() {
                             <Select.Overlay />
                             <Select.Content presentation="bottom-sheet">
                                 <Select.ListLabel>{t('bitMeta.status')}</Select.ListLabel>
-                                {BIT_STATUS_OPTIONS.map((option) => (
+                                {bitStatusOptions.map((option) => (
                                     <Select.Item key={option.value} value={option.value} label={option.label}>
                                         {({ isSelected }) => (
                                             <View className="flex-row items-center gap-3 flex-1">

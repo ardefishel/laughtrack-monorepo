@@ -1,7 +1,7 @@
 import { FilterModalShell } from '@/features/material/components/filter-modal-shell'
 import { Icon } from '@/components/ui/ion-icon'
-import { attitudeConfig } from '@/config/attitudes'
-import { PREMISE_STATUS_OPTIONS } from '@/config/premise-statuses'
+import { getAttitudeOptions } from '@/config/attitudes'
+import { getPremiseStatusOptions } from '@/config/premise-statuses'
 import { PREMISE_TABLE } from '@/database/constants'
 import { parsePremiseTagNames } from '@/database/mappers/premiseMapper'
 import { Premise as PremiseModel } from '@/database/models/premise'
@@ -13,14 +13,14 @@ import { useFilterModal } from '@/features/material/hooks/use-filter-modal'
 import { useI18n } from '@/i18n'
 import { useLocalSearchParams } from 'expo-router'
 import { Checkbox, Chip, PressableFeedback } from 'heroui-native'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Text, View } from 'react-native'
-
-const ALL_ATTITUDES = Object.entries(attitudeConfig) as [Attitude, { label: string; emoji: string }][]
 
 export default function PremiseFilterModal() {
     const params = useLocalSearchParams<{ statuses?: string; tags?: string; attitudes?: string }>()
     const { t } = useI18n()
+    const premiseStatusOptions = useMemo(() => getPremiseStatusOptions(t), [t])
+    const attitudeOptions = useMemo(() => getAttitudeOptions(t), [t])
 
     const { selected: selectedStatuses, toggle: toggleStatus, clear: clearStatuses } = useSetToggle<PremiseStatus>(
         parseCsvParam(params.statuses) as PremiseStatus[],
@@ -56,7 +56,7 @@ export default function PremiseFilterModal() {
                     {t('filters.status')}
                 </Text>
                 <View>
-                    {PREMISE_STATUS_OPTIONS.map((status) => {
+                    {premiseStatusOptions.map((status) => {
                         const isSelected = selectedStatuses.has(status.value)
                         return (
                             <PressableFeedback
@@ -103,7 +103,7 @@ export default function PremiseFilterModal() {
                     {t('filters.attitude')}
                 </Text>
                 <View className="flex-row flex-wrap gap-2">
-                    {ALL_ATTITUDES.map(([value, config]) => {
+                    {attitudeOptions.map(([value, config]) => {
                         const isSelected = selectedAttitudes.has(value)
                         return (
                             <Chip

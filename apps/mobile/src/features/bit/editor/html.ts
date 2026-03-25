@@ -36,20 +36,51 @@ export function countLogicalBreaks(html: string): number {
     return (blockMatches?.length ?? 0) + (breakMatches?.length ?? 0)
 }
 
-function extractBlockTagSequence(html: string): string[] {
+/**
+ * Extract a flat sequence of block-level tag names from HTML.
+ * Only tracks tags relevant to heading-expansion detection (h1-h6, p, div, li).
+ * Nested structures (e.g. blockquote > p) are flattened — container wrappers are ignored.
+ */
+export function extractBlockTagSequence(html: string): string[] {
     const matches = html.match(/<(h[1-6]|p|div|li)(?=\s|>)/gi)
     return matches?.map((match) => match.slice(1).toLowerCase()) ?? []
 }
 
+/**
+ * Detect whether the active heading style has unexpectedly spread to blocks that
+ * previously used a different tag.
+ *
+ * This guards against a react-native-enriched bug where reopening content that
+ * starts with a heading causes the editor to silently convert non-heading blocks
+ * (e.g. `<p>`) into the active heading tag.
+ *
+ * The caller (onChangeHtml) is responsible for outer guards that prevent false
+ * positives on intentional formatting: formattingIntent, recent keypress, and
+ * same-text checks ensure this only fires on spurious editor mutations.
+ *
+ * Returns true when at least one block was converted to `heading` and the total
+ * count of `heading` blocks increased.
+ */
 export function didExpandHeadingStyleAcrossBlocks(previousHtml: string, nextHtml: string, heading: string): boolean {
     const previousBlocks = extractBlockTagSequence(previousHtml)
     const nextBlocks = extractBlockTagSequence(nextHtml)
 
     if (previousBlocks.length < 2 || previousBlocks.length !== nextBlocks.length) return false
-    if (!nextBlocks.every((block) => block === heading)) return false
     if (previousBlocks.every((block) => block === heading)) return false
 
-    return previousBlocks.includes(heading) && previousBlocks.some((block) => block !== heading)
+    let previousHeadingCount = 0
+    let nextHeadingCount = 0
+    let convertedCount = 0
+
+    for (let i = 0; i < previousBlocks.length; i++) {
+        if (previousBlocks[i] === heading) previousHeadingCount++
+        if (nextBlocks[i] === heading) nextHeadingCount++
+        if (previousBlocks[i] !== heading && nextBlocks[i] === heading) {
+            convertedCount++
+        }
+    }
+
+    return convertedCount >= 1 && nextHeadingCount > previousHeadingCount
 }
 
 /**

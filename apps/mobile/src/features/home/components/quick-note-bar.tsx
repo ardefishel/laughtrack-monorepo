@@ -1,4 +1,5 @@
 import { Icon } from "@/components/ui/ion-icon";
+import { useI18n } from '@/i18n'
 import { Button, Input, Surface } from "heroui-native";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
@@ -9,6 +10,7 @@ interface QuickNoteBarProps {
 }
 
 export function QuickNoteBar({ onSubmit, isSubmitting = false }: QuickNoteBarProps) {
+  const { t } = useI18n()
   const [content, setContent] = useState("");
 
   const handleSubmit = useCallback(async () => {
@@ -29,7 +31,7 @@ export function QuickNoteBar({ onSubmit, isSubmitting = false }: QuickNoteBarPro
           onChangeText={setContent}
           onSubmitEditing={handleSubmit}
           className="flex-1 rounded-full bg-transparent border-accent border-0 text-base ml-1"
-          placeholder="What's funny?..."
+          placeholder={t('home.quickNotePlaceholder')}
           variant="secondary"
           returnKeyType="send"
         />

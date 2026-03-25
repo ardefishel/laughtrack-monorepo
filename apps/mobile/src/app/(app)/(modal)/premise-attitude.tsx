@@ -1,16 +1,17 @@
 import { Icon } from '@/components/ui/ion-icon'
-import { attitudeConfig } from '@/config/attitudes'
+import { getAttitudeOptions } from '@/config/attitudes'
+import { useI18n } from '@/i18n'
 import type { Attitude } from '@/types'
 import { Button, PressableFeedback, Separator } from 'heroui-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Text, View } from 'react-native'
 
-const ATTITUDE_OPTIONS = Object.entries(attitudeConfig) as [Attitude, { label: string; emoji: string }][]
-
 export default function PremiseAttitudeModal() {
     const router = useRouter()
+    const { t } = useI18n()
     const params = useLocalSearchParams<{ premiseId?: string; selectedAttitude?: string }>()
     const selectedAttitude = params.selectedAttitude as Attitude | undefined
+    const attitudeOptions = getAttitudeOptions(t)
 
     const handleSelect = (attitude?: Attitude) => {
         router.dismissTo({
@@ -26,10 +27,10 @@ export default function PremiseAttitudeModal() {
     return (
         <View style={{ flex: 1 }}>
             <View className='flex-row items-center justify-between px-4 pt-4 pb-3 bg-field'>
-                <Button variant='ghost' onPress={() => router.back()}>
-                    <Button.Label>Cancel</Button.Label>
+                <Button variant='ghost' onPress={() => router.back()} accessibilityLabel={t('bitMeta.cancel')}>
+                    <Button.Label>{t('bitMeta.cancel')}</Button.Label>
                 </Button>
-                <Text className='text-foreground text-lg font-semibold'>Premise Attitude</Text>
+                <Text className='text-foreground text-lg font-semibold'>{t('premise.attitudeModal.title')}</Text>
                 <View className='w-16' />
             </View>
             <Separator />
@@ -38,16 +39,16 @@ export default function PremiseAttitudeModal() {
                 <PressableFeedback
                     onPress={() => handleSelect(undefined)}
                     accessibilityRole='button'
-                    accessibilityLabel='Clear premise attitude'
+                    accessibilityLabel={t('premise.detail.clearAttitude')}
                     accessibilityState={{ selected: !selectedAttitude }}
                     className='flex-row items-center gap-3 rounded-xl px-4 py-4'
                 >
                     <Icon name='close-circle' size={18} className='text-muted' />
-                    <Text className='text-foreground flex-1 text-base'>None</Text>
+                    <Text className='text-foreground flex-1 text-base'>{t('common.none')}</Text>
                     {!selectedAttitude ? <Icon name='checkmark' size={20} className='text-accent' /> : null}
                 </PressableFeedback>
 
-                {ATTITUDE_OPTIONS.map(([value, config]) => {
+                {attitudeOptions.map(([value, config]) => {
                     const isSelected = value === selectedAttitude
 
                     return (
@@ -55,7 +56,7 @@ export default function PremiseAttitudeModal() {
                             key={value}
                             onPress={() => handleSelect(value)}
                             accessibilityRole='button'
-                            accessibilityLabel={`Set premise attitude to ${config.label}`}
+                            accessibilityLabel={t('premise.attitudeModal.accessibilityLabel', { attitude: config.label })}
                             accessibilityState={{ selected: isSelected }}
                             className='flex-row items-center gap-3 rounded-xl px-4 py-4'
                         >

@@ -2,6 +2,7 @@ import { BitPremiseStrip } from '@/features/bit/components/bit-premise-strip'
 import { EditorToolbar } from '@/features/bit/components/editor-toolbar'
 import { useBitEditor } from '@/features/bit/hooks/use-bit-editor'
 import { useBitForm } from '@/features/bit/hooks/use-bit-form'
+import { useI18n } from '@/i18n'
 import { useNavigation } from 'expo-router'
 import { Button, useThemeColor } from 'heroui-native'
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
@@ -10,6 +11,7 @@ import { EnrichedTextInput } from 'react-native-enriched'
 
 export default function BitDetailScreen() {
     const navigation = useNavigation('/(app)')
+    const { t } = useI18n()
     const [isPremiseExpanded, setIsPremiseExpanded] = useState(false)
 
     const {
@@ -43,6 +45,9 @@ export default function BitDetailScreen() {
     const foreground = useThemeColor('foreground')
     const muted = useThemeColor('muted')
     const accent = useThemeColor('accent')
+    const headerTitle = isEditing ? t('bit.detail.editTitle') : t('bit.detail.newTitle')
+    const metaLabel = t('bit.detail.meta')
+    const saveLabel = isEditing ? t('bit.detail.save') : t('bit.detail.create')
 
     useEffect(() => {
         syncSnapshot(editorInitialValue)
@@ -50,22 +55,20 @@ export default function BitDetailScreen() {
 
     useLayoutEffect(() => {
         navigation.setOptions({
-            headerTitle: isEditing ? 'Edit Bit' : 'New Bit',
+            headerTitle,
             headerRight: () => (
                 <View className='flex-row items-center gap-1'>
                     <Button size='sm' variant='ghost' onPress={openBitMeta}>
-                        <Button.Label className='text-accent font-semibold'>Meta</Button.Label>
+                        <Button.Label className='text-accent font-semibold'>{metaLabel}</Button.Label>
                     </Button>
 
                     <Button size='sm' variant='ghost' onPress={handleEditorSave} isDisabled={!canSave}>
-                        <Button.Label className='text-accent font-semibold'>
-                            {isEditing ? 'Save' : 'Create'}
-                        </Button.Label>
+                        <Button.Label className='text-accent font-semibold'>{saveLabel}</Button.Label>
                     </Button>
                 </View>
             ),
         })
-    }, [canSave, handleEditorSave, isEditing, navigation, openBitMeta])
+    }, [canSave, handleEditorSave, headerTitle, metaLabel, navigation, openBitMeta, saveLabel])
 
     return (
         <View className='flex-1 bg-background'>
@@ -119,7 +122,7 @@ export default function BitDetailScreen() {
                         color: foreground,
                         minHeight: 300,
                     }}
-                    placeholder='Start writing your bit...'
+                    placeholder={t('bit.detail.placeholder')}
                     placeholderTextColor={muted}
                     cursorColor={accent}
                     selectionColor={accent}

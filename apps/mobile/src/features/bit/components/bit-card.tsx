@@ -1,7 +1,8 @@
 import { Icon } from '@/components/ui/ion-icon'
-import { BIT_STATUS_OPTIONS } from '@/config/bit-statuses'
+import { BIT_STATUS_CONFIG, getBitStatusLabel } from '@/config/bit-statuses'
 import { bitContentToPreview } from '@/database/mappers/bitMapper'
 import { MaterialCard } from '@/features/material/components/material-card'
+import { useI18n } from '@/i18n'
 import type { Bit, BitStatus } from '@/types'
 import { timeAgo } from '@/lib/time-ago'
 import { Chip } from 'heroui-native'
@@ -9,8 +10,8 @@ import { memo } from 'react'
 import { Text, View } from 'react-native'
 
 const statusConfig = Object.fromEntries(
-    BIT_STATUS_OPTIONS.map((opt) => [opt.value, { label: opt.label.toUpperCase(), dotClass: opt.dotClass }])
-) as Record<BitStatus, { label: string; dotClass: string }>
+    (Object.entries(BIT_STATUS_CONFIG) as [BitStatus, { labelKey: string; dotClass: string }][]).map(([value, config]) => [value, { dotClass: config.dotClass }])
+) as Record<BitStatus, { dotClass: string }>
 
 interface BitCardProps {
     bit: Bit
@@ -19,6 +20,7 @@ interface BitCardProps {
 }
 
 function BitCardComponent({ bit, onPress, onDelete }: BitCardProps) {
+    const { t } = useI18n()
     const status = statusConfig[bit.status]
     const hasTags = bit.tags && bit.tags.length > 0
     const hasPremise = !!bit.premiseId
@@ -30,7 +32,7 @@ function BitCardComponent({ bit, onPress, onDelete }: BitCardProps) {
                 <View className="flex-row items-center gap-2">
                     <View className={`size-2 rounded-full ${status.dotClass}`} />
                     <Text className="text-muted text-[10px] tracking-[3px] font-semibold">
-                        {status.label}
+                        {getBitStatusLabel(t, bit.status, true)}
                     </Text>
                 </View>
                 <View className="flex-row items-center gap-2">
@@ -44,7 +46,7 @@ function BitCardComponent({ bit, onPress, onDelete }: BitCardProps) {
             </View>
 
             <Text className="text-foreground text-[17px] font-medium leading-6" numberOfLines={1}>
-                {preview.title || 'Untitled bit'}
+                {preview.title || t('bit.untitled')}
             </Text>
 
             {preview.description ? (

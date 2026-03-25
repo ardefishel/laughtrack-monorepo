@@ -7,13 +7,13 @@ export default function MaterialLayout() {
             <TabList asChild>
                 <MaterialTabList>
                     <TabTrigger asChild name="premise" href="/material/premise">
-                        <MaterialTabButton label='Premise' variant="premise" />
+                        <MaterialTabButton variant="premise" />
                     </TabTrigger>
                     <TabTrigger asChild name="bit" href="/material/bit">
-                        <MaterialTabButton label='Bit' variant="bit" />
+                        <MaterialTabButton variant="bit" />
                     </TabTrigger>
                     <TabTrigger asChild name="setlist" href="/material/setlist">
-                        <MaterialTabButton label='Setlist' variant="set" />
+                        <MaterialTabButton variant="set" />
                     </TabTrigger>
                 </MaterialTabList>
             </TabList>

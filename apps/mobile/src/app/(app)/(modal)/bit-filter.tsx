@@ -1,6 +1,6 @@
 import { FilterModalShell } from '@/features/material/components/filter-modal-shell'
 import { Icon } from '@/components/ui/ion-icon'
-import { BIT_STATUS_OPTIONS } from '@/config/bit-statuses'
+import { getBitStatusOptions } from '@/config/bit-statuses'
 import { BIT_TABLE } from '@/database/constants'
 import { Bit as BitModel } from '@/database/models/bit'
 import { parseBitTagNames } from '@/database/mappers/bitMapper'
@@ -9,6 +9,7 @@ import { parseBooleanParam, parseCsvParam, toCsvParam } from '@/features/materia
 import { useSetToggle } from '@/features/material/hooks/use-set-toggle'
 import { useAvailableTags } from '@/features/material/hooks/use-available-tags'
 import { useFilterModal } from '@/features/material/hooks/use-filter-modal'
+import { useI18n } from '@/i18n'
 import { useLocalSearchParams } from 'expo-router'
 import { Checkbox, Chip, PressableFeedback } from 'heroui-native'
 import { useCallback, useMemo, useState } from 'react'
@@ -16,6 +17,8 @@ import { Text, View } from 'react-native'
 
 export default function BitFilterModal() {
     const params = useLocalSearchParams<{ statuses?: string; tags?: string; hasPremise?: string }>()
+    const { t } = useI18n()
+    const bitStatusOptions = getBitStatusOptions(t)
 
     const { selected: selectedStatuses, toggle: toggleStatus, clear: clearStatuses } = useSetToggle<BitStatus>(
         parseCsvParam(params.statuses) as BitStatus[],
@@ -51,10 +54,10 @@ export default function BitFilterModal() {
     return (
         <FilterModalShell activeCount={activeCount} onClear={clearAll} onApply={applyFilters} applyPrefix={<Icon name='funnel' size={18} />}>
                 <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                    STATUS
+                    {t('filters.status')}
                 </Text>
                 <View>
-                    {BIT_STATUS_OPTIONS.map((status) => {
+                    {bitStatusOptions.map((status) => {
                         const isSelected = selectedStatuses.has(status.value)
                         return (
                             <PressableFeedback
@@ -76,7 +79,7 @@ export default function BitFilterModal() {
                     })}
                 </View>
                 <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                    TAGS
+                    {t('filters.tags')}
                 </Text>
                 <View className="flex-row flex-wrap gap-2">
                     {tagsToRender.map((tag) => {
@@ -95,7 +98,7 @@ export default function BitFilterModal() {
                     })}
                 </View>
                 <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                    PREMISE
+                    {t('bitMeta.premise')}
                 </Text>
                 <View className="flex-row gap-2">
                     <Chip
@@ -104,7 +107,7 @@ export default function BitFilterModal() {
                         color={hasPremise === null ? 'accent' : 'default'}
                         onPress={() => setHasPremise(null)}
                     >
-                        <Chip.Label>All</Chip.Label>
+                        <Chip.Label>{t('filters.all')}</Chip.Label>
                     </Chip>
                     <Chip
                         size="md"
@@ -113,7 +116,7 @@ export default function BitFilterModal() {
                         onPress={() => setHasPremise(true)}
                     >
                         <Icon name="bulb-outline" size={14} className={hasPremise === true ? 'text-accent-foreground' : 'text-muted'} />
-                        <Chip.Label>Has Premise</Chip.Label>
+                        <Chip.Label>{t('filters.hasPremise')}</Chip.Label>
                     </Chip>
                     <Chip
                         size="md"
@@ -121,7 +124,7 @@ export default function BitFilterModal() {
                         color={hasPremise === false ? 'accent' : 'default'}
                         onPress={() => setHasPremise(false)}
                     >
-                        <Chip.Label>No Premise</Chip.Label>
+                        <Chip.Label>{t('filters.noPremise')}</Chip.Label>
                     </Chip>
                 </View>
         </FilterModalShell>

@@ -24,6 +24,16 @@ export const idTranslations = {
         termsOfService: 'Ketentuan Layanan',
         title: 'Akun',
     },
+    attitudes: {
+        angry: 'Marah',
+        confused: 'Bingung',
+        disgusted: 'Jijik',
+        embarrassed: 'Malu',
+        envious: 'Iri',
+        lustful: 'Bernafsu',
+        proud: 'Bangga',
+        scared: 'Takut',
+    },
     auth: {
         alerts: {
             emailSentMessage: 'Periksa email Anda untuk tautan reset kata sandi.',
@@ -110,6 +120,24 @@ export const idTranslations = {
             useRecentAddress: 'Gunakan alamat yang baru saja Anda daftarkan.',
         },
     },
+    bit: {
+        detail: {
+            create: 'Buat',
+            editTitle: 'Edit Bit',
+            meta: 'Meta',
+            newTitle: 'Bit Baru',
+            placeholder: 'Mulai tulis bit Anda...',
+            save: 'Simpan',
+        },
+        statuses: {
+            dead: 'Dihapus',
+            draft: 'Draft',
+            final: 'Final',
+            rework: 'Revisi',
+            tested: 'Teruji',
+        },
+        untitled: 'Bit tanpa judul',
+    },
     bitMeta: {
         cancel: 'Batal',
         connectedToPremise: 'Terhubung ke sebuah premis',
@@ -122,17 +150,33 @@ export const idTranslations = {
         tags: 'Tag',
         title: 'Info Bit',
     },
+    common: {
+        delete: 'Hapus',
+        none: 'Tidak Ada',
+        ok: 'Oke',
+    },
     filters: {
+        all: 'Semua',
         attitude: 'Sikap',
+        hasPremise: 'Punya Premis',
+        noPremise: 'Tanpa Premis',
         noTagsYet: 'Belum ada tag.',
         status: 'Status',
         tags: 'Tag',
     },
     home: {
         noNotes: 'Belum ada catatan. Tulis ide pertama Anda di bawah.',
+        quickNotePlaceholder: 'Apa yang lucu?...',
         recentNotes: 'Catatan Terbaru',
         recentWorks: 'Karya Terbaru',
         seeAll: 'Lihat semua',
+    },
+    material: {
+        variants: {
+            bit: 'Bit',
+            premise: 'Premis',
+            setlist: 'Setlist',
+        },
     },
     navigation: {
         tabs: {
@@ -142,19 +186,69 @@ export const idTranslations = {
             material: 'Materi',
         },
     },
-    common: {
-        ok: 'Oke',
-    },
     notes: {
+        detail: {
+            content: 'Konten',
+            editTitle: 'Detail Catatan',
+            newTitle: 'Catatan Baru',
+            placeholder: 'Tulis ide catatan Anda...',
+            promoteDescription: 'Ubah catatan ini menjadi premis draft',
+            promoteTitle: 'Naikkan ke Premis',
+        },
+        label: 'Catatan',
         list: {
             new: 'Baru',
             noMatches: 'Belum ada catatan yang cocok.',
             searchPlaceholder: 'Cari catatan',
             title: 'Catatan',
         },
+        untitled: 'Catatan tanpa judul',
+    },
+    premise: {
+        attitudeModal: {
+            accessibilityLabel: 'Atur sikap premis menjadi %{attitude}',
+            title: 'Sikap Premis',
+        },
+        detail: {
+            attitude: 'Sikap',
+            attitudePlaceholder: 'Bagaimana perasaan Anda tentang ini?',
+            chooseAttitude: 'Pilih sikap premis',
+            chooseStatus: 'Pilih status premis',
+            clearAttitude: 'Hapus sikap premis',
+            editTitle: 'Edit Premis',
+            newTitle: 'Premis Baru',
+            placeholder: 'Apa pengamatan atau ide lucunya?',
+            selectStatus: 'Pilih status',
+            status: 'Status',
+            title: 'Premis',
+        },
+        statusModal: {
+            accessibilityLabel: 'Atur status premis menjadi %{status}',
+            title: 'Status Premis',
+        },
+        statuses: {
+            archived: 'Diarsipkan',
+            draft: 'Draft',
+            ready: 'Siap',
+            rework: 'Revisi',
+        },
     },
     setlist: {
+        addNote: 'Tambah Catatan',
+        addNoteDescription: 'Tambahkan arahan panggung atau pengingat',
+        addNoteDialogDescription: 'Arahan panggung atau pengingat di antara bit.',
+        addNotePlaceholder: 'mis. Berhenti sejenak di sini - biarkan mengendap.',
+        addSetItem: 'Tambah Item Set',
+        addToSetlist: 'Tambah ke Setlist',
+        addToSetlistDescription: 'Apa yang ingin Anda tambahkan?',
+        bitsPlural: 'bit',
+        description: 'Deskripsi',
+        descriptionPlaceholder: 'mis. Friday Club Night - set 20 menit',
+        items: 'Item',
         label: 'Setlist',
+        pickBitsDescription: 'Pilih satu atau lebih bit dari pustaka Anda',
+        read: 'Baca',
+        readerTitle: 'Pembaca',
         untitled: 'Setlist Tanpa Judul',
     },
     tags: {

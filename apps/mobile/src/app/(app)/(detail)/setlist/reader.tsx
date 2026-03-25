@@ -1,4 +1,5 @@
 import { buildSetlistReaderHtml } from '@/features/setlist/reader/buildSetlistReaderHtml'
+import { useI18n } from '@/i18n'
 import { uiLogger } from '@/lib/loggers'
 import type { SetlistItem } from '@/types'
 import { useKeepAwake } from 'expo-keep-awake'
@@ -11,6 +12,8 @@ import WebView from 'react-native-webview'
 export default function SetlistReaderScreen() {
     const { title, items: itemsJson } = useLocalSearchParams<{ title: string; items: string }>()
     const navigation = useNavigation('/(app)')
+    const { t } = useI18n()
+    const resolvedTitle = title || t('setlist.readerTitle')
 
     useKeepAwake()
 
@@ -21,8 +24,8 @@ export default function SetlistReaderScreen() {
     const surface = useThemeColor('field')
 
     useLayoutEffect(() => {
-        navigation.setOptions({ headerTitle: title || 'Reader' })
-    }, [navigation, title])
+        navigation.setOptions({ headerTitle: resolvedTitle })
+    }, [navigation, resolvedTitle])
 
     const html = useMemo(() => {
         let parsed: SetlistItem[] = []
@@ -46,14 +49,14 @@ export default function SetlistReaderScreen() {
             parsed = []
         }
 
-        return buildSetlistReaderHtml(parsed, title || '', {
+        return buildSetlistReaderHtml(parsed, resolvedTitle, {
             background,
             foreground,
             muted,
             accent,
             surface,
         })
-    }, [itemsJson, title, background, foreground, muted, accent, surface])
+    }, [itemsJson, resolvedTitle, background, foreground, muted, accent, surface])
 
     return (
         <View className="flex-1 bg-background">

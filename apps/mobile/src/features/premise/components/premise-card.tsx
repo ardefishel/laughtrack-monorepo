@@ -1,17 +1,19 @@
 import { Icon } from '@/components/ui/ion-icon'
-import { attitudeConfig } from '@/config/attitudes'
+import { PREMISE_STATUS_CONFIG, getPremiseStatusLabel } from '@/config/premise-statuses'
+import { attitudeConfig, getAttitudeLabel } from '@/config/attitudes'
 import { MaterialCard } from '@/features/material/components/material-card'
+import { useI18n } from '@/i18n'
 import type { Premise, PremiseStatus } from '@/types'
 import { timeAgo } from '@/lib/time-ago'
 import { Chip } from 'heroui-native'
 import { memo } from 'react'
 import { Text, View } from 'react-native'
 
-const statusConfig: Record<PremiseStatus, { label: string; dotClass: string }> = {
-    draft: { label: 'DRAFT', dotClass: 'bg-muted' },
-    rework: { label: 'REWORK', dotClass: 'bg-warning' },
-    archived: { label: 'ARCHIVED', dotClass: 'bg-default' },
-    ready: { label: 'READY', dotClass: 'bg-success' },
+const statusConfig: Record<PremiseStatus, { dotClass: string }> = {
+    draft: { dotClass: PREMISE_STATUS_CONFIG.draft.dotClass },
+    rework: { dotClass: PREMISE_STATUS_CONFIG.rework.dotClass },
+    archived: { dotClass: PREMISE_STATUS_CONFIG.archived.dotClass },
+    ready: { dotClass: PREMISE_STATUS_CONFIG.ready.dotClass },
 }
 
 interface PremiseCardProps {
@@ -21,6 +23,7 @@ interface PremiseCardProps {
 }
 
 function PremiseCardComponent({ premise, onPress, onDelete }: PremiseCardProps) {
+    const { t } = useI18n()
     const status = statusConfig[premise.status]
     const bitCount = premise.bitIds?.length ?? 0
     const hasTags = premise.tags && premise.tags.length > 0
@@ -31,7 +34,7 @@ function PremiseCardComponent({ premise, onPress, onDelete }: PremiseCardProps) 
                 <View className="flex-row items-center gap-2">
                     <View className={`size-2 rounded-full ${status.dotClass}`} />
                     <Text className="text-muted text-[10px] tracking-[3px] font-semibold">
-                        {status.label}
+                        {getPremiseStatusLabel(t, premise.status, true)}
                     </Text>
                 </View>
                 <Text className="text-muted text-[11px]">
@@ -45,7 +48,7 @@ function PremiseCardComponent({ premise, onPress, onDelete }: PremiseCardProps) 
 
             {premise.attitude && (
                 <Text className="text-muted text-sm">
-                    {`${attitudeConfig[premise.attitude].emoji} ${attitudeConfig[premise.attitude].label}`}
+                    {`${attitudeConfig[premise.attitude].emoji} ${getAttitudeLabel(t, premise.attitude)}`}
                 </Text>
             )}
 
