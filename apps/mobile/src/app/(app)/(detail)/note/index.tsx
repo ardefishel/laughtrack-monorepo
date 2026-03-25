@@ -7,8 +7,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useDatabase } from '@nozbe/watermelondb/react';
 import { useNavigation, useRouter } from 'expo-router';
 import { Button, Input } from 'heroui-native';
-import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { Keyboard, Platform, Text, View, type ViewStyle } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 export default function NoteList() {
@@ -18,6 +18,28 @@ export default function NoteList() {
     const database = useDatabase()
     const [search, setSearch] = useState('')
     const { notes, refresh } = useNoteList()
+    const [keyboardHeight, setKeyboardHeight] = useState(0)
+
+    useEffect(() => {
+        const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow'
+        const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide'
+
+        const showSub = Keyboard.addListener(showEvent, (e) => {
+            setKeyboardHeight(e.endCoordinates.height)
+        })
+        const hideSub = Keyboard.addListener(hideEvent, () => {
+            setKeyboardHeight(0)
+        })
+
+        return () => {
+            showSub.remove()
+            hideSub.remove()
+        }
+    }, [])
+
+    const fabStyle = useMemo<ViewStyle>(() => ({
+        marginBottom: keyboardHeight + 20,
+    }), [keyboardHeight])
 
     useFocusEffect(
         useCallback(() => {
@@ -69,7 +91,7 @@ export default function NoteList() {
                 </View>
             </ScrollView>
 
-            <Button className='absolute right-0 bottom-0 mr-4 mb-5' onPress={() => router.push('/note/new')} accessibilityLabel={t('notes.list.new')}>
+            <Button className='absolute right-0 bottom-0 mr-4' style={fabStyle} onPress={() => router.push('/note/new')} accessibilityLabel={t('notes.list.new')}>
                 <Icon name='add-outline' size={20} />
                 <Button.Label>{t('notes.list.new')}</Button.Label>
             </Button>
