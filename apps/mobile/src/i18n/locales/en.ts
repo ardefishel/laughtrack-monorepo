@@ -187,6 +187,17 @@ export const enTranslations = {
         },
     },
     notes: {
+        bulkImport: {
+            cancel: 'Cancel',
+            empty: 'No notes detected. Separate notes with a blank line.',
+            importButton: 'Import %{count}',
+            importButtonSingular: 'Import 1',
+            inputPlaceholder: 'Paste your notes here…\n\nSeparate each note with a blank line.',
+            noteCount: '%{count} notes detected',
+            noteCountSingular: '1 note detected',
+            pasteLabel: 'Your Notes',
+            title: 'Import Notes',
+        },
         detail: {
             content: 'Content',
             editTitle: 'Note Detail',
@@ -197,6 +208,7 @@ export const enTranslations = {
         },
         label: 'Note',
         list: {
+            importNotes: 'Import Notes',
             new: 'New',
             noMatches: 'No matching notes yet.',
             searchPlaceholder: 'Search notes',

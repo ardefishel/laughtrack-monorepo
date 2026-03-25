@@ -8,7 +8,7 @@ import { useDatabase } from '@nozbe/watermelondb/react';
 import { useNavigation, useRouter } from 'expo-router';
 import { Button, Input } from 'heroui-native';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { Keyboard, Platform, Text, View, type ViewStyle } from 'react-native';
+import { Keyboard, Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 export default function NoteList() {
@@ -61,8 +61,13 @@ export default function NoteList() {
     useLayoutEffect(() => {
         navigation.setOptions({
             headerTitle: t('notes.list.title'),
+            headerRight: () => (
+                <Pressable onPress={() => router.push('/(app)/(modal)/note-bulk-import')} accessibilityLabel={t('notes.list.importNotes')} accessibilityRole="button">
+                    <Icon name="ellipsis-vertical" size={22} className="text-accent" />
+                </Pressable>
+            ),
         })
-    }, [navigation, t])
+    }, [navigation, router, t])
 
     return (
         <View className='flex-1 bg-background'>

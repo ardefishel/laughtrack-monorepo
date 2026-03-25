@@ -187,6 +187,17 @@ export const idTranslations = {
         },
     },
     notes: {
+        bulkImport: {
+            cancel: 'Batal',
+            empty: 'Tidak ada catatan terdeteksi. Pisahkan catatan dengan baris kosong.',
+            importButton: 'Impor %{count}',
+            importButtonSingular: 'Impor 1',
+            inputPlaceholder: 'Tempel catatan Anda di sini…\n\nPisahkan setiap catatan dengan baris kosong.',
+            noteCount: '%{count} catatan terdeteksi',
+            noteCountSingular: '1 catatan terdeteksi',
+            pasteLabel: 'Catatan Anda',
+            title: 'Impor Catatan',
+        },
         detail: {
             content: 'Konten',
             editTitle: 'Detail Catatan',
@@ -197,6 +208,7 @@ export const idTranslations = {
         },
         label: 'Catatan',
         list: {
+            importNotes: 'Impor Catatan',
             new: 'Baru',
             noMatches: 'Belum ada catatan yang cocok.',
             searchPlaceholder: 'Cari catatan',

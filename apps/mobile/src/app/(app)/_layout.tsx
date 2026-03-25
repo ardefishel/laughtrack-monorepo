@@ -49,6 +49,7 @@ export default function AppStack() {
         <Stack.Screen name="(modal)/setlist-filter" options={formSheet(field, 0.6)} />
         <Stack.Screen name="(modal)/setlist-add-bit" options={formSheet(field, 0.85)} />
         <Stack.Screen name="(modal)/premise-add-bit" options={formSheet(field, 0.85)} />
+        <Stack.Screen name="(modal)/note-bulk-import" options={formSheet(field, 0.85)} />
 
 
         <Stack.Screen name="(detail)/note/[id]" options={{ headerShown: true }} />
