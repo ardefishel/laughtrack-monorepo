@@ -1,3 +1,4 @@
+import { Icon } from '@/components/ui/ion-icon';
 import { RecentNoteCard } from '@/features/home/components/recent-note-card';
 import { useNoteList } from '@/features/note/hooks/use-note-list';
 import { deleteNote } from '@/features/note/services/delete-note';
@@ -38,13 +39,8 @@ export default function NoteList() {
     useLayoutEffect(() => {
         navigation.setOptions({
             headerTitle: t('notes.list.title'),
-            headerRight: () => (
-                <Button size='sm' variant='ghost' onPress={() => router.push('/note/new')} accessibilityLabel={t('notes.list.new')}>
-                    <Button.Label className='text-accent font-semibold'>{t('notes.list.new')}</Button.Label>
-                </Button>
-            ),
         })
-    }, [navigation, router, t])
+    }, [navigation, t])
 
     return (
         <View className='flex-1 bg-background'>
@@ -57,7 +53,7 @@ export default function NoteList() {
                 returnKeyType='search'
             />
             <ScrollView className='flex-1' >
-                <View className='px-4 pt-4 gap-4'>
+                <View className='px-4 pt-4 pb-20 gap-4'>
                     {filteredNotes.length === 0 ? (
                         <Text className='text-muted text-sm'>{t('notes.list.noMatches')}</Text>
                     ) : (
@@ -72,6 +68,11 @@ export default function NoteList() {
                     )}
                 </View>
             </ScrollView>
+
+            <Button className='absolute right-0 bottom-0 mr-4 mb-5' onPress={() => router.push('/note/new')} accessibilityLabel={t('notes.list.new')}>
+                <Icon name='add-outline' size={20} />
+                <Button.Label>{t('notes.list.new')}</Button.Label>
+            </Button>
         </View>
     )
 }
