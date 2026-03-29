@@ -48,7 +48,6 @@ export default function NoteBulkImportModal() {
                     variant="ghost"
                     onPress={handleImport}
                     isDisabled={noteCount === 0 || isImporting}
-                    isLoading={isImporting}
                     accessibilityLabel={noteCount === 1 ? t('notes.bulkImport.importButtonSingular') : t('notes.bulkImport.importButton', { count: noteCount })}
                 >
                     <Button.Label className="text-accent font-semibold">
