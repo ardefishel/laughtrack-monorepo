@@ -1,9 +1,9 @@
 import type { Database } from '@nozbe/watermelondb'
 import { BIT_TABLE, PREMISE_TABLE, SETLIST_TABLE } from '@/database/constants'
-import { setlistModelToDomain } from '@/database/mappers/setlistMapper'
-import { Bit as BitModel } from '@/database/models/bit'
-import { Premise as PremiseModel } from '@/database/models/premise'
-import { Setlist as SetlistModel } from '@/database/models/setlist'
+import { setlistModelToDomain } from '@/features/setlist/data/setlist.mapper'
+import { Bit as BitModel } from '../data/bit.model'
+import { Premise as PremiseModel } from '@/features/premise/data/premise.model'
+import { Setlist as SetlistModel } from '@/features/setlist/data/setlist.model'
 import { parseStringArrayJson } from '@/database/utils/json'
 import { dbLogger } from '@/lib/loggers'
 

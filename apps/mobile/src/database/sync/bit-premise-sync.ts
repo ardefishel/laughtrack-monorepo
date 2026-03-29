@@ -1,7 +1,7 @@
 import type { Database } from '@nozbe/watermelondb'
 import { dbLogger } from '@/lib/loggers'
 import { PREMISE_TABLE } from '../constants'
-import { Premise as PremiseModel } from '../models/premise'
+import { Premise as PremiseModel } from '@/features/premise/data/premise.model'
 import { parseStringArrayJson } from '../utils/json'
 
 export async function syncBitPremiseRelation(input: {

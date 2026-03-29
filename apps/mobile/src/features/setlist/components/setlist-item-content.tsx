@@ -1,6 +1,6 @@
 import { Icon } from '@/components/ui/ion-icon'
 import { getBitStatusLabel } from '@/config/bit-statuses'
-import { bitContentToPreview } from '@/database/mappers/bitMapper'
+import { bitContentToPreview } from '@/features/bit/data/bit.mapper'
 import { useI18n } from '@/i18n'
 import type { SetlistItem } from '@/types'
 import { Text, View } from 'react-native'

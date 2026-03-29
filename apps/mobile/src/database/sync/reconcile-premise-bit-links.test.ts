@@ -1,7 +1,7 @@
 import type { Database } from '@nozbe/watermelondb'
 import { BIT_TABLE, PREMISE_TABLE } from '../constants'
-import { Bit } from '../models/bit'
-import { Premise } from '../models/premise'
+import { Bit } from '@/features/bit/data/bit.model'
+import { Premise } from '@/features/premise/data/premise.model'
 import { createTestDatabase, teardownTestDatabase } from '../test-utils/create-test-database'
 import { reconcilePremiseBitLinks } from './reconcile-premise-bit-links'
 

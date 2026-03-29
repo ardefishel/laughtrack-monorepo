@@ -1,7 +1,7 @@
 import type { Database } from '@nozbe/watermelondb'
 import { BIT_TABLE, SETLIST_TABLE } from '../constants'
-import { Bit } from '../models/bit'
-import { Setlist } from '../models/setlist'
+import { Bit } from '@/features/bit/data/bit.model'
+import { Setlist } from '@/features/setlist/data/setlist.model'
 import { createTestDatabase, teardownTestDatabase } from '../test-utils/create-test-database'
 import { reconcileSetlistBitLinks } from './reconcile-setlist-bit-links'
 

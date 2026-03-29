@@ -1,6 +1,6 @@
 import type { Database } from '@nozbe/watermelondb'
 import { NOTE_TABLE } from '@/database/constants'
-import { Note as NoteModel } from '@/database/models/note'
+import { Note as NoteModel } from '../data/note.model'
 
 export async function deleteNote(database: Database, noteId: string) {
     await database.write(async () => {

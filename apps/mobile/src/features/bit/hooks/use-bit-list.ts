@@ -1,7 +1,7 @@
 import { BIT_TABLE } from '@/database/constants'
 import { useObservedUpdatedList } from '@/database/hooks/use-observed-updated-list'
-import { bitModelToDomain } from '@/database/mappers/bitMapper'
-import { Bit as BitModel } from '@/database/models/bit'
+import { bitModelToDomain } from '../data/bit.mapper'
+import { Bit as BitModel } from '../data/bit.model'
 import type { Bit } from '@/types'
 
 export function useBitList() {

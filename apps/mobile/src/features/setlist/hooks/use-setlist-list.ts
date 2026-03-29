@@ -1,7 +1,7 @@
 import { SETLIST_TABLE } from '@/database/constants'
 import { useObservedUpdatedList } from '@/database/hooks/use-observed-updated-list'
-import { setlistModelToDomain } from '@/database/mappers/setlistMapper'
-import { Setlist as SetlistModel } from '@/database/models/setlist'
+import { setlistModelToDomain } from '../data/setlist.mapper'
+import { Setlist as SetlistModel } from '../data/setlist.model'
 import type { Setlist } from '@/types'
 
 export function useSetlistList() {

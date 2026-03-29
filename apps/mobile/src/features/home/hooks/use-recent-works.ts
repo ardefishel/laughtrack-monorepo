@@ -6,9 +6,9 @@ import { isValidDate } from '@/database/utils/dates'
 import { stripHtmlToLines } from '@/database/utils/html'
 import type { RecentWork } from '@/domain/recent-work'
 import { dbLogger } from '@/lib/loggers'
-import { Bit } from '@/database/models/bit'
-import { Premise } from '@/database/models/premise'
-import { Setlist } from '@/database/models/setlist'
+import { Bit } from '@/features/bit/data/bit.model'
+import { Premise } from '@/features/premise/data/premise.model'
+import { Setlist } from '@/features/setlist/data/setlist.model'
 
 const MAX_RECENT_WORKS = 5
 

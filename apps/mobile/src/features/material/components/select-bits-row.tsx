@@ -1,5 +1,5 @@
 import { Icon } from '@/components/ui/ion-icon'
-import { bitContentToPreview } from '@/database/mappers/bitMapper'
+import { bitContentToPreview } from '@/features/bit/data/bit.mapper'
 import type { Bit } from '@/types'
 import { memo } from 'react'
 import { Pressable, Text, View } from 'react-native'

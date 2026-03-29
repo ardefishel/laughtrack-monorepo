@@ -1,0 +1,5 @@
+export { Premise } from './premise.model'
+export { PREMISE_COLUMNS, PREMISE_TABLE_SCHEMA } from './premise.schema'
+export type { PremiseRecord } from './premise.schema'
+export { premiseModelToDomain, premiseRecordToDomain, domainToPremiseRecord, parsePremiseTagNames } from './premise.mapper'
+export * as premiseRepository from './premise.repository'

@@ -1,7 +1,7 @@
 import type { Database } from '@nozbe/watermelondb'
 import { BIT_TABLE, PREMISE_TABLE } from '@/database/constants'
-import { Bit as BitModel } from '@/database/models/bit'
-import { Premise as PremiseModel } from '@/database/models/premise'
+import { Bit as BitModel } from '@/features/bit/data/bit.model'
+import { Premise as PremiseModel } from '../data/premise.model'
 
 export async function deletePremise(database: Database, premiseId: string) {
     await database.write(async () => {

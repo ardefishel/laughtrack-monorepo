@@ -1,5 +1,5 @@
-import { noteModelToDomain } from '@/database/mappers/noteMapper'
-import { Note as NoteModel } from '@/database/models/note'
+import { noteModelToDomain } from '../data/note.mapper'
+import { Note as NoteModel } from '../data/note.model'
 import { timeAgo } from '@/lib/time-ago'
 import { createNote, promoteNoteToPremise } from '@/features/note/services/note-actions'
 import { NOTE_TABLE } from '@/database/constants'

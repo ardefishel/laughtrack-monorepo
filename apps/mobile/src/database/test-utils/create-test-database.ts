@@ -1,9 +1,9 @@
 import { Database } from '@nozbe/watermelondb'
 import LokiJSAdapter from '@nozbe/watermelondb/adapters/lokijs'
-import { Bit } from '../models/bit'
-import { Note } from '../models/note'
-import { Premise } from '../models/premise'
-import { Setlist } from '../models/setlist'
+import { Bit } from '@/features/bit/data/bit.model'
+import { Note } from '@/features/note/data/note.model'
+import { Premise } from '@/features/premise/data/premise.model'
+import { Setlist } from '@/features/setlist/data/setlist.model'
 import { migrations } from '../migrations'
 import { schema } from '../schema'
 

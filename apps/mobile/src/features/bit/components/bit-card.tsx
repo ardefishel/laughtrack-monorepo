@@ -1,6 +1,6 @@
 import { Icon } from '@/components/ui/ion-icon'
 import { BIT_STATUS_CONFIG, getBitStatusLabel } from '@/config/bit-statuses'
-import { bitContentToPreview } from '@/database/mappers/bitMapper'
+import { bitContentToPreview } from '../data/bit.mapper'
 import { MaterialCard } from '@/features/material/components/material-card'
 import { useI18n } from '@/i18n'
 import type { Bit, BitStatus } from '@/types'

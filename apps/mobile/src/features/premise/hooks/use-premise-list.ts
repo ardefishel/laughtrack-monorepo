@@ -1,7 +1,7 @@
 import { PREMISE_TABLE } from '@/database/constants'
 import { useObservedUpdatedList } from '@/database/hooks/use-observed-updated-list'
-import { premiseModelToDomain } from '@/database/mappers/premiseMapper'
-import { Premise as PremiseModel } from '@/database/models/premise'
+import { premiseModelToDomain } from '../data/premise.mapper'
+import { Premise as PremiseModel } from '../data/premise.model'
 import type { Premise } from '@/types'
 
 export function usePremiseList() {

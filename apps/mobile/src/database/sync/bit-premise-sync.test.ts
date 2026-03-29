@@ -1,6 +1,6 @@
 import type { Database } from '@nozbe/watermelondb'
 import { PREMISE_TABLE } from '../constants'
-import { Premise } from '../models/premise'
+import { Premise } from '@/features/premise/data/premise.model'
 import { createTestDatabase, teardownTestDatabase } from '../test-utils/create-test-database'
 import { syncBitPremiseRelation } from './bit-premise-sync'
 

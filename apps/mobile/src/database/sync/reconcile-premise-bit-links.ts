@@ -1,7 +1,7 @@
 import type { Database } from '@nozbe/watermelondb'
 import { BIT_TABLE, PREMISE_TABLE } from '../constants'
-import { Bit as BitModel } from '../models/bit'
-import { Premise as PremiseModel } from '../models/premise'
+import { Bit as BitModel } from '@/features/bit/data/bit.model'
+import { Premise as PremiseModel } from '@/features/premise/data/premise.model'
 import { normalizedIds, areEqualIds } from '../utils/ids'
 import { parseStringArrayJson } from '../utils/json'
 

@@ -1,7 +1,7 @@
 import type { Database } from '@nozbe/watermelondb'
 import { NOTE_TABLE, PREMISE_TABLE } from '@/database/constants'
-import { Note as NoteModel } from '@/database/models/note'
-import { Premise as PremiseModel } from '@/database/models/premise'
+import { Note as NoteModel } from '../data/note.model'
+import { Premise as PremiseModel } from '@/features/premise/data/premise.model'
 
 export async function createNote(database: Database, content: string): Promise<string> {
     let noteId = ''

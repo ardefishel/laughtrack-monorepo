@@ -1,6 +1,6 @@
 import { SETLIST_TABLE } from '@/database/constants'
-import { setlistModelToDomain } from '@/database/mappers/setlistMapper'
-import { Setlist as SetlistModel } from '@/database/models/setlist'
+import { setlistModelToDomain } from '../data/setlist.mapper'
+import { Setlist as SetlistModel } from '../data/setlist.model'
 import { fetchBitsByIds } from '@/database/utils/fetch-bits'
 import { dbLogger } from '@/lib/loggers'
 import type { SetlistItem } from '@/types'
