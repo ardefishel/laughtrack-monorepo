@@ -2,10 +2,10 @@ import { buildSetlistReaderHtml } from '@/features/setlist/reader/buildSetlistRe
 import { useI18n } from '@/i18n'
 import { uiLogger } from '@/lib/loggers'
 import type { SetlistItem } from '@/types'
-import { useKeepAwake } from 'expo-keep-awake'
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake'
 import { useLocalSearchParams, useNavigation } from 'expo-router'
 import { useThemeColor } from 'heroui-native'
-import { useLayoutEffect, useMemo } from 'react'
+import { useEffect, useLayoutEffect, useMemo } from 'react'
 import { View } from 'react-native'
 import WebView from 'react-native-webview'
 
@@ -15,7 +15,14 @@ export default function SetlistReaderScreen() {
     const { t } = useI18n()
     const resolvedTitle = title || t('setlist.readerTitle')
 
-    useKeepAwake()
+    useEffect(() => {
+        void activateKeepAwakeAsync().catch(() => {
+            uiLogger.debug('expo-keep-awake: native module not available, skipping')
+        })
+        return () => {
+            deactivateKeepAwake()
+        }
+    }, [])
 
     const background = useThemeColor('background')
     const foreground = useThemeColor('foreground')
