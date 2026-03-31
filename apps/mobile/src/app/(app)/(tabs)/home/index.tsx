@@ -47,10 +47,11 @@ export default function Index() {
     setIsCreatingQuickNote(true)
     try {
       await createNote(database, trimmed)
+      await refreshRecentNotes()
     } finally {
       setIsCreatingQuickNote(false)
     }
-  }, [database])
+  }, [database, refreshRecentNotes])
 
   const openNote = useCallback((id: string) => {
     router.push(`/note/${id}`)

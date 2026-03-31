@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, type ReactNode } from 'react'
 import { authClient } from '@/lib/auth-client'
+import { database } from '@/database'
 import { translate } from '@/i18n'
 import { authLogger } from '@/lib/loggers'
 import { useGoogleSignIn } from '@/features/auth/hooks/use-google-sign-in'
@@ -77,6 +78,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const signOut = useCallback(async () => {
         authLogger.info('Sign-out attempt')
         try {
+            await database.write(async () => {
+                await database.unsafeResetDatabase()
+            })
+            authLogger.info('Local database cleared on sign-out')
             await authClient.signOut()
             authLogger.info('Sign-out successful')
         } catch (error) {
