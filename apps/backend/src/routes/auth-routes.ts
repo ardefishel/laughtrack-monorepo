@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { auth } from '../auth'
 import { db } from '../db'
 import { accounts, users } from '../db/schema'
-import { defaultLogger } from '@laughtrack/logger/node'
+import { defaultLogger } from '../lib/logger'
 import { authMiddleware } from '../middlewares/auth'
 import { errorResponse } from '../lib/response'
 import {
@@ -81,10 +81,10 @@ authRoutes.post('/verification/resend', async (c) => {
           body: { email },
         })
         .catch((error) => {
-          defaultLogger.error('Failed to trigger verification resend', {
+          defaultLogger.error({
             email,
             errorName: error instanceof Error ? error.name : 'UnknownError',
-          })
+          }, 'Failed to trigger verification resend')
         })
     }
   }

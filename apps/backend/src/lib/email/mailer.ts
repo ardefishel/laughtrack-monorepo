@@ -1,4 +1,4 @@
-import { defaultLogger } from '@laughtrack/logger/node'
+import { defaultLogger } from '../logger'
 import nodemailer from 'nodemailer'
 import { getEmailConfig, type EmailConfig } from '../../config/email'
 
@@ -109,12 +109,12 @@ export function createMailer(
           messageId: result.messageId ?? 'smtp-sent',
         }
       } catch (error) {
-        defaultLogger.error('Failed to send verification email', {
+        defaultLogger.error({
           transport: config.transport,
           host: config.smtp.host,
           port: config.smtp.port,
           errorName: error instanceof Error ? error.name : 'UnknownError',
-        })
+        }, 'Failed to send verification email')
 
         throw new Error('Failed to send verification email')
       }
