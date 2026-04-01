@@ -47,7 +47,7 @@ detect.get("/runtime", (c) => {
     return c.json(obj);
 });
 
-detect.get("db", async (c) => {
+detect.get("/db", async (c) => {
     const result = await db.execute('select 1')
     return c.json({ result })
 })
