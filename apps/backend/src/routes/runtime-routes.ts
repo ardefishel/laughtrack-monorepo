@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { db } from "../db";
 
 export const detect = new Hono();
 
@@ -45,3 +46,8 @@ detect.get("/runtime", (c) => {
 
     return c.json(obj);
 });
+
+detect.get("/db", async (c) => {
+    const result = await db.execute('select 1')
+    return c.json({ result })
+})
