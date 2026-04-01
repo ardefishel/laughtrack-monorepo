@@ -48,6 +48,6 @@ detect.get("/runtime", (c) => {
 });
 
 detect.get("/db", async (c) => {
-    const result = await db.query.users.findFirst()
+    const result = (await db.execute('select "trying to connect to db" as result_query')).rows[0]
     return c.json({ result })
 })
