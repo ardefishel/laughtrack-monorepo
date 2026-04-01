@@ -1,55 +1,68 @@
-import { Hono } from 'hono'
-import { cors } from 'hono/cors'
-import { errorMiddleware } from './middlewares/error'
-import { loggerMiddleware } from './middlewares/logger'
-import { webApp } from './routes/admin'
-import { authRoutes } from './routes/auth-routes'
-import { mobileApp } from './routes/mobile'
-import { detect } from './routes/runtime-routes'
-import { corsOrigins } from './lib/cors-origins'
+// import { Hono } from 'hono'
+// import { cors } from 'hono/cors'
+// import { corsOrigins } from './lib/cors-origins'
+// import { errorMiddleware } from './middlewares/error'
+// import { loggerMiddleware } from './middlewares/logger'
+// import { webApp } from './routes/admin'
+// import { authRoutes } from './routes/auth-routes'
+// import { mobileApp } from './routes/mobile'
+// import { detect } from './routes/runtime-routes'
 
-const app = new Hono()
+// console.log("Booting Hono handler", process.versions.bun);
 
-// Security headers middleware
-app.use('*', async (c, next) => {
-  await next()
-  c.header('X-Content-Type-Options', 'nosniff')
-  c.header('X-Frame-Options', 'DENY')
-  c.header('X-XSS-Protection', '1; mode=block')
-})
+// const app = new Hono()
 
-// Global middleware
-app.use('*', loggerMiddleware())
-app.use('*', errorMiddleware())
+// // Security headers middleware
+// app.use('*', async (c, next) => {
+//   await next()
+//   c.header('X-Content-Type-Options', 'nosniff')
+//   c.header('X-Frame-Options', 'DENY')
+//   c.header('X-XSS-Protection', '1; mode=block')
+// })
 
-// Auth routes need CORS for both mobile and web clients (shared)
-app.use(
-  '/api/auth/*',
-  cors({
-    origin: [...corsOrigins, 'laughtrack://'],
-    allowHeaders: ['Content-Type', 'Authorization'],
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    credentials: true,
-  })
-)
+// // Global middleware
+// app.use('*', loggerMiddleware())
+// app.use('*', errorMiddleware())
 
-// Health check
-app.get('/health', (c) => {
-  return c.json({ status: 'ok', timestamp: new Date().toISOString() })
-})
+// // Auth routes need CORS for both mobile and web clients (shared)
+// app.use(
+//   '/api/auth/*',
+//   cors({
+//     origin: [...corsOrigins, 'laughtrack://'],
+//     allowHeaders: ['Content-Type', 'Authorization'],
+//     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//     credentials: true,
+//   })
+// )
 
-// Mount route modules
-app.route('/api/auth', authRoutes)
-app.route('/api/mobile', mobileApp)
-app.route('/api/web', webApp)
+// // Health check
+// app.get('/health', (c) => {
+//   return c.json({ status: 'ok', timestamp: new Date().toISOString() })
+// })
 
-if (process.env.NODE_ENV === 'development') {
-  app.route('/api/detect', detect)
-}
+// // Mount route modules
+// app.route('/api/auth', authRoutes)
+// app.route('/api/mobile', mobileApp)
+// app.route('/api/web', webApp)
 
-// 404 handler
-app.notFound((c) => {
-  return c.json({ error: 'Not found' }, 404)
-})
+// if (process.env.NODE_ENV === 'development') {
+//   app.route('/api/detect', detect)
+// }
 
-export default app
+// // 404 handler
+// app.notFound((c) => {
+//   return c.json({ error: 'Not found' }, 404)
+// })
+
+// export default app
+
+// apps/api/src/minimal.ts
+import { Hono } from "hono";
+
+console.log("Minimal Hono handler starting");
+
+const app = new Hono();
+
+app.get("/", (c) => c.text("OK"));
+
+export default app;
