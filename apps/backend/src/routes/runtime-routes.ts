@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { db } from "../db";
 
@@ -48,6 +49,6 @@ detect.get("/runtime", (c) => {
 });
 
 detect.get("/db", async (c) => {
-    const result = (await db.execute('select "trying to connect to db" as result_query')).rows[0]
+    const result = db.execute(sql`select 'trying to connect' as result_query`)
     return c.json({ result })
 })
