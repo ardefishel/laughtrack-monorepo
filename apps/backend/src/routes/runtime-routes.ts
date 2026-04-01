@@ -49,6 +49,6 @@ detect.get("/runtime", (c) => {
 });
 
 detect.get("/db", async (c) => {
-    const result = db.execute(sql`select 'trying to connect' as result_query`)
+    const result = await db.execute(sql`select 'trying to connect' as result_query`)
     return c.json({ result })
 })
