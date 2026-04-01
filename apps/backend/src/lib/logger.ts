@@ -1,37 +1,84 @@
-import pino from 'pino'
+type LogLevel = 'debug' | 'info' | 'warn' | 'error'
+
+const LOG_LEVELS: Record<LogLevel, number> = { debug: 0, info: 1, warn: 2, error: 3 }
 
 const isProduction = process.env.NODE_ENV === 'production'
+const minLevel: LogLevel = isProduction ? 'warn' : 'debug'
 
-function createPinoOptions(): pino.LoggerOptions {
-  const options: pino.LoggerOptions = {
-    level: isProduction ? 'warn' : 'debug',
-  }
+function shouldLog(level: LogLevel): boolean {
+  return LOG_LEVELS[level] >= LOG_LEVELS[minLevel]
+}
 
-  // Only use pino-pretty transport in development.
-  // In production (Vercel), pino outputs JSON to stdout — no worker threads, no file writes.
-  if (!isProduction) {
-    try {
-      require.resolve('pino-pretty')
-      options.transport = {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-          translateTime: 'SYS:yyyy-mm-dd HH:MM:ss.l',
-          ignore: 'pid,hostname',
-        },
+function formatArgs(args: unknown[]): string {
+  return args
+    .map((arg) => {
+      if (typeof arg === 'string') return arg
+      if (arg instanceof Error) return `${arg.name}: ${arg.message}${arg.stack ? `\n${arg.stack}` : ''}`
+      if (typeof arg === 'object' && arg !== null) {
+        try {
+          return JSON.stringify(arg)
+        } catch {
+          return String(arg)
+        }
       }
-    } catch {
-      // pino-pretty not installed (e.g. production install), fall through to JSON output
+      return String(arg)
+    })
+    .join(' ')
+}
+
+interface Logger {
+  debug: (...args: unknown[]) => void
+  info: (...args: unknown[]) => void
+  warn: (...args: unknown[]) => void
+  error: (...args: unknown[]) => void
+}
+
+function createNamespacedLogger(namespace: string): Logger {
+  const tag = namespace.toUpperCase()
+
+  function log(level: LogLevel, ...args: unknown[]): void {
+    if (!shouldLog(level)) return
+
+    const timestamp = new Date().toISOString()
+    const message = formatArgs(args)
+
+    if (isProduction) {
+      // Structured JSON for Vercel log drain
+      const entry = { timestamp, level, namespace: tag, msg: message }
+      const output = JSON.stringify(entry)
+      if (level === 'error') {
+        console.error(output)
+      } else if (level === 'warn') {
+        console.warn(output)
+      } else {
+        console.log(output)
+      }
+    } else {
+      // Pretty output for local dev
+      const output = `[${timestamp}] [${tag}] ${message}`
+      switch (level) {
+        case 'debug':
+          console.debug(output)
+          break
+        case 'info':
+          console.info(output)
+          break
+        case 'warn':
+          console.warn(output)
+          break
+        case 'error':
+          console.error(output)
+          break
+      }
     }
   }
 
-  return options
-}
-
-const baseLogger = pino(createPinoOptions())
-
-function createNamespacedLogger(namespace: string) {
-  return baseLogger.child({ namespace })
+  return {
+    debug: (...args: unknown[]) => log('debug', ...args),
+    info: (...args: unknown[]) => log('info', ...args),
+    warn: (...args: unknown[]) => log('warn', ...args),
+    error: (...args: unknown[]) => log('error', ...args),
+  }
 }
 
 export const defaultLogger = createNamespacedLogger('default')
@@ -41,4 +88,6 @@ export const hooksLogger = createNamespacedLogger('hooks')
 export const uiLogger = createNamespacedLogger('ui')
 export const networkLogger = createNamespacedLogger('network')
 
-export { createNamespacedLogger, baseLogger }
+export { createNamespacedLogger }
+export type { Logger, LogLevel }
+
