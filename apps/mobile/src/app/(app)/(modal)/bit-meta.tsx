@@ -1,8 +1,10 @@
 import { Icon } from '@/components/ui/ion-icon'
-import { BIT_STATUS_OPTIONS } from '@/config/bit-statuses'
+import { getBitStatusOptions } from '@/config/bit-statuses'
 import { PREMISE_TABLE } from '@/database/constants'
-import { premiseModelToDomain } from '@/database/mappers/premiseMapper'
-import { Premise as PremiseModel } from '@/database/models/premise'
+import { premiseModelToDomain } from '@/features/premise/data/premise.mapper'
+import { Premise as PremiseModel } from '@/features/premise/data/premise.model'
+import { dbLogger } from '@/lib/loggers'
+import { useI18n } from '@/i18n'
 import type { BitStatus } from '@/types'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -13,6 +15,8 @@ import { Text, View } from 'react-native'
 export default function BitMetaModal() {
     const router = useRouter()
     const database = useDatabase()
+    const { t } = useI18n()
+    const bitStatusOptions = useMemo(() => getBitStatusOptions(t), [t])
     const params = useLocalSearchParams<{ tags?: string; status?: string; premiseId?: string; bitId?: string }>()
 
     const initialStatus = (params.status as BitStatus | undefined) ?? 'draft'
@@ -31,23 +35,28 @@ export default function BitMetaModal() {
             .get<PremiseModel>(PREMISE_TABLE)
             .query()
             .observe()
-            .subscribe((value: PremiseModel[]) => {
-                setPremises(
-                    value
-                        .map(premiseModelToDomain)
-                        .map((premise) => ({ id: premise.id, content: premise.content })),
-                )
+            .subscribe({
+                next: (value: PremiseModel[]) => {
+                    setPremises(
+                        value
+                            .map(premiseModelToDomain)
+                            .map((premise) => ({ id: premise.id, content: premise.content })),
+                    )
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('BitMeta failed to observe premise options', error)
+                },
             })
 
         return () => subscription.unsubscribe()
     }, [database])
 
     const selectedPremiseLabel = useMemo(() => {
-        if (!selectedPremiseId) return 'None'
+        if (!selectedPremiseId) return t('bitMeta.none')
         const selected = premises.find((premise) => premise.id === selectedPremiseId)
-        if (!selected) return 'Linked premise'
+        if (!selected) return t('bitMeta.premise')
         return selected.content
-    }, [premises, selectedPremiseId])
+    }, [premises, selectedPremiseId, t])
 
     const handleAddTag = () => {
         const trimmed = tagInput.trim()
@@ -77,12 +86,12 @@ export default function BitMetaModal() {
     return (
         <View style={{ flex: 1 }}>
             <View className="flex-row items-center justify-between px-4 pt-4 pb-3 bg-field">
-                <Button variant="ghost" onPress={() => router.back()}>
-                    <Button.Label>Cancel</Button.Label>
+                <Button variant="ghost" onPress={() => router.back()} accessibilityLabel={t('bitMeta.cancel')}>
+                    <Button.Label>{t('bitMeta.cancel')}</Button.Label>
                 </Button>
-                <Text className="text-foreground text-lg font-semibold">Bit Info</Text>
-                <Button variant="ghost" onPress={handleDone}>
-                    <Button.Label>Done</Button.Label>
+                <Text className="text-foreground text-lg font-semibold">{t('bitMeta.title')}</Text>
+                <Button variant="ghost" onPress={handleDone} accessibilityLabel={t('bitMeta.done')}>
+                    <Button.Label>{t('bitMeta.done')}</Button.Label>
                 </Button>
             </View>
             <Separator />
@@ -90,13 +99,13 @@ export default function BitMetaModal() {
             <View className="flex-1 px-6 pt-6 gap-4">
                 <View className="gap-2">
                     <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                        STATUS
+                        {t('bitMeta.status')}
                     </Text>
                     <Select
                         presentation="bottom-sheet"
                         value={{
                             value: status,
-                            label: BIT_STATUS_OPTIONS.find((s) => s.value === status)?.label ?? '',
+                            label: bitStatusOptions.find((s) => s.value === status)?.label ?? '',
                         }}
                         onValueChange={(option) => {
                             const selected = Array.isArray(option) ? option[0] : option
@@ -105,16 +114,16 @@ export default function BitMetaModal() {
                     >
                         <Select.Trigger>
                             <View className="flex-row items-center gap-2 flex-1">
-                                <View className={`size-2.5 rounded-full ${BIT_STATUS_OPTIONS.find((s) => s.value === status)?.dotClass}`} />
-                                <Select.Value placeholder="Select status" />
+                                <View className={`size-2.5 rounded-full ${bitStatusOptions.find((s) => s.value === status)?.dotClass}`} />
+                                <Select.Value placeholder={t('bitMeta.selectStatus')} />
                             </View>
                             <Select.TriggerIndicator />
                         </Select.Trigger>
                         <Select.Portal>
                             <Select.Overlay />
                             <Select.Content presentation="bottom-sheet">
-                                <Select.ListLabel>Status</Select.ListLabel>
-                                {BIT_STATUS_OPTIONS.map((option) => (
+                                <Select.ListLabel>{t('bitMeta.status')}</Select.ListLabel>
+                                {bitStatusOptions.map((option) => (
                                     <Select.Item key={option.value} value={option.value} label={option.label}>
                                         {({ isSelected }) => (
                                             <View className="flex-row items-center gap-3 flex-1">
@@ -132,7 +141,7 @@ export default function BitMetaModal() {
 
                 <View className="gap-2">
                     <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                        PREMISE
+                        {t('bitMeta.premise')}
                     </Text>
                     <Select
                         presentation="bottom-sheet"
@@ -143,17 +152,17 @@ export default function BitMetaModal() {
                         }}
                     >
                         <Select.Trigger>
-                            <Select.Value placeholder="Connect to premise (optional)" />
+                            <Select.Value placeholder={t('bitMeta.connectToPremiseOptional')} />
                             <Select.TriggerIndicator />
                         </Select.Trigger>
                         <Select.Portal>
                             <Select.Overlay />
                             <Select.Content presentation="bottom-sheet">
-                                <Select.ListLabel>Premise</Select.ListLabel>
-                                <Select.Item value="" label="None">
+                                <Select.ListLabel>{t('bitMeta.premise')}</Select.ListLabel>
+                                <Select.Item value="" label={t('bitMeta.none')}>
                                     {({ isSelected }) => (
                                         <View className="flex-row items-center gap-3 flex-1">
-                                            <Text className="text-foreground flex-1">None</Text>
+                                            <Text className="text-foreground flex-1">{t('bitMeta.none')}</Text>
                                             {isSelected && <Select.ItemIndicator />}
                                         </View>
                                     )}
@@ -178,7 +187,7 @@ export default function BitMetaModal() {
                 {/* Tags */}
                 <View className="gap-3">
                     <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                        TAGS
+                        {t('bitMeta.tags')}
                     </Text>
                     {tags.length > 0 && (
                         <View className="flex-row flex-wrap gap-2">
@@ -195,7 +204,7 @@ export default function BitMetaModal() {
                             className="flex-1"
                             value={tagInput}
                             onChangeText={setTagInput}
-                            placeholder="Add a tag..."
+                            placeholder={t('tags.addPlaceholder')}
                             returnKeyType="done"
                             onSubmitEditing={handleAddTag}
                         />
@@ -204,6 +213,7 @@ export default function BitMetaModal() {
                             variant="secondary"
                             onPress={handleAddTag}
                             isDisabled={!tagInput.trim()}
+                            accessibilityLabel={t('tags.addButton')}
                         >
                             <Icon name="add" size={20} className="text-accent" />
                         </Button>
@@ -213,7 +223,7 @@ export default function BitMetaModal() {
                 {selectedPremiseId ? (
                     <View className="flex-row items-center gap-2 pt-2 border-t border-separator">
                         <Icon name="bulb-outline" size={14} className="text-accent" />
-                        <Text className="text-muted text-sm">Connected to a premise</Text>
+                        <Text className="text-muted text-sm">{t('bitMeta.connectedToPremise')}</Text>
                     </View>
                 ) : null}
             </View>

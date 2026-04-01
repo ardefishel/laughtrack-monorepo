@@ -1,5 +1,5 @@
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
-export type LogNamespace = 'db' | 'hooks' | 'ui' | 'network' | 'audio' | 'default';
+export type LogNamespace = 'db' | 'hooks' | 'ui' | 'network' | 'audio' | 'server' | 'default';
 
 export interface Logger {
   debug: (...args: unknown[]) => void;

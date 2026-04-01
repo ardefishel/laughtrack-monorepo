@@ -1,52 +1,61 @@
-import { BIT_TABLE, SETLIST_TABLE } from '@/database/constants'
-import { bitModelToDomain } from '@/database/mappers/bitMapper'
-import { setlistModelToDomain } from '@/database/mappers/setlistMapper'
-import { Bit as BitModel } from '@/database/models/bit'
-import { Setlist as SetlistModel } from '@/database/models/setlist'
-import { parseStringArrayJson } from '@/database/utils/json'
+import { SETLIST_TABLE } from '@/database/constants'
+import { setlistModelToDomain } from '../data/setlist.mapper'
+import { Setlist as SetlistModel } from '../data/setlist.model'
+import { fetchBitsByIds } from '@/database/utils/fetch-bits'
 import { dbLogger } from '@/lib/loggers'
 import type { SetlistItem } from '@/types'
+import { extractBitIds, saveSetlist } from '@/features/setlist/services/setlist-actions'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useReducer, useState } from 'react'
 
-function toPersistedSetlistItems(items: SetlistItem[]): SetlistItem[] {
-    return items
-        .map((item): SetlistItem | null => {
-            if (item.type === 'bit') {
-                return {
-                    id: item.id,
-                    type: 'bit',
-                    bitId: item.bitId,
-                }
-            }
+type SetlistFormState = {
+    setlistState: { setlist: SetlistModel; _key: number } | null
+    description: string
+    tags: string[]
+    items: SetlistItem[]
+    isSaving: boolean
+}
 
-            if (!item.setlistNote) return null
+const INITIAL_STATE: SetlistFormState = {
+    setlistState: null,
+    description: '',
+    tags: [],
+    items: [],
+    isSaving: false,
+}
 
+type SetlistFormAction =
+    | { type: 'RESET' }
+    | { type: 'LOAD'; setlist: SetlistModel; key: number; description: string; tags: string[] }
+    | { type: 'SET_DESCRIPTION'; description: string }
+    | { type: 'SET_TAGS'; tags: string[] }
+    | { type: 'SET_ITEMS'; items: SetlistItem[] }
+    | { type: 'UPDATE_ITEMS'; updater: (prev: SetlistItem[]) => SetlistItem[] }
+    | { type: 'SET_SAVING'; isSaving: boolean }
+
+function setlistFormReducer(state: SetlistFormState, action: SetlistFormAction): SetlistFormState {
+    switch (action.type) {
+        case 'RESET':
+            return INITIAL_STATE
+        case 'LOAD':
             return {
-                id: item.id,
-                type: 'set-note',
-                setlistNote: {
-                    id: item.setlistNote.id,
-                    content: item.setlistNote.content,
-                    createdAt: item.setlistNote.createdAt,
-                    updatedAt: item.setlistNote.updatedAt,
-                },
+                ...state,
+                setlistState: { setlist: action.setlist, _key: action.key },
+                description: action.description,
+                tags: action.tags,
             }
-        })
-        .filter((item): item is SetlistItem => item !== null)
-}
-
-function uniqueSortedIds(values: string[]): string[] {
-    return [...new Set(values)].sort((left, right) => left.localeCompare(right))
-}
-
-function extractBitIds(items: SetlistItem[]): string[] {
-    return uniqueSortedIds(
-        items
-            .filter((item): item is Extract<SetlistItem, { type: 'bit' }> => item.type === 'bit')
-            .map((item) => item.bitId),
-    )
+        case 'SET_DESCRIPTION':
+            return { ...state, description: action.description }
+        case 'SET_TAGS':
+            return { ...state, tags: action.tags }
+        case 'SET_ITEMS':
+            return { ...state, items: action.items }
+        case 'UPDATE_ITEMS':
+            return { ...state, items: action.updater(state.items) }
+        case 'SET_SAVING':
+            return { ...state, isSaving: action.isSaving }
+    }
 }
 
 export function useSetlistForm() {
@@ -59,13 +68,19 @@ export function useSetlistForm() {
     }>()
     const isEditing = id !== 'new'
 
-    const [setlistState, setSetlistState] = useState<{ setlist: SetlistModel; _key: number } | null>(null)
+    const [state, dispatch] = useReducer(setlistFormReducer, INITIAL_STATE)
+    const { setlistState, description, tags, items, isSaving } = state
     const setlistModel = setlistState?.setlist ?? null
 
-    const [description, setDescription] = useState('')
-    const [tags, setTags] = useState<string[]>([])
-    const [items, setItems] = useState<SetlistItem[]>([])
-    const [isSaving, setIsSaving] = useState(false)
+    const setDescription = useCallback((value: string) => dispatch({ type: 'SET_DESCRIPTION', description: value }), [])
+    const setTags = useCallback((value: string[]) => dispatch({ type: 'SET_TAGS', tags: value }), [])
+    const setItems = useCallback((value: SetlistItem[] | ((prev: SetlistItem[]) => SetlistItem[])) => {
+        if (typeof value === 'function') {
+            dispatch({ type: 'UPDATE_ITEMS', updater: value })
+        } else {
+            dispatch({ type: 'SET_ITEMS', items: value })
+        }
+    }, [])
 
     const [typeDialogOpen, setTypeDialogOpen] = useState(false)
     const [noteDialogOpen, setNoteDialogOpen] = useState(false)
@@ -76,22 +91,7 @@ export function useSetlistForm() {
             const bitIds = extractBitIds(sourceItems)
             if (bitIds.length === 0) return sourceItems
 
-            const foundModels = await Promise.all(
-                bitIds.map(async (bitId) => {
-                    try {
-                        return await database.get<BitModel>(BIT_TABLE).find(bitId)
-                    } catch (error) {
-                        dbLogger.debug('SetlistDetail hydrateItemsWithBits missing bit', { bitId, error })
-                        return null
-                    }
-                }),
-            )
-
-            const bitById = new Map(
-                foundModels
-                    .filter((model): model is BitModel => model !== null)
-                    .map((model) => [model.id, bitModelToDomain(model)]),
-            )
+            const bitById = await fetchBitsByIds(database, bitIds)
 
             return sourceItems.map((item) => {
                 if (item.type !== 'bit') return item
@@ -106,27 +106,32 @@ export function useSetlistForm() {
 
     useEffect(() => {
         if (!isEditing || !id) {
-            setSetlistState(null)
-            setDescription('')
-            setTags([])
-            setItems([])
+            dispatch({ type: 'RESET' })
             return
         }
 
         const subscription = database
             .get<SetlistModel>(SETLIST_TABLE)
             .findAndObserve(id)
-            .subscribe((result: SetlistModel) => {
-                const domainSetlist = setlistModelToDomain(result)
-                setSetlistState({
-                    setlist: result,
-                    _key: result.updatedAt.getTime(),
-                })
-                setDescription(domainSetlist.description)
-                setTags((domainSetlist.tags ?? []).map((tag) => tag.name))
-                void hydrateItemsWithBits(domainSetlist.items).then((nextItems) => {
-                    setItems(nextItems)
-                })
+            .subscribe({
+                next: (result: SetlistModel) => {
+                    const domainSetlist = setlistModelToDomain(result)
+                    dispatch({
+                        type: 'LOAD',
+                        setlist: result,
+                        key: result.updatedAt.getTime(),
+                        description: domainSetlist.description,
+                        tags: (domainSetlist.tags ?? []).map((tag) => tag.name),
+                    })
+                    void hydrateItemsWithBits(domainSetlist.items).then((nextItems) => {
+                        setItems(nextItems)
+                    }).catch((error: unknown) => {
+                        dbLogger.error('SetlistDetail failed to hydrate setlist items', { error, setlistId: id })
+                    })
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('SetlistDetail subscription failed', { error, setlistId: id })
+                },
             })
 
         return () => subscription.unsubscribe()
@@ -146,144 +151,61 @@ export function useSetlistForm() {
         }
 
         void (async () => {
-            const foundModels = await Promise.all(
-                incomingIds.map(async (bitId) => {
-                    try {
-                        return await database.get<BitModel>(BIT_TABLE).find(bitId)
-                    } catch (error) {
-                        dbLogger.debug('SetlistDetail add bits ignored missing model', { bitId, error })
-                        return null
-                    }
-                }),
-            )
+            try {
+                const bitById = await fetchBitsByIds(database, incomingIds)
 
-            const foundBits = foundModels
-                .filter((model): model is BitModel => model !== null)
-                .map(bitModelToDomain)
+                const newItems: SetlistItem[] = [...bitById.entries()].map(([bitId, bit], idx) => ({
+                    id: `new-bit-${Date.now()}-${idx}`,
+                    type: 'bit' as const,
+                    bitId,
+                    bit,
+                }))
 
-            const newItems: SetlistItem[] = foundBits.map((bit, idx) => ({
-                id: `new-bit-${Date.now()}-${idx}`,
-                type: 'bit',
-                bitId: bit.id,
-                bit,
-            }))
-
-            setItems((prev) => {
-                const existingBitIds = new Set(
-                    prev
-                        .filter((item): item is Extract<SetlistItem, { type: 'bit' }> => item.type === 'bit')
-                        .map((item) => item.bitId),
-                )
-                const dedupedIncomingItems = newItems.filter(
-                    (item): item is Extract<SetlistItem, { type: 'bit' }> =>
-                        item.type === 'bit' && !existingBitIds.has(item.bitId),
-                )
-                return [...prev, ...dedupedIncomingItems]
-            })
-
-            router.setParams({ addedBits: '', addedBitsNonce: '' })
+                setItems((prev) => {
+                    const existingBitIds = new Set(
+                        prev
+                            .filter((item): item is Extract<SetlistItem, { type: 'bit' }> => item.type === 'bit')
+                            .map((item) => item.bitId),
+                    )
+                    const dedupedIncomingItems = newItems.filter((item) => !existingBitIds.has(item.bitId))
+                    return [...prev, ...dedupedIncomingItems]
+                })
+            } catch (error) {
+                dbLogger.error('SetlistDetail failed to append selected bits', {
+                    error,
+                    setlistId: id,
+                    incomingCount: incomingIds.length,
+                })
+            } finally {
+                router.setParams({ addedBits: '', addedBitsNonce: '' })
+            }
         })()
-    }, [addedBits, addedBitsNonce, database])
+    }, [addedBits, addedBitsNonce, database, id, router])
 
     const handleSave = useCallback(async () => {
         const trimmedDescription = description.trim()
         if (!trimmedDescription || isSaving) return
 
-        const persistedItems = toPersistedSetlistItems(items)
-        const nextBitIds = extractBitIds(persistedItems)
-
-        setIsSaving(true)
+        dispatch({ type: 'SET_SAVING', isSaving: true })
         try {
-            await database.write(async () => {
-                const now = new Date()
-
-                if (isEditing && id && setlistModel) {
-                    const previousBitIds = extractBitIds(setlistModelToDomain(setlistModel).items)
-
-                    await setlistModel.update((setlist) => {
-                        setlist.description = trimmedDescription
-                        setlist.tagsJson = JSON.stringify(tags)
-                        setlist.itemsJson = JSON.stringify(persistedItems)
-                        setlist.updatedAt = now
-                    })
-
-                    const nextBitIdSet = new Set(nextBitIds)
-                    const previousBitIdSet = new Set(previousBitIds)
-                    const touchedBitIds = uniqueSortedIds([...nextBitIds, ...previousBitIds])
-
-                    for (const bitId of touchedBitIds) {
-                        try {
-                            const bit = await database.get<BitModel>(BIT_TABLE).find(bitId)
-                            const currentSetlistIds = uniqueSortedIds(parseStringArrayJson(bit.setlistIdsJson))
-                            const shouldContain = nextBitIdSet.has(bitId)
-                            const previouslyContained = previousBitIdSet.has(bitId)
-
-                            if (!shouldContain && !previouslyContained) continue
-
-                            const nextSetlistIds = shouldContain
-                                ? uniqueSortedIds([...currentSetlistIds, id])
-                                : currentSetlistIds.filter((setlistId) => setlistId !== id)
-
-                            if (
-                                nextSetlistIds.length === currentSetlistIds.length &&
-                                nextSetlistIds.every((value, index) => value === currentSetlistIds[index])
-                            ) {
-                                continue
-                            }
-
-                            await bit.update((model) => {
-                                model.setlistIdsJson = JSON.stringify(nextSetlistIds)
-                                model.updatedAt = now
-                            })
-                        } catch (error) {
-                            dbLogger.debug('SetlistDetail save ignored failed bit update', { bitId, error })
-                            continue
-                        }
-                    }
-
-                    return
-                }
-
-                const createdSetlist = await database.get<SetlistModel>(SETLIST_TABLE).create((setlist: SetlistModel) => {
-                    setlist.description = trimmedDescription
-                    setlist.tagsJson = JSON.stringify(tags)
-                    setlist.itemsJson = JSON.stringify(persistedItems)
-                    setlist.createdAt = now
-                    setlist.updatedAt = now
-                })
-
-                for (const bitId of nextBitIds) {
-                    try {
-                        const bit = await database.get<BitModel>(BIT_TABLE).find(bitId)
-                        const currentSetlistIds = uniqueSortedIds(parseStringArrayJson(bit.setlistIdsJson))
-                        const nextSetlistIds = uniqueSortedIds([...currentSetlistIds, createdSetlist.id])
-
-                        if (
-                            nextSetlistIds.length === currentSetlistIds.length &&
-                            nextSetlistIds.every((value, index) => value === currentSetlistIds[index])
-                        ) {
-                            continue
-                        }
-
-                        await bit.update((model) => {
-                            model.setlistIdsJson = JSON.stringify(nextSetlistIds)
-                            model.updatedAt = now
-                        })
-                    } catch (error) {
-                        dbLogger.debug('SetlistDetail save ignored failed created setlist relation update', {
-                            bitId,
-                            error,
-                        })
-                        continue
-                    }
-                }
+            await saveSetlist(database, {
+                description: trimmedDescription,
+                tags,
+                items,
+                existingSetlist: isEditing && id && setlistModel ? { id, model: setlistModel } : null,
             })
 
             router.back()
+        } catch (error) {
+            dbLogger.error('SetlistDetail failed to save setlist', {
+                error,
+                setlistId: isEditing ? id : 'new',
+                isEditing,
+            })
         } finally {
-            setIsSaving(false)
+            dispatch({ type: 'SET_SAVING', isSaving: false })
         }
-    }, [database, description, id, isEditing, isSaving, items, setlistModel, tags])
+    }, [database, description, id, isEditing, isSaving, items, router, setlistModel, tags])
 
     const handleChooseBit = useCallback(() => {
         setTypeDialogOpen(false)
@@ -298,7 +220,7 @@ export function useSetlistForm() {
                 selected,
             },
         })
-    }, [items])
+    }, [items, router])
 
     const handleChooseNote = useCallback(() => {
         setTypeDialogOpen(false)

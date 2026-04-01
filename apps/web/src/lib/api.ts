@@ -19,11 +19,11 @@ async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
 
 import type {
   ApiResponse,
-  JokeDTO as Joke,
-  JokeDetailDTO as JokeDetail,
-  JokeSetDTO as JokeSet,
-  JokeSetDetailDTO as JokeSetDetail,
+  BitDTO as Bit,
+  NoteDTO as Note,
   PaginatedApiResponse,
+  PremiseDTO as Premise,
+  SetlistDTO as Setlist,
   StatsDTO as Stats,
   UpdateUserPayload,
   UserDTO as User,
@@ -31,14 +31,14 @@ import type {
 } from '@laughtrack/shared-types'
 
 export type {
-  ApiResponse, Joke,
-  JokeDetail,
-  JokeSet,
-  JokeSetDetail, PaginatedApiResponse, Stats, UpdateUserPayload, User,
-  UserDetail
+  ApiResponse, PaginatedApiResponse, Stats, UpdateUserPayload, User,
+  UserDetail,
+  Note,
+  Bit,
+  Premise,
+  Setlist
 }
 
-// API functions
 export async function getStats(): Promise<Stats> {
   const res = await fetchApi<ApiResponse<Stats>>('/api/web/stats')
   return res.data
@@ -61,34 +61,26 @@ export async function updateUser(id: string, data: UpdateUserPayload) {
   })
 }
 
-export async function getJokes(
-  page = 1,
-  limit = 20,
-  userId?: string,
-  search?: string,
-  status?: string,
-  sort?: string,
-  order?: 'asc' | 'desc'
-) {
+export async function getNotes(page = 1, limit = 20, userId?: string) {
   const params = new URLSearchParams({ page: String(page), limit: String(limit) })
   if (userId) params.set('userId', userId)
-  if (search) params.set('search', search)
-  if (status) params.set('status', status)
-  if (sort) params.set('sort', sort)
-  if (order) params.set('order', order)
-  return fetchApi<PaginatedApiResponse<Joke>>(`/api/web/jokes?${params}`)
+  return fetchApi<PaginatedApiResponse<Note>>(`/api/web/notes?${params}`)
 }
 
-export async function getJoke(id: string) {
-  return fetchApi<ApiResponse<JokeDetail>>(`/api/web/jokes/${id}`)
-}
-
-export async function getSets(page = 1, limit = 20, userId?: string) {
+export async function getBits(page = 1, limit = 20, userId?: string) {
   const params = new URLSearchParams({ page: String(page), limit: String(limit) })
   if (userId) params.set('userId', userId)
-  return fetchApi<PaginatedApiResponse<JokeSet>>(`/api/web/sets?${params}`)
+  return fetchApi<PaginatedApiResponse<Bit>>(`/api/web/bits?${params}`)
 }
 
-export async function getSet(id: string) {
-  return fetchApi<ApiResponse<JokeSetDetail>>(`/api/web/sets/${id}`)
+export async function getPremises(page = 1, limit = 20, userId?: string) {
+  const params = new URLSearchParams({ page: String(page), limit: String(limit) })
+  if (userId) params.set('userId', userId)
+  return fetchApi<PaginatedApiResponse<Premise>>(`/api/web/premises?${params}`)
+}
+
+export async function getSetlists(page = 1, limit = 20, userId?: string) {
+  const params = new URLSearchParams({ page: String(page), limit: String(limit) })
+  if (userId) params.set('userId', userId)
+  return fetchApi<PaginatedApiResponse<Setlist>>(`/api/web/setlists?${params}`)
 }

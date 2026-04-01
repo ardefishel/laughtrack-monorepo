@@ -5,57 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1770621869089,
-      "tag": "0000_smooth_gateway",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1770626569406,
-      "tag": "0001_oval_captain_britain",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1770643779120,
-      "tag": "0002_polite_snowbird",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1770685847854,
-      "tag": "0003_whole_phantom_reporter",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1770867365547,
-      "tag": "0004_lame_baron_strucker",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1771472447508,
-      "tag": "0005_worried_lake",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1772329007555,
-      "tag": "0006_secret_queen_noir",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1772675862910,
-      "tag": "0007_closed_rage",
+      "when": 1774964524566,
+      "tag": "0000_short_colleen_wing",
       "breakpoints": true
     }
   ]

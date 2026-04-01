@@ -70,23 +70,47 @@ Notes:
 | `DATABASE_URL` | PostgreSQL connection string |
 | `AUTH_SECRET` | better-auth secret key |
 | `AUTH_URL` | Auth base URL (e.g., `http://localhost:3000`) |
+| `PUBLIC_WEB_URL` | Public verify-email page host (should point to the public web/marketing app, not `AUTH_URL`) |
 | `GOOGLE_CLIENT_ID` | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
-| `R2_ACCOUNT_ID` | Cloudflare R2 account ID |
-| `R2_ACCESS_KEY_ID` | R2 access key |
-| `R2_SECRET_ACCESS_KEY` | R2 secret key |
-| `R2_BUCKET_NAME` | R2 bucket name for audio storage |
+| `EMAIL_TRANSPORT` | Email delivery mode: `smtp` for real delivery, `stub` for tests/local stub mode |
+| `SMTP_HOST` | SMTP host (Google SMTP default: `smtp.gmail.com`) |
+| `SMTP_PORT` | SMTP port (Google SMTP default: `587`) |
+| `SMTP_SECURE` | SMTP TLS mode (`false` for STARTTLS on 587, `true` for implicit TLS on 465) |
+| `SMTP_USER` | SMTP username / mailbox address |
+| `SMTP_PASS` | SMTP password or app password |
+| `SMTP_FROM_NAME` | Sender name for transactional email |
+| `SMTP_FROM_EMAIL` | Sender email address for transactional email |
 | `PORT` | Server port (default: 3000) |
 | `NODE_ENV` | `development` or `production` |
+
+Notes:
+- Keep `PUBLIC_WEB_URL` pointed at the public verification page host, not the backend auth host.
+- `EMAIL_TRANSPORT` should stay `stub` for local/test environments until real SMTP credentials are configured.
+- For Google SMTP, prefer an app password and `SMTP_SECURE=false` on port `587` unless your provider requires implicit TLS.
+- Email verification in v1 applies to email/password auth only; Google OAuth stays unchanged.
+- Verification links land on the public `/verify-email` page first, then offer an app handoff.
 
 ### Mobile Env Vars
 
 | Variable | Description |
 |----------|-------------|
 | `EXPO_PUBLIC_API_URL` | Backend API URL (e.g., `http://localhost:3000`) |
+| `EXPO_PUBLIC_MARKETING_URL` | Public marketing site URL used for legal/support links |
 | `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` | Google OAuth web client ID |
 | `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` | Google OAuth iOS client ID |
 | `EXPO_PUBLIC_VERBOSE_LOGS` | Enable verbose logging (`true`/`false`) |
+
+### Marketing/Web Env Vars
+
+| Variable | Description |
+|----------|-------------|
+| `VITE_OPEN_APP_URL` | Deep link used by the public verify-email page `Open app` CTA |
+| `VITE_PUBLIC_WEB_URL` | Public marketing/web host used when web login points users toward verification help |
+
+Verification flow notes:
+- Backend and tests use the same verification-link shape: `PUBLIC_WEB_URL/verify-email?token=...`.
+- Backend tests use `EMAIL_TRANSPORT=stub`; they never attempt a live Gmail SMTP connection.
 
 ## Scripts
 

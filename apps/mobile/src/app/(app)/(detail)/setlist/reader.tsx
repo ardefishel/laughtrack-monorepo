@@ -1,18 +1,28 @@
 import { buildSetlistReaderHtml } from '@/features/setlist/reader/buildSetlistReaderHtml'
+import { useI18n } from '@/i18n'
 import { uiLogger } from '@/lib/loggers'
 import type { SetlistItem } from '@/types'
-import { useKeepAwake } from 'expo-keep-awake'
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake'
 import { useLocalSearchParams, useNavigation } from 'expo-router'
 import { useThemeColor } from 'heroui-native'
-import { useLayoutEffect, useMemo } from 'react'
+import { useEffect, useLayoutEffect, useMemo } from 'react'
 import { View } from 'react-native'
 import WebView from 'react-native-webview'
 
 export default function SetlistReaderScreen() {
     const { title, items: itemsJson } = useLocalSearchParams<{ title: string; items: string }>()
     const navigation = useNavigation('/(app)')
+    const { t } = useI18n()
+    const resolvedTitle = title || t('setlist.readerTitle')
 
-    useKeepAwake()
+    useEffect(() => {
+        void activateKeepAwakeAsync().catch(() => {
+            uiLogger.debug('expo-keep-awake: native module not available, skipping')
+        })
+        return () => {
+            deactivateKeepAwake()
+        }
+    }, [])
 
     const background = useThemeColor('background')
     const foreground = useThemeColor('foreground')
@@ -21,13 +31,23 @@ export default function SetlistReaderScreen() {
     const surface = useThemeColor('field')
 
     useLayoutEffect(() => {
-        navigation.setOptions({ headerTitle: title || 'Reader' })
-    }, [navigation, title])
+        navigation.setOptions({ headerTitle: resolvedTitle })
+    }, [navigation, resolvedTitle])
 
     const html = useMemo(() => {
         let parsed: SetlistItem[] = []
         try {
-            parsed = JSON.parse(itemsJson || '[]') as SetlistItem[]
+            const raw = JSON.parse(itemsJson || '[]')
+            if (!Array.isArray(raw)) {
+                uiLogger.debug('SetlistReader items payload is not an array')
+                parsed = []
+            } else {
+                parsed = raw.filter(
+                    (item: unknown): item is SetlistItem =>
+                        typeof item === 'object' && item !== null && 'type' in item &&
+                        (item.type === 'bit' || item.type === 'set-note')
+                )
+            }
         } catch (error) {
             uiLogger.debug('SetlistReader failed to parse items payload', {
                 itemsJson,
@@ -36,14 +56,14 @@ export default function SetlistReaderScreen() {
             parsed = []
         }
 
-        return buildSetlistReaderHtml(parsed, title || '', {
+        return buildSetlistReaderHtml(parsed, resolvedTitle, {
             background,
             foreground,
             muted,
             accent,
             surface,
         })
-    }, [itemsJson, title, background, foreground, muted, accent, surface])
+    }, [itemsJson, resolvedTitle, background, foreground, muted, accent, surface])
 
     return (
         <View className="flex-1 bg-background">
@@ -52,7 +72,7 @@ export default function SetlistReaderScreen() {
                 style={{ backgroundColor: 'transparent' }}
                 scrollEnabled
                 showsVerticalScrollIndicator={false}
-                originWhitelist={['*']}
+                originWhitelist={['about:blank']}
             />
         </View>
     )

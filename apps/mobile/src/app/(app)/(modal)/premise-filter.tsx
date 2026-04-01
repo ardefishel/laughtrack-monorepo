@@ -1,97 +1,51 @@
 import { FilterModalShell } from '@/features/material/components/filter-modal-shell'
 import { Icon } from '@/components/ui/ion-icon'
-import { attitudeConfig } from '@/config/attitudes'
-import { PREMISE_STATUS_OPTIONS } from '@/config/premise-statuses'
+import { getAttitudeOptions } from '@/config/attitudes'
+import { getPremiseStatusOptions } from '@/config/premise-statuses'
 import { PREMISE_TABLE } from '@/database/constants'
-import { parsePremiseTagNames } from '@/database/mappers/premiseMapper'
-import { Premise as PremiseModel } from '@/database/models/premise'
+import { parsePremiseTagNames } from '@/features/premise/data/premise.mapper'
+import { Premise as PremiseModel } from '@/features/premise/data/premise.model'
 import type { Attitude, PremiseStatus } from '@/types'
 import { parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
-import { useDatabase } from '@nozbe/watermelondb/react'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useSetToggle } from '@/features/material/hooks/use-set-toggle'
+import { useAvailableTags } from '@/features/material/hooks/use-available-tags'
+import { useFilterModal } from '@/features/material/hooks/use-filter-modal'
+import { useI18n } from '@/i18n'
+import { useLocalSearchParams } from 'expo-router'
 import { Checkbox, Chip, PressableFeedback } from 'heroui-native'
-import { useEffect, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Text, View } from 'react-native'
 
-const ALL_ATTITUDES = Object.entries(attitudeConfig) as [Attitude, { label: string; emoji: string }][]
-
 export default function PremiseFilterModal() {
-    const router = useRouter()
-    const database = useDatabase()
     const params = useLocalSearchParams<{ statuses?: string; tags?: string; attitudes?: string }>()
-    const [allTags, setAllTags] = useState<string[]>([])
+    const { t } = useI18n()
+    const premiseStatusOptions = useMemo(() => getPremiseStatusOptions(t), [t])
+    const attitudeOptions = useMemo(() => getAttitudeOptions(t), [t])
 
-    useEffect(() => {
-        const subscription = database
-            .get<PremiseModel>(PREMISE_TABLE)
-            .query()
-            .observe()
-            .subscribe((premises: PremiseModel[]) => {
-                const uniqueTags = new Set<string>()
-                for (const premise of premises) {
-                    const tagNames = parsePremiseTagNames(premise.tagsJson)
-                    for (const tagName of tagNames) {
-                        uniqueTags.add(tagName)
-                    }
-                }
-                setAllTags([...uniqueTags].sort((a, b) => a.localeCompare(b)))
-            })
+    const { selected: selectedStatuses, toggle: toggleStatus, clear: clearStatuses } = useSetToggle<PremiseStatus>(
+        parseCsvParam(params.statuses) as PremiseStatus[],
+    )
+    const { selected: selectedTags, toggle: toggleTag, clear: clearTags } = useSetToggle<string>(
+        parseCsvParam(params.tags),
+    )
+    const { selected: selectedAttitudes, toggle: toggleAttitude, clear: clearAttitudes } = useSetToggle<Attitude>(
+        parseCsvParam(params.attitudes) as Attitude[],
+    )
 
-        return () => subscription.unsubscribe()
-    }, [database])
+    const allTags = useAvailableTags<PremiseModel>(PREMISE_TABLE, parsePremiseTagNames)
 
-    const [selectedStatuses, setSelectedStatuses] = useState<Set<PremiseStatus>>(() => {
-        return new Set(parseCsvParam(params.statuses) as PremiseStatus[])
-    })
+    const buildParams = useCallback(() => ({
+        statuses: toCsvParam(selectedStatuses),
+        tags: toCsvParam(selectedTags),
+        attitudes: toCsvParam(selectedAttitudes),
+    }), [selectedStatuses, selectedTags, selectedAttitudes])
 
-    const [selectedTags, setSelectedTags] = useState<Set<string>>(() => {
-        return new Set(parseCsvParam(params.tags))
-    })
-
-    const [selectedAttitudes, setSelectedAttitudes] = useState<Set<Attitude>>(() => {
-        return new Set(parseCsvParam(params.attitudes) as Attitude[])
-    })
-
-    const toggleStatus = (status: PremiseStatus) => {
-        setSelectedStatuses((prev) => {
-            const next = new Set(prev)
-            if (next.has(status)) next.delete(status)
-            else next.add(status)
-            return next
-        })
-    }
-
-    const toggleTag = (tag: string) => {
-        setSelectedTags((prev) => {
-            const next = new Set(prev)
-            if (next.has(tag)) next.delete(tag)
-            else next.add(tag)
-            return next
-        })
-    }
-
-    const toggleAttitude = (attitude: Attitude) => {
-        setSelectedAttitudes((prev) => {
-            const next = new Set(prev)
-            if (next.has(attitude)) next.delete(attitude)
-            else next.add(attitude)
-            return next
-        })
-    }
+    const { applyFilters } = useFilterModal(buildParams)
 
     const clearAll = () => {
-        setSelectedStatuses(new Set())
-        setSelectedTags(new Set())
-        setSelectedAttitudes(new Set())
-    }
-
-    const applyFilters = () => {
-        router.back()
-        router.setParams({
-            statuses: toCsvParam(selectedStatuses),
-            tags: toCsvParam(selectedTags),
-            attitudes: toCsvParam(selectedAttitudes),
-        })
+        clearStatuses()
+        clearTags()
+        clearAttitudes()
     }
 
     const activeCount = selectedStatuses.size + selectedTags.size + selectedAttitudes.size
@@ -99,10 +53,10 @@ export default function PremiseFilterModal() {
     return (
         <FilterModalShell activeCount={activeCount} onClear={clearAll} onApply={applyFilters} applyPrefix={<Icon name='funnel' size={18} />}>
                 <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                    STATUS
+                    {t('filters.status')}
                 </Text>
                 <View>
-                    {PREMISE_STATUS_OPTIONS.map((status) => {
+                    {premiseStatusOptions.map((status) => {
                         const isSelected = selectedStatuses.has(status.value)
                         return (
                             <PressableFeedback
@@ -124,7 +78,7 @@ export default function PremiseFilterModal() {
                     })}
                 </View>
                 <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                    TAGS
+                    {t('filters.tags')}
                 </Text>
                 <View className="flex-row flex-wrap gap-2">
                     {allTags.map((tag) => {
@@ -143,13 +97,13 @@ export default function PremiseFilterModal() {
                     })}
                 </View>
                 {allTags.length === 0 && (
-                    <Text className="text-muted text-sm">No tags yet.</Text>
+                    <Text className="text-muted text-sm">{t('filters.noTagsYet')}</Text>
                 )}
                 <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                    ATTITUDE
+                    {t('filters.attitude')}
                 </Text>
                 <View className="flex-row flex-wrap gap-2">
-                    {ALL_ATTITUDES.map(([value, config]) => {
+                    {attitudeOptions.map(([value, config]) => {
                         const isSelected = selectedAttitudes.has(value)
                         return (
                             <Chip

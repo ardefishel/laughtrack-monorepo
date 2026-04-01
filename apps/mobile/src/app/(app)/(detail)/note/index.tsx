@@ -1,57 +1,50 @@
+import { Icon } from '@/components/ui/ion-icon';
 import { RecentNoteCard } from '@/features/home/components/recent-note-card';
-import { NOTE_TABLE } from '@/database/constants';
-import { Note as NoteModel } from '@/database/models/note';
-import type { Note } from '@/types';
+import { useNoteList } from '@/features/note/hooks/use-note-list';
+import { deleteNote } from '@/features/note/services/delete-note';
+import { useI18n } from '@/i18n';
 import { useFocusEffect } from '@react-navigation/native';
-import { Q } from '@nozbe/watermelondb';
 import { useDatabase } from '@nozbe/watermelondb/react';
 import { useNavigation, useRouter } from 'expo-router';
 import { Button, Input } from 'heroui-native';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Keyboard, Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-
-function toNote(model: NoteModel): Note {
-    return {
-        id: model.id,
-        content: model.content,
-        createdAt: model.createdAt,
-        updatedAt: model.updatedAt,
-    }
-}
 
 export default function NoteList() {
     const router = useRouter()
     const navigation = useNavigation('/(app)')
+    const { t } = useI18n()
     const database = useDatabase()
     const [search, setSearch] = useState('')
-    const [notes, setNotes] = useState<Note[]>([])
-
-    const loadNotes = useCallback(async () => {
-        const value = await database
-            .get<NoteModel>(NOTE_TABLE)
-            .query(Q.sortBy('updated_at', Q.desc))
-            .fetch()
-
-        setNotes(value.map(toNote))
-    }, [database])
+    const { notes, refresh } = useNoteList()
+    const [keyboardHeight, setKeyboardHeight] = useState(0)
 
     useEffect(() => {
-        const subscription = database
-            .get<NoteModel>(NOTE_TABLE)
-            .query(Q.sortBy('updated_at', Q.desc))
-            .observe()
-            .subscribe((value: NoteModel[]) => {
-                setNotes(value.map(toNote))
-            })
+        const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow'
+        const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide'
 
-        return () => subscription.unsubscribe()
-    }, [database])
+        const showSub = Keyboard.addListener(showEvent, (e) => {
+            setKeyboardHeight(e.endCoordinates.height)
+        })
+        const hideSub = Keyboard.addListener(hideEvent, () => {
+            setKeyboardHeight(0)
+        })
+
+        return () => {
+            showSub.remove()
+            hideSub.remove()
+        }
+    }, [])
+
+    const fabStyle = useMemo<ViewStyle>(() => ({
+        marginBottom: keyboardHeight + 20,
+    }), [keyboardHeight])
 
     useFocusEffect(
         useCallback(() => {
-            void loadNotes()
-        }, [loadNotes]),
+            void refresh()
+        }, [refresh]),
     )
 
     const filteredNotes = useMemo(() => {
@@ -61,23 +54,20 @@ export default function NoteList() {
         return notes.filter((note) => note.content.toLowerCase().includes(term))
     }, [notes, search])
 
-    const handleDeleteNote = async (id: string) => {
-        await database.write(async () => {
-            const note = await database.get<NoteModel>(NOTE_TABLE).find(id)
-            await note.destroyPermanently()
-        })
-    }
+    const handleDeleteNote = useCallback(async (id: string) => {
+        await deleteNote(database, id)
+    }, [database])
 
     useLayoutEffect(() => {
         navigation.setOptions({
-            headerTitle: 'Notes',
+            headerTitle: t('notes.list.title'),
             headerRight: () => (
-                <Button size='sm' variant='ghost' onPress={() => router.push('/note/new')}>
-                    <Button.Label className='text-accent font-semibold'>New</Button.Label>
-                </Button>
+                <Pressable onPress={() => router.push('/(app)/(modal)/note-bulk-import')} accessibilityLabel={t('notes.list.importNotes')} accessibilityRole="button">
+                    <Icon name="ellipsis-vertical" size={22} className="text-accent" />
+                </Pressable>
             ),
         })
-    }, [navigation, router])
+    }, [navigation, router, t])
 
     return (
         <View className='flex-1 bg-background'>
@@ -85,13 +75,14 @@ export default function NoteList() {
                 className='mx-4 mt-4'
                 value={search}
                 onChangeText={setSearch}
-                placeholder='Search notes'
+                placeholder={t('notes.list.searchPlaceholder')}
+                accessibilityLabel={t('notes.list.searchPlaceholder')}
                 returnKeyType='search'
             />
             <ScrollView className='flex-1' >
-                <View className='px-4 pt-4 gap-4'>
+                <View className='px-4 pt-4 pb-20 gap-4'>
                     {filteredNotes.length === 0 ? (
-                        <Text className='text-muted text-sm'>No matching notes yet.</Text>
+                        <Text className='text-muted text-sm'>{t('notes.list.noMatches')}</Text>
                     ) : (
                         filteredNotes.map((note) => (
                             <RecentNoteCard
@@ -104,6 +95,11 @@ export default function NoteList() {
                     )}
                 </View>
             </ScrollView>
+
+            <Button className='absolute right-0 bottom-0 mr-4' style={fabStyle} onPress={() => router.push('/note/new')} accessibilityLabel={t('notes.list.new')}>
+                <Icon name='add-outline' size={20} />
+                <Button.Label>{t('notes.list.new')}</Button.Label>
+            </Button>
         </View>
     )
 }

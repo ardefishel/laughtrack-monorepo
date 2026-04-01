@@ -19,6 +19,7 @@ bun install
 bun run mobile        # Start Expo dev server
 bun run mobile:ios    # Run on iOS simulator
 bun run mobile:android # Run on Android emulator
+bun run mobile:test   # Run mobile unit tests
 ```
 
 ## Project Structure

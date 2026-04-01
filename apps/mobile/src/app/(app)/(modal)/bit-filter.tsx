@@ -1,89 +1,52 @@
 import { FilterModalShell } from '@/features/material/components/filter-modal-shell'
 import { Icon } from '@/components/ui/ion-icon'
-import { BIT_STATUS_OPTIONS } from '@/config/bit-statuses'
+import { getBitStatusOptions } from '@/config/bit-statuses'
 import { BIT_TABLE } from '@/database/constants'
-import { Bit as BitModel } from '@/database/models/bit'
-import { parseBitTagNames } from '@/database/mappers/bitMapper'
+import { Bit as BitModel } from '@/features/bit/data/bit.model'
+import { parseBitTagNames } from '@/features/bit/data/bit.mapper'
 import type { BitStatus } from '@/types'
-import { useDatabase } from '@nozbe/watermelondb/react'
 import { parseBooleanParam, parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useSetToggle } from '@/features/material/hooks/use-set-toggle'
+import { useAvailableTags } from '@/features/material/hooks/use-available-tags'
+import { useFilterModal } from '@/features/material/hooks/use-filter-modal'
+import { useI18n } from '@/i18n'
+import { useLocalSearchParams } from 'expo-router'
 import { Checkbox, Chip, PressableFeedback } from 'heroui-native'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Text, View } from 'react-native'
 
 export default function BitFilterModal() {
-    const router = useRouter()
-    const database = useDatabase()
     const params = useLocalSearchParams<{ statuses?: string; tags?: string; hasPremise?: string }>()
-    const [availableTags, setAvailableTags] = useState<string[]>([])
+    const { t } = useI18n()
+    const bitStatusOptions = getBitStatusOptions(t)
 
-    const [selectedStatuses, setSelectedStatuses] = useState<Set<BitStatus>>(() => {
-        return new Set(parseCsvParam(params.statuses) as BitStatus[])
-    })
-
-    const [selectedTags, setSelectedTags] = useState<Set<string>>(() => {
-        return new Set(parseCsvParam(params.tags))
-    })
-
+    const { selected: selectedStatuses, toggle: toggleStatus, clear: clearStatuses } = useSetToggle<BitStatus>(
+        parseCsvParam(params.statuses) as BitStatus[],
+    )
+    const { selected: selectedTags, toggle: toggleTag, clear: clearTags } = useSetToggle<string>(
+        parseCsvParam(params.tags),
+    )
     const [hasPremise, setHasPremise] = useState<boolean | null>(() => parseBooleanParam(params.hasPremise))
 
-    useEffect(() => {
-        const subscription = database
-            .get<BitModel>(BIT_TABLE)
-            .query()
-            .observe()
-            .subscribe((bits: BitModel[]) => {
-                const tagSet = new Set<string>()
-
-                for (const bit of bits) {
-                    for (const tag of parseBitTagNames(bit.tagsJson)) {
-                        tagSet.add(tag)
-                    }
-                }
-
-                setAvailableTags([...tagSet].sort((a, b) => a.localeCompare(b)))
-            })
-
-        return () => subscription.unsubscribe()
-    }, [database])
+    const availableTags = useAvailableTags<BitModel>(BIT_TABLE, parseBitTagNames)
 
     const tagsToRender = useMemo(() => {
         if (availableTags.length > 0) return availableTags
         return [...selectedTags].sort((a, b) => a.localeCompare(b))
     }, [availableTags, selectedTags])
 
-    const toggleStatus = (status: BitStatus) => {
-        setSelectedStatuses((prev) => {
-            const next = new Set(prev)
-            if (next.has(status)) next.delete(status)
-            else next.add(status)
-            return next
-        })
-    }
+    const buildParams = useCallback(() => ({
+        statuses: toCsvParam(selectedStatuses),
+        tags: toCsvParam(selectedTags),
+        hasPremise: hasPremise !== null ? String(hasPremise) : '',
+    }), [selectedStatuses, selectedTags, hasPremise])
 
-    const toggleTag = (tag: string) => {
-        setSelectedTags((prev) => {
-            const next = new Set(prev)
-            if (next.has(tag)) next.delete(tag)
-            else next.add(tag)
-            return next
-        })
-    }
+    const { applyFilters } = useFilterModal(buildParams)
 
     const clearAll = () => {
-        setSelectedStatuses(new Set())
-        setSelectedTags(new Set())
+        clearStatuses()
+        clearTags()
         setHasPremise(null)
-    }
-
-    const applyFilters = () => {
-        router.back()
-        router.setParams({
-            statuses: toCsvParam(selectedStatuses),
-            tags: toCsvParam(selectedTags),
-            hasPremise: hasPremise !== null ? String(hasPremise) : '',
-        })
     }
 
     const activeCount = selectedStatuses.size + selectedTags.size + (hasPremise !== null ? 1 : 0)
@@ -91,10 +54,10 @@ export default function BitFilterModal() {
     return (
         <FilterModalShell activeCount={activeCount} onClear={clearAll} onApply={applyFilters} applyPrefix={<Icon name='funnel' size={18} />}>
                 <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                    STATUS
+                    {t('filters.status')}
                 </Text>
                 <View>
-                    {BIT_STATUS_OPTIONS.map((status) => {
+                    {bitStatusOptions.map((status) => {
                         const isSelected = selectedStatuses.has(status.value)
                         return (
                             <PressableFeedback
@@ -116,7 +79,7 @@ export default function BitFilterModal() {
                     })}
                 </View>
                 <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                    TAGS
+                    {t('filters.tags')}
                 </Text>
                 <View className="flex-row flex-wrap gap-2">
                     {tagsToRender.map((tag) => {
@@ -135,7 +98,7 @@ export default function BitFilterModal() {
                     })}
                 </View>
                 <Text className="text-muted text-xs font-semibold tracking-[2px]">
-                    PREMISE
+                    {t('bitMeta.premise')}
                 </Text>
                 <View className="flex-row gap-2">
                     <Chip
@@ -144,7 +107,7 @@ export default function BitFilterModal() {
                         color={hasPremise === null ? 'accent' : 'default'}
                         onPress={() => setHasPremise(null)}
                     >
-                        <Chip.Label>All</Chip.Label>
+                        <Chip.Label>{t('filters.all')}</Chip.Label>
                     </Chip>
                     <Chip
                         size="md"
@@ -153,7 +116,7 @@ export default function BitFilterModal() {
                         onPress={() => setHasPremise(true)}
                     >
                         <Icon name="bulb-outline" size={14} className={hasPremise === true ? 'text-accent-foreground' : 'text-muted'} />
-                        <Chip.Label>Has Premise</Chip.Label>
+                        <Chip.Label>{t('filters.hasPremise')}</Chip.Label>
                     </Chip>
                     <Chip
                         size="md"
@@ -161,7 +124,7 @@ export default function BitFilterModal() {
                         color={hasPremise === false ? 'accent' : 'default'}
                         onPress={() => setHasPremise(false)}
                     >
-                        <Chip.Label>No Premise</Chip.Label>
+                        <Chip.Label>{t('filters.noPremise')}</Chip.Label>
                     </Chip>
                 </View>
         </FilterModalShell>

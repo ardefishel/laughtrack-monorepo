@@ -50,16 +50,6 @@ Client uses snake_case, Drizzle uses camelCase. Mapped fields:
 
 Internal fields stripped from sync: `userId`, `serverCreatedAt`, `lastModified`, `isDeleted` (server-side); `_status`, `_changed` (client-side).
 
-### Audio — `/api/mobile/audio/*`
-
-Cloudflare R2 presigned URL management. All endpoints require `requireAuth`.
-
-| Method | Path | Auth | Body | Description |
-|--------|------|------|------|-------------|
-| POST | `/api/mobile/audio/upload-url` | `requireAuth` | `{ recordingId }` | Generates a presigned PUT URL for uploading audio to R2. Verifies recording exists and belongs to user. Returns `{ url, key, expiresIn: 600 }`. Content-Type: `audio/mp4`. |
-| POST | `/api/mobile/audio/confirm-upload` | `requireAuth` | `{ recordingId, key }` | Confirms upload completed. Updates `remoteUrl` on the recording. Validates key matches expected format. Returns `{ ok: true }`. |
-| POST | `/api/mobile/audio/download-url` | `requireAuth` | `{ recordingId }` | Generates a presigned GET URL for downloading audio from R2. Reconstructs key from userId+recordingId (prevents IDOR). Returns `{ url, expiresIn: 600 }`. |
-
 ---
 
 ## Web — `/api/web/*`

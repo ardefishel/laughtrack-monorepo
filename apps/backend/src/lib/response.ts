@@ -29,12 +29,13 @@ export function paginatedResponse<T>(
 
 export function errorResponse(
   message: string,
-  _status: number = 400,
-  details?: Record<string, string>[]
+  details?: Record<string, string>[],
+  code?: string,
 ) {
   return {
     success: false,
     error: message,
+    ...(code ? { code } : {}),
     details,
     timestamp: new Date().toISOString(),
   }

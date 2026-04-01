@@ -1,76 +1,43 @@
 import { FilterModalShell } from '@/features/material/components/filter-modal-shell'
 import { Icon } from '@/components/ui/ion-icon'
 import { SETLIST_TABLE } from '@/database/constants'
-import { parseSetlistTagNames } from '@/database/mappers/setlistMapper'
-import { Setlist as SetlistModel } from '@/database/models/setlist'
-import { parseCsvParam, toCsvParam } from '@/features/material/filters/filter-query'
-import { useDatabase } from '@nozbe/watermelondb/react'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { parseSetlistTagNames } from '@/features/setlist/data/setlist.mapper'
+import { Setlist as SetlistModel } from '@/features/setlist/data/setlist.model'
+import { toCsvParam, parseCsvParam } from '@/features/material/filters/filter-query'
+import { useSetToggle } from '@/features/material/hooks/use-set-toggle'
+import { useAvailableTags } from '@/features/material/hooks/use-available-tags'
+import { useFilterModal } from '@/features/material/hooks/use-filter-modal'
+import { useLocalSearchParams } from 'expo-router'
 import { Chip } from 'heroui-native'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Text, View } from 'react-native'
 
 export default function SetlistFilterModal() {
-    const router = useRouter()
-    const database = useDatabase()
     const params = useLocalSearchParams<{ tags?: string }>()
-    const [availableTags, setAvailableTags] = useState<string[]>([])
 
-    const [selectedTags, setSelectedTags] = useState<Set<string>>(() => {
-        return new Set(parseCsvParam(params.tags))
-    })
+    const { selected: selectedTags, toggle: toggleTag, clear: clearTags } = useSetToggle<string>(
+        parseCsvParam(params.tags),
+    )
 
-    useEffect(() => {
-        const subscription = database
-            .get<SetlistModel>(SETLIST_TABLE)
-            .query()
-            .observe()
-            .subscribe((setlists: SetlistModel[]) => {
-                const tagSet = new Set<string>()
-
-                for (const setlist of setlists) {
-                    for (const tag of parseSetlistTagNames(setlist.tagsJson)) {
-                        tagSet.add(tag)
-                    }
-                }
-
-                setAvailableTags([...tagSet].sort((a, b) => a.localeCompare(b)))
-            })
-
-        return () => subscription.unsubscribe()
-    }, [database])
+    const availableTags = useAvailableTags<SetlistModel>(SETLIST_TABLE, parseSetlistTagNames)
 
     const tagsToRender = useMemo(() => {
         if (availableTags.length > 0) return availableTags
         return [...selectedTags].sort((a, b) => a.localeCompare(b))
     }, [availableTags, selectedTags])
 
-    const toggleTag = (tag: string) => {
-        setSelectedTags((prev) => {
-            const next = new Set(prev)
-            if (next.has(tag)) next.delete(tag)
-            else next.add(tag)
-            return next
-        })
-    }
+    const buildParams = useCallback(() => ({
+        tags: toCsvParam(selectedTags),
+    }), [selectedTags])
 
-    const clearAll = () => {
-        setSelectedTags(new Set())
-    }
-
-    const applyFilters = () => {
-        router.back()
-        router.setParams({
-            tags: toCsvParam(selectedTags),
-        })
-    }
+    const { applyFilters } = useFilterModal(buildParams)
 
     const activeCount = selectedTags.size
 
     return (
         <FilterModalShell
             activeCount={activeCount}
-            onClear={clearAll}
+            onClear={clearTags}
             onApply={applyFilters}
             applyPrefix={<Icon name='funnel' size={18} />}
         >

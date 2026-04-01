@@ -26,7 +26,7 @@ export default function PremiseAddBitModal() {
                 bitsNonce: Date.now().toString(),
             },
         })
-    }, [premiseId])
+    }, [premiseId, router])
 
     const handleCreate = useCallback(() => {
         if (!premiseId) return
@@ -40,7 +40,7 @@ export default function PremiseAddBitModal() {
                 metaNonce: Date.now().toString(),
             },
         })
-    }, [premiseId])
+    }, [premiseId, router])
 
     return (
         <SelectBitsModal

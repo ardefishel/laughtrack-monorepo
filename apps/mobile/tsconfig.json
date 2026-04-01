@@ -4,6 +4,7 @@
     "jsx": "react-jsx",
     "allowImportingTsExtensions": true,
     "experimentalDecorators": true,
+    "lib": ["ES2021"],
     "strict": true,
     "paths": {
       "@/*": [

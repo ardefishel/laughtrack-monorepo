@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { Platform } from 'react-native'
 import { GoogleSignin, isSuccessResponse, statusCodes } from '@react-native-google-signin/google-signin'
+import { translate } from '@/i18n'
 import { authClient } from '@/lib/auth-client'
 import { authLogger } from '@/lib/loggers'
 
@@ -32,13 +33,13 @@ export function useGoogleSignIn() {
 
             const response = await GoogleSignin.signIn()
             if (!isSuccessResponse(response)) {
-                return { success: false, error: 'Google Sign-In was cancelled' }
+                return { success: false, error: translate('auth.errors.googlePopupCancelled') }
             }
 
             const idToken = response.data?.idToken
             if (!idToken) {
                 authLogger.error('Google sign-in returned no ID token')
-                return { success: false, error: 'Failed to get ID token from Google' }
+                return { success: false, error: translate('auth.errors.googleIdToken') }
             }
 
             const result = await authClient.signIn.social({
@@ -61,18 +62,18 @@ export function useGoogleSignIn() {
                 typeof error === 'object' && error !== null && Object.keys(error).length === 0
             const errorMessage =
                 getStringProperty(error, 'message') ??
-                (error instanceof Error ? error.message : 'Failed to sign in with Google')
+                (error instanceof Error ? error.message : translate('auth.errors.unexpected'))
 
             if (errorCode === statusCodes.SIGN_IN_CANCELLED || isEmptyObject) {
-                return { success: false, error: 'Sign in was cancelled' }
+                return { success: false, error: translate('auth.errors.googleCancelled') }
             }
 
             if (errorCode === statusCodes.IN_PROGRESS) {
-                return { success: false, error: 'Sign in already in progress' }
+                return { success: false, error: translate('auth.errors.googleInProgress') }
             }
 
             if (errorCode === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-                return { success: false, error: 'Google Play Services not available' }
+                return { success: false, error: translate('auth.errors.googlePlayServicesUnavailable') }
             }
 
             return { success: false, error: errorMessage }

@@ -1,13 +1,11 @@
 import { PremiseCard } from '@/features/premise/components/premise-card'
+import { usePremiseList } from '@/features/premise/hooks/use-premise-list'
+import { deletePremise } from '@/features/premise/services/delete-premise'
 import { MaterialListScreen } from '@/features/material/components/material-list-screen'
-import { premiseModelToDomain } from '@/database/mappers/premiseMapper'
-import { PREMISE_TABLE } from '@/database/constants'
-import { Premise as PremiseModel } from '@/database/models/premise'
 import type { Attitude, Premise, PremiseStatus } from '@/types'
 import { parseCsvParam } from '@/features/material/filters/filter-query'
 import { useFocusEffect } from '@react-navigation/native'
 import type { FlashListRef } from '@shopify/flash-list'
-import { Q } from '@nozbe/watermelondb'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useRef, useMemo, useState } from 'react'
@@ -15,49 +13,31 @@ import { useCallback, useEffect, useRef, useMemo, useState } from 'react'
 export default function PremiseListScreen() {
     const router = useRouter()
     const database = useDatabase()
+    const { premises, refresh } = usePremiseList()
     const params = useLocalSearchParams<{ statuses?: string; tags?: string; attitudes?: string }>()
     const [search, setSearch] = useState('')
-    const [premises, setPremises] = useState<Premise[]>([])
     const listRef = useRef<FlashListRef<Premise> | null>(null)
     const countBeforeCreateRef = useRef<number | null>(null)
-
-    const fetchPremises = useCallback(async () => {
-        const value = await database
-            .get<PremiseModel>(PREMISE_TABLE)
-            .query(Q.sortBy('updated_at', Q.desc))
-            .fetch()
-        setPremises(value.map(premiseModelToDomain))
-        return value.length
-    }, [database])
-
-    useEffect(() => {
-        const subscription = database
-            .get<PremiseModel>(PREMISE_TABLE)
-            .query(Q.sortBy('updated_at', Q.desc))
-            .observe()
-            .subscribe((value: PremiseModel[]) => {
-                setPremises(value.map(premiseModelToDomain))
-            })
-
-        return () => subscription.unsubscribe()
-    }, [database])
-
     useFocusEffect(
         useCallback(() => {
-            void (async () => {
-                const count = await fetchPremises()
+            void refresh().then((count) => {
                 const countBeforeCreate = countBeforeCreateRef.current
-
-                if (countBeforeCreate !== null && count > countBeforeCreate) {
-                    requestAnimationFrame(() => {
-                        listRef.current?.scrollToOffset({ offset: 0, animated: true })
-                    })
+                if (countBeforeCreate !== null && count <= countBeforeCreate) {
+                    countBeforeCreateRef.current = null
                 }
-
-                countBeforeCreateRef.current = null
-            })()
-        }, [fetchPremises]),
+            })
+        }, [refresh]),
     )
+
+    useEffect(() => {
+        const countBeforeCreate = countBeforeCreateRef.current
+        if (countBeforeCreate === null || premises.length <= countBeforeCreate) return
+
+        requestAnimationFrame(() => {
+            listRef.current?.scrollToOffset({ offset: 0, animated: true })
+        })
+        countBeforeCreateRef.current = null
+    }, [premises.length])
 
     const filteredPremises = useMemo(() => {
         let result = premises
@@ -90,14 +70,14 @@ export default function PremiseListScreen() {
             pathname: '/premise-filter',
             params: { statuses: params.statuses ?? '', tags: params.tags ?? '', attitudes: params.attitudes ?? '' },
         })
-    }, [params.attitudes, params.statuses, params.tags])
+    }, [params.attitudes, params.statuses, params.tags, router])
 
     const keyExtractor = useCallback((item: Premise) => item.id, [])
 
     const handleFabPress = useCallback(() => {
         countBeforeCreateRef.current = premises.length
         router.push('/premise/new')
-    }, [premises.length])
+    }, [premises.length, router])
 
     const renderItem = useCallback(({ item }: { item: Premise }) => {
         const handlePress = () => {
@@ -105,14 +85,11 @@ export default function PremiseListScreen() {
         }
 
         const handleDelete = async () => {
-            await database.write(async () => {
-                const premise = await database.get<PremiseModel>(PREMISE_TABLE).find(item.id)
-                await premise.destroyPermanently()
-            })
+            await deletePremise(database, item.id)
         }
 
         return <PremiseCard premise={item} onPress={handlePress} onDelete={handleDelete} />
-    }, [database])
+    }, [database, router])
 
     return (
         <MaterialListScreen

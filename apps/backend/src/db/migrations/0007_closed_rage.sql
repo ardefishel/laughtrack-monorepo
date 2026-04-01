@@ -1,1 +1,0 @@
-ALTER TABLE "premises" ADD COLUMN "source_note_id" text;

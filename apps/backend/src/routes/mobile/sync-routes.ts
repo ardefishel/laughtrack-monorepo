@@ -1,5 +1,6 @@
 import { and, eq, gt } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { z } from 'zod'
 import { db } from '../../db'
 import { bits, notes, premises, setlists } from '../../db/schema'
 import { requireAuth } from '../../middlewares/auth'
@@ -14,6 +15,24 @@ const SYNC_TABLES = {
 } as const
 
 type SyncTableName = keyof typeof SYNC_TABLES
+
+const ALLOWED_FIELDS: Record<SyncTableName, Set<string>> = {
+    notes: new Set(['id', 'content', 'created_at', 'updated_at']),
+    bits: new Set(['id', 'content', 'status', 'tags_json', 'premise_id', 'setlist_ids_json', 'created_at', 'updated_at']),
+    premises: new Set(['id', 'content', 'status', 'attitude', 'tags_json', 'bit_ids_json', 'source_note_id', 'created_at', 'updated_at']),
+    setlists: new Set(['id', 'description', 'items_json', 'tags_json', 'created_at', 'updated_at']),
+}
+
+function sanitizeRecord(record: Record<string, unknown>, tableName: SyncTableName): Record<string, unknown> {
+    const allowed = ALLOWED_FIELDS[tableName]
+    const sanitized: Record<string, unknown> = {}
+    for (const [key, value] of Object.entries(record)) {
+        if (allowed.has(key)) {
+            sanitized[key] = value
+        }
+    }
+    return sanitized
+}
 
 const CAMEL_TO_SNAKE: Record<string, string> = {
     createdAt: 'created_at',
@@ -110,25 +129,27 @@ syncRoutes.get('/pull', requireAuth, async (c) => {
     })
 })
 
-interface SyncChanges {
-    [tableName: string]: {
-        created?: Record<string, unknown>[]
-        updated?: Record<string, unknown>[]
-        deleted?: string[]
-    }
-}
-
-interface PushBody {
-    changes: SyncChanges
-    lastPulledAt: number
-}
+const pushBodySchema = z.object({
+    changes: z.record(
+        z.object({
+            created: z.array(z.record(z.unknown())).optional().default([]),
+            updated: z.array(z.record(z.unknown())).optional().default([]),
+            deleted: z.array(z.string()).optional().default([]),
+        })
+    ),
+    lastPulledAt: z.number().nullable(),
+})
 
 syncRoutes.post('/push', requireAuth, async (c) => {
     const user = c.get('user')
     if (!user) return c.json({ error: 'Unauthorized' }, 401)
 
-    const body = await c.req.json<PushBody>()
-    const { changes, lastPulledAt } = body
+    const rawBody = await c.req.json()
+    const parseResult = pushBodySchema.safeParse(rawBody)
+    if (!parseResult.success) {
+        return c.json({ error: 'Invalid request body', details: parseResult.error.flatten() }, 400)
+    }
+    const { changes, lastPulledAt } = parseResult.data
     const lastPulledAtDate = lastPulledAt ? new Date(lastPulledAt) : null
     const now = new Date()
 
@@ -140,7 +161,8 @@ syncRoutes.post('/push', requireAuth, async (c) => {
 
                 if (tableChanges.created?.length) {
                     for (const record of tableChanges.created) {
-                        const mapped = snakeToDrizzleRecord(record)
+                        const sanitized = sanitizeRecord(record, tableName as SyncTableName)
+                        const mapped = snakeToDrizzleRecord(sanitized)
                         delete mapped.id
                         const values = {
                             id: record.id as string,
@@ -168,7 +190,8 @@ syncRoutes.post('/push', requireAuth, async (c) => {
 
                 if (tableChanges.updated?.length) {
                     for (const record of tableChanges.updated) {
-                        const mapped = snakeToDrizzleRecord(record)
+                        const sanitized = sanitizeRecord(record, tableName as SyncTableName)
+                        const mapped = snakeToDrizzleRecord(sanitized)
                         const id = record.id as string
                         delete mapped.id
 

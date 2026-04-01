@@ -1,4 +1,5 @@
 import { Icon } from '@/components/ui/ion-icon'
+import { useI18n } from '@/i18n'
 import { Button, Chip, Input } from 'heroui-native'
 import { useState } from 'react'
 import { View } from 'react-native'
@@ -9,8 +10,10 @@ type TagInputProps = {
     placeholder?: string
 }
 
-export function TagInput({ tags, onTagsChange, placeholder = 'Add a tag...' }: TagInputProps) {
+export function TagInput({ tags, onTagsChange, placeholder }: TagInputProps) {
+    const { t } = useI18n()
     const [tagInput, setTagInput] = useState('')
+    const resolvedPlaceholder = placeholder ?? t('tags.addPlaceholder')
 
     const handleAddTag = () => {
         const trimmed = tagInput.trim()
@@ -42,12 +45,13 @@ export function TagInput({ tags, onTagsChange, placeholder = 'Add a tag...' }: T
                     className='flex-1'
                     value={tagInput}
                     onChangeText={setTagInput}
-                    placeholder={placeholder}
+                    placeholder={resolvedPlaceholder}
+                    accessibilityLabel={resolvedPlaceholder}
                     returnKeyType='done'
                     onSubmitEditing={handleAddTag}
                 />
 
-                <Button isIconOnly variant='secondary' onPress={handleAddTag} isDisabled={!tagInput.trim()}>
+                <Button isIconOnly variant='secondary' onPress={handleAddTag} isDisabled={!tagInput.trim()} accessibilityLabel={t('tags.addButton')}>
                     <Icon name='add' size={20} className='text-accent' />
                 </Button>
             </View>

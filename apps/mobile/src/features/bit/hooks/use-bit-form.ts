@@ -1,18 +1,82 @@
 import { syncBitPremiseRelation } from '@/features/premise/services/premise-bit-links'
 import { BIT_TABLE, PREMISE_TABLE } from '@/database/constants'
-import { bitModelToDomain } from '@/database/mappers/bitMapper'
-import { Bit as BitModel } from '@/database/models/bit'
-import { Premise as PremiseModel } from '@/database/models/premise'
+import { bitModelToDomain } from '../data/bit.mapper'
+import { Bit as BitModel } from '../data/bit.model'
+import { Premise as PremiseModel } from '@/features/premise/data/premise.model'
 import { dbLogger } from '@/lib/loggers'
 import type { BitStatus } from '@/types'
 import { useDatabase } from '@nozbe/watermelondb/react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useReducer } from 'react'
 
 const BIT_STATUS_VALUES: BitStatus[] = ['draft', 'rework', 'tested', 'final', 'dead']
 
 function isBitStatus(value: string): value is BitStatus {
     return BIT_STATUS_VALUES.includes(value as BitStatus)
+}
+
+type BitFormState = {
+    bitModel: BitModel | null
+    content: string
+    editorInitialValue: string
+    editorRevision: number
+    status: BitStatus
+    tags: string[]
+    premiseId: string | null
+    linkedPremiseContent: string
+    isSaving: boolean
+}
+
+const INITIAL_STATE: BitFormState = {
+    bitModel: null,
+    content: '',
+    editorInitialValue: '',
+    editorRevision: 0,
+    status: 'draft',
+    tags: [],
+    premiseId: null,
+    linkedPremiseContent: '',
+    isSaving: false,
+}
+
+type BitFormAction =
+    | { type: 'RESET' }
+    | { type: 'LOAD'; model: BitModel; content: string; status: BitStatus; tags: string[]; premiseId: string | null; revision: number }
+    | { type: 'SET_CONTENT'; content: string }
+    | { type: 'SET_STATUS'; status: BitStatus }
+    | { type: 'SET_TAGS'; tags: string[] }
+    | { type: 'SET_PREMISE_ID'; premiseId: string | null }
+    | { type: 'SET_LINKED_PREMISE_CONTENT'; content: string }
+    | { type: 'SET_SAVING'; isSaving: boolean }
+
+function bitFormReducer(state: BitFormState, action: BitFormAction): BitFormState {
+    switch (action.type) {
+        case 'RESET':
+            return INITIAL_STATE
+        case 'LOAD':
+            return {
+                ...state,
+                bitModel: action.model,
+                content: action.content,
+                editorInitialValue: action.content,
+                editorRevision: action.revision,
+                status: action.status,
+                tags: action.tags,
+                premiseId: action.premiseId,
+            }
+        case 'SET_CONTENT':
+            return { ...state, content: action.content }
+        case 'SET_STATUS':
+            return { ...state, status: action.status }
+        case 'SET_TAGS':
+            return { ...state, tags: action.tags }
+        case 'SET_PREMISE_ID':
+            return { ...state, premiseId: action.premiseId }
+        case 'SET_LINKED_PREMISE_CONTENT':
+            return { ...state, linkedPremiseContent: action.content }
+        case 'SET_SAVING':
+            return { ...state, isSaving: action.isSaving }
+    }
 }
 
 export function useBitForm() {
@@ -28,41 +92,36 @@ export function useBitForm() {
     const database = useDatabase()
     const isEditing = id !== 'new'
 
-    const [bitModel, setBitModel] = useState<BitModel | null>(null)
-    const [content, setContent] = useState('')
-    const [editorInitialValue, setEditorInitialValue] = useState('')
-    const [editorRevision, setEditorRevision] = useState(0)
-    const [status, setStatus] = useState<BitStatus>('draft')
-    const [tags, setTags] = useState<string[]>([])
-    const [premiseId, setPremiseId] = useState<string | null>(null)
-    const [linkedPremiseContent, setLinkedPremiseContent] = useState('')
-    const [isSaving, setIsSaving] = useState(false)
+    const [state, dispatch] = useReducer(bitFormReducer, INITIAL_STATE)
+    const { bitModel, content, editorInitialValue, editorRevision, status, tags, premiseId, linkedPremiseContent, isSaving } = state
+
+    const setContent = useCallback((value: string) => dispatch({ type: 'SET_CONTENT', content: value }), [])
 
     useEffect(() => {
         if (!isEditing || !id) {
-            setBitModel(null)
-            setContent('')
-            setEditorInitialValue('')
-            setEditorRevision(0)
-            setStatus('draft')
-            setTags([])
-            setPremiseId(null)
-            setLinkedPremiseContent('')
+            dispatch({ type: 'RESET' })
             return
         }
 
         const subscription = database
             .get<BitModel>(BIT_TABLE)
             .findAndObserve(id)
-            .subscribe((result: BitModel) => {
-                const bit = bitModelToDomain(result)
-                setBitModel(result)
-                setContent(bit.content)
-                setEditorInitialValue(bit.content)
-                setEditorRevision(result.updatedAt.getTime())
-                setStatus(bit.status)
-                setTags((bit.tags ?? []).map((tag) => tag.name))
-                setPremiseId(bit.premiseId ?? null)
+            .subscribe({
+                next: (result: BitModel) => {
+                    const bit = bitModelToDomain(result)
+                    dispatch({
+                        type: 'LOAD',
+                        model: result,
+                        content: bit.content,
+                        status: bit.status,
+                        tags: (bit.tags ?? []).map((tag) => tag.name),
+                        premiseId: bit.premiseId ?? null,
+                        revision: result.updatedAt.getTime(),
+                    })
+                },
+                error: (error: unknown) => {
+                    dbLogger.error('BitDetail subscription failed', { error, bitId: id })
+                },
             })
 
         return () => subscription.unsubscribe()
@@ -72,15 +131,15 @@ export function useBitForm() {
         if (typeof metaNonce !== 'string' || metaNonce.length === 0) return
 
         if (typeof metaStatus === 'string' && isBitStatus(metaStatus)) {
-            setStatus(metaStatus)
+            dispatch({ type: 'SET_STATUS', status: metaStatus })
         }
 
         if (typeof metaTags === 'string') {
-            setTags(metaTags.length > 0 ? metaTags.split(',').filter(Boolean) : [])
+            dispatch({ type: 'SET_TAGS', tags: metaTags.length > 0 ? metaTags.split(',').filter(Boolean) : [] })
         }
 
         if (typeof metaPremiseId === 'string') {
-            setPremiseId(metaPremiseId.length > 0 ? metaPremiseId : null)
+            dispatch({ type: 'SET_PREMISE_ID', premiseId: metaPremiseId.length > 0 ? metaPremiseId : null })
         }
 
         router.setParams({
@@ -89,35 +148,35 @@ export function useBitForm() {
             metaPremiseId: '',
             metaNonce: '',
         })
-    }, [metaNonce, metaPremiseId, metaStatus, metaTags])
+    }, [metaNonce, metaPremiseId, metaStatus, metaTags, router])
 
     useEffect(() => {
         if (!premiseId) {
-            setLinkedPremiseContent('')
+            dispatch({ type: 'SET_LINKED_PREMISE_CONTENT', content: '' })
             return
         }
 
         void (async () => {
             try {
                 const premise = await database.get<PremiseModel>(PREMISE_TABLE).find(premiseId)
-                setLinkedPremiseContent(premise.content)
+                dispatch({ type: 'SET_LINKED_PREMISE_CONTENT', content: premise.content })
             } catch (error) {
                 dbLogger.debug('BitDetail failed to load linked premise preview', {
                     premiseId,
                     error,
                 })
-                setLinkedPremiseContent('')
+                dispatch({ type: 'SET_LINKED_PREMISE_CONTENT', content: '' })
             }
         })()
     }, [database, premiseId])
 
     const canSave = useMemo(() => content.trim().length > 0 && !isSaving, [content, isSaving])
 
-    const handleSave = useCallback(async () => {
-        const trimmed = content.trim()
+    const handleSave = useCallback(async (nextContent?: string) => {
+        const trimmed = (nextContent ?? content).trim()
         if (!trimmed || isSaving) return
 
-        setIsSaving(true)
+        dispatch({ type: 'SET_SAVING', isSaving: true })
         try {
             if (isEditing && bitModel) {
                 const previousPremiseId = bitModel.premiseId
@@ -173,10 +232,19 @@ export function useBitForm() {
                     })
                 })
             }
+        } catch (error) {
+            dbLogger.error('BitDetail failed to save bit', {
+                error,
+                bitId: isEditing ? bitModel?.id ?? id : 'new',
+                isEditing,
+                premiseId,
+                tagCount: tags.length,
+                fromSetlist,
+            })
         } finally {
-            setIsSaving(false)
+            dispatch({ type: 'SET_SAVING', isSaving: false })
         }
-    }, [bitModel, content, database, fromSetlist, isEditing, isSaving, premiseId, status, tags])
+    }, [bitModel, content, database, fromSetlist, id, isEditing, isSaving, premiseId, router, status, tags])
 
     const openBitMeta = useCallback(() => {
         router.push({
@@ -188,7 +256,7 @@ export function useBitForm() {
                 bitId: id,
             },
         })
-    }, [id, premiseId, status, tags])
+    }, [id, premiseId, router, status, tags])
 
     const editorKey = useMemo(() => {
         if (!isEditing) return 'bit-new'

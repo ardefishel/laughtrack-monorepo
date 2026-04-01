@@ -9,282 +9,317 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UsersRouteImport } from './routes/users'
-import { Route as SetsRouteImport } from './routes/sets'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as JokesRouteImport } from './routes/jokes'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as UsersIndexRouteImport } from './routes/users.index'
-import { Route as SetsIndexRouteImport } from './routes/sets.index'
-import { Route as JokesIndexRouteImport } from './routes/jokes.index'
-import { Route as UsersIdRouteImport } from './routes/users.$id'
-import { Route as SetsIdRouteImport } from './routes/sets.$id'
-import { Route as JokesIdRouteImport } from './routes/jokes.$id'
+import { Route as PublicRouteImport } from './routes/_public'
+import { Route as AuthedRouteImport } from './routes/_authed'
+import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
+import { Route as PublicVerifyEmailRouteImport } from './routes/_public/verify-email'
+import { Route as PublicLoginRouteImport } from './routes/_public/login'
+import { Route as AuthedUsersRouteImport } from './routes/_authed/users'
+import { Route as AuthedSetlistsRouteImport } from './routes/_authed/setlists'
+import { Route as AuthedBitsRouteImport } from './routes/_authed/bits'
+import { Route as AuthedUsersIndexRouteImport } from './routes/_authed/users.index'
+import { Route as AuthedSetlistsIndexRouteImport } from './routes/_authed/setlists.index'
+import { Route as AuthedBitsIndexRouteImport } from './routes/_authed/bits.index'
+import { Route as AuthedUsersIdRouteImport } from './routes/_authed/users.$id'
 
-const UsersRoute = UsersRouteImport.update({
-  id: '/users',
-  path: '/users',
+const PublicRoute = PublicRouteImport.update({
+  id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SetsRoute = SetsRouteImport.update({
-  id: '/sets',
-  path: '/sets',
+const AuthedRoute = AuthedRouteImport.update({
+  id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
+const AuthedIndexRoute = AuthedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const PublicVerifyEmailRoute = PublicVerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicLoginRoute = PublicLoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => PublicRoute,
 } as any)
-const JokesRoute = JokesRouteImport.update({
-  id: '/jokes',
-  path: '/jokes',
-  getParentRoute: () => rootRouteImport,
+const AuthedUsersRoute = AuthedUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthedRoute,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const AuthedSetlistsRoute = AuthedSetlistsRouteImport.update({
+  id: '/setlists',
+  path: '/setlists',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedBitsRoute = AuthedBitsRouteImport.update({
+  id: '/bits',
+  path: '/bits',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedUsersIndexRoute = AuthedUsersIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthedUsersRoute,
 } as any)
-const UsersIndexRoute = UsersIndexRouteImport.update({
+const AuthedSetlistsIndexRoute = AuthedSetlistsIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => UsersRoute,
+  getParentRoute: () => AuthedSetlistsRoute,
 } as any)
-const SetsIndexRoute = SetsIndexRouteImport.update({
+const AuthedBitsIndexRoute = AuthedBitsIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => SetsRoute,
+  getParentRoute: () => AuthedBitsRoute,
 } as any)
-const JokesIndexRoute = JokesIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => JokesRoute,
-} as any)
-const UsersIdRoute = UsersIdRouteImport.update({
+const AuthedUsersIdRoute = AuthedUsersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
-  getParentRoute: () => UsersRoute,
-} as any)
-const SetsIdRoute = SetsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => SetsRoute,
-} as any)
-const JokesIdRoute = JokesIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => JokesRoute,
+  getParentRoute: () => AuthedUsersRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/jokes': typeof JokesRouteWithChildren
-  '/login': typeof LoginRoute
-  '/sets': typeof SetsRouteWithChildren
-  '/users': typeof UsersRouteWithChildren
-  '/jokes/$id': typeof JokesIdRoute
-  '/sets/$id': typeof SetsIdRoute
-  '/users/$id': typeof UsersIdRoute
-  '/jokes/': typeof JokesIndexRoute
-  '/sets/': typeof SetsIndexRoute
-  '/users/': typeof UsersIndexRoute
+  '/': typeof AuthedIndexRoute
+  '/bits': typeof AuthedBitsRouteWithChildren
+  '/setlists': typeof AuthedSetlistsRouteWithChildren
+  '/users': typeof AuthedUsersRouteWithChildren
+  '/login': typeof PublicLoginRoute
+  '/verify-email': typeof PublicVerifyEmailRoute
+  '/users/$id': typeof AuthedUsersIdRoute
+  '/bits/': typeof AuthedBitsIndexRoute
+  '/setlists/': typeof AuthedSetlistsIndexRoute
+  '/users/': typeof AuthedUsersIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/jokes/$id': typeof JokesIdRoute
-  '/sets/$id': typeof SetsIdRoute
-  '/users/$id': typeof UsersIdRoute
-  '/jokes': typeof JokesIndexRoute
-  '/sets': typeof SetsIndexRoute
-  '/users': typeof UsersIndexRoute
+  '/': typeof AuthedIndexRoute
+  '/login': typeof PublicLoginRoute
+  '/verify-email': typeof PublicVerifyEmailRoute
+  '/users/$id': typeof AuthedUsersIdRoute
+  '/bits': typeof AuthedBitsIndexRoute
+  '/setlists': typeof AuthedSetlistsIndexRoute
+  '/users': typeof AuthedUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/jokes': typeof JokesRouteWithChildren
-  '/login': typeof LoginRoute
-  '/sets': typeof SetsRouteWithChildren
-  '/users': typeof UsersRouteWithChildren
-  '/jokes/$id': typeof JokesIdRoute
-  '/sets/$id': typeof SetsIdRoute
-  '/users/$id': typeof UsersIdRoute
-  '/jokes/': typeof JokesIndexRoute
-  '/sets/': typeof SetsIndexRoute
-  '/users/': typeof UsersIndexRoute
+  '/_authed': typeof AuthedRouteWithChildren
+  '/_public': typeof PublicRouteWithChildren
+  '/_authed/bits': typeof AuthedBitsRouteWithChildren
+  '/_authed/setlists': typeof AuthedSetlistsRouteWithChildren
+  '/_authed/users': typeof AuthedUsersRouteWithChildren
+  '/_public/login': typeof PublicLoginRoute
+  '/_public/verify-email': typeof PublicVerifyEmailRoute
+  '/_authed/': typeof AuthedIndexRoute
+  '/_authed/users/$id': typeof AuthedUsersIdRoute
+  '/_authed/bits/': typeof AuthedBitsIndexRoute
+  '/_authed/setlists/': typeof AuthedSetlistsIndexRoute
+  '/_authed/users/': typeof AuthedUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/jokes'
-    | '/login'
-    | '/sets'
+    | '/bits'
+    | '/setlists'
     | '/users'
-    | '/jokes/$id'
-    | '/sets/$id'
+    | '/login'
+    | '/verify-email'
     | '/users/$id'
-    | '/jokes/'
-    | '/sets/'
+    | '/bits/'
+    | '/setlists/'
     | '/users/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
-    | '/jokes/$id'
-    | '/sets/$id'
+    | '/verify-email'
     | '/users/$id'
-    | '/jokes'
-    | '/sets'
+    | '/bits'
+    | '/setlists'
     | '/users'
   id:
     | '__root__'
-    | '/'
-    | '/jokes'
-    | '/login'
-    | '/sets'
-    | '/users'
-    | '/jokes/$id'
-    | '/sets/$id'
-    | '/users/$id'
-    | '/jokes/'
-    | '/sets/'
-    | '/users/'
+    | '/_authed'
+    | '/_public'
+    | '/_authed/bits'
+    | '/_authed/setlists'
+    | '/_authed/users'
+    | '/_public/login'
+    | '/_public/verify-email'
+    | '/_authed/'
+    | '/_authed/users/$id'
+    | '/_authed/bits/'
+    | '/_authed/setlists/'
+    | '/_authed/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  JokesRoute: typeof JokesRouteWithChildren
-  LoginRoute: typeof LoginRoute
-  SetsRoute: typeof SetsRouteWithChildren
-  UsersRoute: typeof UsersRouteWithChildren
+  AuthedRoute: typeof AuthedRouteWithChildren
+  PublicRoute: typeof PublicRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/users': {
-      id: '/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof UsersRouteImport
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PublicRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sets': {
-      id: '/sets'
-      path: '/sets'
-      fullPath: '/sets'
-      preLoaderRoute: typeof SetsRouteImport
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/jokes': {
-      id: '/jokes'
-      path: '/jokes'
-      fullPath: '/jokes'
-      preLoaderRoute: typeof JokesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
+    '/_authed/': {
+      id: '/_authed/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthedIndexRouteImport
+      parentRoute: typeof AuthedRoute
     }
-    '/users/': {
-      id: '/users/'
+    '/_public/verify-email': {
+      id: '/_public/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof PublicVerifyEmailRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/login': {
+      id: '/_public/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof PublicLoginRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_authed/users': {
+      id: '/_authed/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AuthedUsersRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/setlists': {
+      id: '/_authed/setlists'
+      path: '/setlists'
+      fullPath: '/setlists'
+      preLoaderRoute: typeof AuthedSetlistsRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/bits': {
+      id: '/_authed/bits'
+      path: '/bits'
+      fullPath: '/bits'
+      preLoaderRoute: typeof AuthedBitsRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/users/': {
+      id: '/_authed/users/'
       path: '/'
       fullPath: '/users/'
-      preLoaderRoute: typeof UsersIndexRouteImport
-      parentRoute: typeof UsersRoute
+      preLoaderRoute: typeof AuthedUsersIndexRouteImport
+      parentRoute: typeof AuthedUsersRoute
     }
-    '/sets/': {
-      id: '/sets/'
+    '/_authed/setlists/': {
+      id: '/_authed/setlists/'
       path: '/'
-      fullPath: '/sets/'
-      preLoaderRoute: typeof SetsIndexRouteImport
-      parentRoute: typeof SetsRoute
+      fullPath: '/setlists/'
+      preLoaderRoute: typeof AuthedSetlistsIndexRouteImport
+      parentRoute: typeof AuthedSetlistsRoute
     }
-    '/jokes/': {
-      id: '/jokes/'
+    '/_authed/bits/': {
+      id: '/_authed/bits/'
       path: '/'
-      fullPath: '/jokes/'
-      preLoaderRoute: typeof JokesIndexRouteImport
-      parentRoute: typeof JokesRoute
+      fullPath: '/bits/'
+      preLoaderRoute: typeof AuthedBitsIndexRouteImport
+      parentRoute: typeof AuthedBitsRoute
     }
-    '/users/$id': {
-      id: '/users/$id'
+    '/_authed/users/$id': {
+      id: '/_authed/users/$id'
       path: '/$id'
       fullPath: '/users/$id'
-      preLoaderRoute: typeof UsersIdRouteImport
-      parentRoute: typeof UsersRoute
-    }
-    '/sets/$id': {
-      id: '/sets/$id'
-      path: '/$id'
-      fullPath: '/sets/$id'
-      preLoaderRoute: typeof SetsIdRouteImport
-      parentRoute: typeof SetsRoute
-    }
-    '/jokes/$id': {
-      id: '/jokes/$id'
-      path: '/$id'
-      fullPath: '/jokes/$id'
-      preLoaderRoute: typeof JokesIdRouteImport
-      parentRoute: typeof JokesRoute
+      preLoaderRoute: typeof AuthedUsersIdRouteImport
+      parentRoute: typeof AuthedUsersRoute
     }
   }
 }
 
-interface JokesRouteChildren {
-  JokesIdRoute: typeof JokesIdRoute
-  JokesIndexRoute: typeof JokesIndexRoute
+interface AuthedBitsRouteChildren {
+  AuthedBitsIndexRoute: typeof AuthedBitsIndexRoute
 }
 
-const JokesRouteChildren: JokesRouteChildren = {
-  JokesIdRoute: JokesIdRoute,
-  JokesIndexRoute: JokesIndexRoute,
+const AuthedBitsRouteChildren: AuthedBitsRouteChildren = {
+  AuthedBitsIndexRoute: AuthedBitsIndexRoute,
 }
 
-const JokesRouteWithChildren = JokesRoute._addFileChildren(JokesRouteChildren)
+const AuthedBitsRouteWithChildren = AuthedBitsRoute._addFileChildren(
+  AuthedBitsRouteChildren,
+)
 
-interface SetsRouteChildren {
-  SetsIdRoute: typeof SetsIdRoute
-  SetsIndexRoute: typeof SetsIndexRoute
+interface AuthedSetlistsRouteChildren {
+  AuthedSetlistsIndexRoute: typeof AuthedSetlistsIndexRoute
 }
 
-const SetsRouteChildren: SetsRouteChildren = {
-  SetsIdRoute: SetsIdRoute,
-  SetsIndexRoute: SetsIndexRoute,
+const AuthedSetlistsRouteChildren: AuthedSetlistsRouteChildren = {
+  AuthedSetlistsIndexRoute: AuthedSetlistsIndexRoute,
 }
 
-const SetsRouteWithChildren = SetsRoute._addFileChildren(SetsRouteChildren)
+const AuthedSetlistsRouteWithChildren = AuthedSetlistsRoute._addFileChildren(
+  AuthedSetlistsRouteChildren,
+)
 
-interface UsersRouteChildren {
-  UsersIdRoute: typeof UsersIdRoute
-  UsersIndexRoute: typeof UsersIndexRoute
+interface AuthedUsersRouteChildren {
+  AuthedUsersIdRoute: typeof AuthedUsersIdRoute
+  AuthedUsersIndexRoute: typeof AuthedUsersIndexRoute
 }
 
-const UsersRouteChildren: UsersRouteChildren = {
-  UsersIdRoute: UsersIdRoute,
-  UsersIndexRoute: UsersIndexRoute,
+const AuthedUsersRouteChildren: AuthedUsersRouteChildren = {
+  AuthedUsersIdRoute: AuthedUsersIdRoute,
+  AuthedUsersIndexRoute: AuthedUsersIndexRoute,
 }
 
-const UsersRouteWithChildren = UsersRoute._addFileChildren(UsersRouteChildren)
+const AuthedUsersRouteWithChildren = AuthedUsersRoute._addFileChildren(
+  AuthedUsersRouteChildren,
+)
+
+interface AuthedRouteChildren {
+  AuthedBitsRoute: typeof AuthedBitsRouteWithChildren
+  AuthedSetlistsRoute: typeof AuthedSetlistsRouteWithChildren
+  AuthedUsersRoute: typeof AuthedUsersRouteWithChildren
+  AuthedIndexRoute: typeof AuthedIndexRoute
+}
+
+const AuthedRouteChildren: AuthedRouteChildren = {
+  AuthedBitsRoute: AuthedBitsRouteWithChildren,
+  AuthedSetlistsRoute: AuthedSetlistsRouteWithChildren,
+  AuthedUsersRoute: AuthedUsersRouteWithChildren,
+  AuthedIndexRoute: AuthedIndexRoute,
+}
+
+const AuthedRouteWithChildren =
+  AuthedRoute._addFileChildren(AuthedRouteChildren)
+
+interface PublicRouteChildren {
+  PublicLoginRoute: typeof PublicLoginRoute
+  PublicVerifyEmailRoute: typeof PublicVerifyEmailRoute
+}
+
+const PublicRouteChildren: PublicRouteChildren = {
+  PublicLoginRoute: PublicLoginRoute,
+  PublicVerifyEmailRoute: PublicVerifyEmailRoute,
+}
+
+const PublicRouteWithChildren =
+  PublicRoute._addFileChildren(PublicRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  JokesRoute: JokesRouteWithChildren,
-  LoginRoute: LoginRoute,
-  SetsRoute: SetsRouteWithChildren,
-  UsersRoute: UsersRouteWithChildren,
+  AuthedRoute: AuthedRouteWithChildren,
+  PublicRoute: PublicRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

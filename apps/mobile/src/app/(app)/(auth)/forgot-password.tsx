@@ -1,4 +1,5 @@
 import { AuthContainer } from '@/features/auth/components/container'
+import { useI18n } from '@/i18n'
 import { authClient } from '@/lib/auth-client'
 import { authLogger } from '@/lib/loggers'
 import { useRouter } from 'expo-router'
@@ -29,6 +30,7 @@ async function requestPasswordReset(input: PasswordResetRequest) {
 
 export default function ForgotPassword() {
     const router = useRouter()
+    const { t } = useI18n()
     const [email, setEmail] = useState('')
     const [isLoading, setIsLoading] = useState(false)
 
@@ -39,23 +41,23 @@ export default function ForgotPassword() {
         try {
             await requestPasswordReset({ email: email.trim(), redirectTo: 'laughtrack://reset-password' })
             authLogger.info('Password reset email sent')
-            Alert.alert('Email Sent', 'Check your email for a password reset link.', [
-                { text: 'OK', onPress: () => router.back() }
+            Alert.alert(t('auth.alerts.emailSentTitle'), t('auth.alerts.emailSentMessage'), [
+                { text: t('common.ok'), onPress: () => router.back() }
             ])
         } catch (error) {
             authLogger.error('Password reset failed:', error)
-            Alert.alert('Error', 'Failed to send reset email. Please try again.')
+            Alert.alert(t('auth.alerts.errorTitle'), t('auth.alerts.resetFailed'))
         } finally {
             setIsLoading(false)
         }
-    }, [email])
+    }, [email, router, t])
 
     return (
-        <AuthContainer title='Reset Password' subtitle='Enter your email to receive a reset link'>
+        <AuthContainer title={t('auth.forgotPassword.title')} subtitle={t('auth.forgotPassword.subtitle')}>
             <View className="gap-4">
                 <TextField>
                     <Input
-                        placeholder="Email"
+                        placeholder={t('auth.placeholders.email')}
                         keyboardType="email-address"
                         autoCapitalize="none"
                         value={email}
@@ -68,16 +70,18 @@ export default function ForgotPassword() {
                     onPress={handleReset}
                     isDisabled={isLoading || !email.trim()}
                     className="w-full"
+                    accessibilityLabel={t('auth.forgotPassword.sendResetLink')}
                 >
-                    <Button.Label>{isLoading ? 'Sending...' : 'Send Reset Link'}</Button.Label>
+                    <Button.Label>{isLoading ? t('auth.forgotPassword.sending') : t('auth.forgotPassword.sendResetLink')}</Button.Label>
                 </Button>
 
                 <Button
                     variant="ghost"
                     onPress={() => router.back()}
                     className="w-full"
+                    accessibilityLabel={t('auth.common.backToSignIn')}
                 >
-                    <Button.Label>Back to Sign In</Button.Label>
+                    <Button.Label>{t('auth.common.backToSignIn')}</Button.Label>
                 </Button>
             </View>
         </AuthContainer>

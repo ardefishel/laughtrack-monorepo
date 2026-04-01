@@ -43,47 +43,51 @@ export interface UpdateUserPayload {
     banReason?: string | null
 }
 
-export interface JokeDTO {
+export interface NoteDTO {
     id: string
-    contentText: string | null
-    contentHtml: string | null
-    status: string | null
+    content: string | null
     userId: string
-    userName: string
-    userEmail: string
-    createdAt: number | null
-    updatedAt: number | null
+    userName: string | null
+    userEmail: string | null
+    createdAt: string | null
+    updatedAt: string | null
 }
 
-export interface JokeDetailDTO extends JokeDTO {
-    draftUpdatedAt: number | null
-    tags: string | null
-}
-
-export interface JokeSetDTO {
+export interface BitDTO {
     id: string
-    title: string | null
+    content: string | null
+    status: string | null
+    tagsJson: string | null
+    premiseId: string | null
+    userId: string
+    userName: string | null
+    userEmail: string | null
+    createdAt: string | null
+    updatedAt: string | null
+}
+
+export interface PremiseDTO {
+    id: string
+    content: string | null
+    status: string | null
+    attitude: string | null
+    tagsJson: string | null
+    userId: string
+    userName: string | null
+    userEmail: string | null
+    createdAt: string | null
+    updatedAt: string | null
+}
+
+export interface SetlistDTO {
+    id: string
     description: string | null
-    duration: number | null
-    place: string | null
-    status: string | null
+    tagsJson: string | null
     userId: string
-    userName: string
-    userEmail: string
-    createdAt: number | null
-    updatedAt: number | null
-    itemCount: number
-}
-
-export interface JokeSetDetailDTO extends JokeSetDTO {
-    items: Array<{
-        id: string
-        itemType: string | null
-        jokeId: string | null
-        jokeTitle: string | null
-        content: string | null
-        position: number | null
-    }>
+    userName: string | null
+    userEmail: string | null
+    createdAt: string | null
+    updatedAt: string | null
 }
 
 export interface StatsDTO {

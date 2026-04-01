@@ -1,5 +1,6 @@
 import { Icon, type IconName } from '@/components/ui/ion-icon';
 import { MaterialVariant, materialVariantConfig } from '@/config/material-variants';
+import { useI18n } from '@/i18n';
 import { TabTriggerSlotProps } from 'expo-router/ui';
 import { PressableFeedback } from 'heroui-native';
 import { forwardRef } from 'react';
@@ -19,11 +20,11 @@ export function MaterialTabList({ children }: { children: React.ReactNode }) {
 }
 
 type MaterialTabButtonProps = TabTriggerSlotProps & {
-    label: string,
     variant: MaterialVariant
 };
 
-export const MaterialTabButton = forwardRef<View, MaterialTabButtonProps>(({ label, variant, isFocused, ...props }, ref) => {
+export const MaterialTabButton = forwardRef<View, MaterialTabButtonProps>(({ variant, isFocused, ...props }, ref) => {
+    const { t } = useI18n()
     const config = materialVariantConfig[variant];
     const focusedIcon = config.icon.replace('-outline', '') as IconName;
     return (
@@ -31,7 +32,7 @@ export const MaterialTabButton = forwardRef<View, MaterialTabButtonProps>(({ lab
             <View className='flex-row items-center py-2 gap-2'>
                 <Icon name={isFocused ? focusedIcon : config.icon} size={28} className={`rounded-xl ${isFocused ? config.iconColor : 'text-muted'}`} />
                 <Text className={`${isFocused ? `${config.iconColor} font-semibold` : 'text-muted'}`}>
-                    {label}
+                    {t(config.labelKey)}
                 </Text>
             </View>
         </PressableFeedback>

@@ -1,7 +1,7 @@
 import { Icon } from '@/components/ui/ion-icon'
 import { useKeyboardOffset } from '@/lib/use-keyboard-offset'
 import { FlashList, type FlashListProps, type FlashListRef, type ListRenderItem } from '@shopify/flash-list'
-import { Button, Input } from 'heroui-native'
+import { Button, Input, useThemeColor } from 'heroui-native'
 import type { RefObject } from 'react'
 import { useCallback, useMemo } from 'react'
 import { View, type ViewStyle } from 'react-native'
@@ -36,6 +36,8 @@ export function MaterialListScreen<ItemT>({
     listRef,
 }: MaterialListScreenProps<ItemT>) {
     const keyboardOffset = useKeyboardOffset()
+    const foreground = useThemeColor('foreground')
+    const muted = useThemeColor('muted')
 
     const contentContainerStyle = useMemo<ViewStyle>(() => ({
         paddingHorizontal: 16,
@@ -59,8 +61,17 @@ export function MaterialListScreen<ItemT>({
                     placeholder={searchPlaceholder}
                     returnKeyType='search'
                 />
-                <Button isIconOnly variant={hasActiveFilters ? 'primary' : 'outline'} onPress={onFilterPress}>
-                    <Icon name={hasActiveFilters ? 'funnel' : 'filter-outline'} size={20} className={hasActiveFilters ? '' : 'text-muted'} />
+                <Button
+                    isIconOnly
+                    variant='outline'
+                    onPress={onFilterPress}
+                    className={hasActiveFilters ? 'bg-accent border-accent' : ''}
+                >
+                    <Icon
+                        name='filter-outline'
+                        size={20}
+                        color={hasActiveFilters ? foreground : muted}
+                    />
                 </Button>
             </View>
 
@@ -71,6 +82,7 @@ export function MaterialListScreen<ItemT>({
                 contentContainerStyle={contentContainerStyle}
                 ItemSeparatorComponent={itemSeparator}
                 renderItem={renderItem}
+                estimatedItemSize={120}
             />
 
             <Button className='absolute right-0 bottom-0 mr-4' style={fabStyle} onPress={onFabPress}>

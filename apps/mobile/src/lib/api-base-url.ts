@@ -1,7 +1,3 @@
-const DEFAULT_API_BASE_URL = 'https://api.laughtrack.rtvcl.com'
+import { resolveApiBaseUrl } from './normalize-api-base-url'
 
-function normalizeApiBaseUrl(url: string): string {
-  return url.replace(/\/+$/, '')
-}
-
-export const API_BASE_URL = normalizeApiBaseUrl(process.env.EXPO_PUBLIC_API_URL ?? DEFAULT_API_BASE_URL)
+export const API_BASE_URL = resolveApiBaseUrl(process.env.EXPO_PUBLIC_API_URL)

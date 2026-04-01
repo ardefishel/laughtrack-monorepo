@@ -7,9 +7,6 @@ Package name: `@laughtrack/shared-types`. Import via `@laughtrack/shared-types`.
 
 - `src/index.ts` — Re-exports all types from domain modules.
 - `src/api.ts` — API payload/response helper types.
-- `src/joke.ts` — `JokeStatus` and joke-related types.
-- `src/joke-set.ts` — `JokeSetStatus`, `JokeSetItemType`, and set-related types.
-- `src/audio.ts` — Audio recording types.
 
 ## Conventions
 
