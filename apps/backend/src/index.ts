@@ -3,7 +3,7 @@ import { cors } from 'hono/cors';
 import { corsOrigins } from './lib/cors-origins';
 import { errorMiddleware } from './middlewares/error';
 import { loggerMiddleware } from './middlewares/logger';
-import { webApp } from './routes/admin';
+// import { webApp } from './routes/admin';
 // import { authRoutes } from './routes/auth-routes';
 import { mobileApp } from './routes/mobile';
 import { detect } from './routes/runtime-routes';
@@ -43,7 +43,7 @@ app.get('/health', (c) => {
 // Mount route modules
 // app.route('/api/auth', authRoutes)
 app.route('/api/mobile', mobileApp)
-app.route('/api/web', webApp)
+// app.route('/api/web', webApp)
 
 
 
