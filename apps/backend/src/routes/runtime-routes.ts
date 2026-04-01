@@ -48,6 +48,6 @@ detect.get("/runtime", (c) => {
 });
 
 detect.get("/db", async (c) => {
-    const result = await db.execute('select 1')
+    const result = await db.query.users.findFirst()
     return c.json({ result })
 })
