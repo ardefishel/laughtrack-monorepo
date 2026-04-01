@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
-// import { cors } from 'hono/cors'
-// import { corsOrigins } from './lib/cors-origins'
+import { cors } from 'hono/cors';
+import { corsOrigins } from './lib/cors-origins';
 // import { errorMiddleware } from './middlewares/error'
 // import { loggerMiddleware } from './middlewares/logger'
 // import { webApp } from './routes/admin'
@@ -25,15 +25,15 @@ app.use('*', async (c, next) => {
 // app.use('*', errorMiddleware())
 
 // // Auth routes need CORS for both mobile and web clients (shared)
-// app.use(
-//   '/api/auth/*',
-//   cors({
-//     origin: [...corsOrigins, 'laughtrack://'],
-//     allowHeaders: ['Content-Type', 'Authorization'],
-//     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//     credentials: true,
-//   })
-// )
+app.use(
+  '/api/auth/*',
+  cors({
+    origin: [...corsOrigins, 'laughtrack://'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+  })
+)
 
 // Health check
 app.get('/health', (c) => {
