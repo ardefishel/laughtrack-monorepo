@@ -7,7 +7,7 @@ import { corsOrigins } from '../lib/cors-origins'
 import { users, sessions, accounts, verification } from '../db/schema'
 import { createEmailVerificationUrl, getEmailConfig } from '../config/email'
 import { createMailer } from '../lib/email/mailer'
-import { defaultLogger } from '@laughtrack/logger/node'
+import { defaultLogger } from '../lib/logger'
 
 const emailConfig = getEmailConfig()
 const mailer = createMailer(emailConfig)
@@ -41,10 +41,10 @@ export const auth = betterAuth({
         to: user.email,
         verificationUrl,
       }).catch((error) => {
-        defaultLogger.error('Failed to queue verification email', {
+        defaultLogger.error({
           email: user.email,
           errorName: error instanceof Error ? error.name : 'UnknownError',
-        })
+        }, 'Failed to queue verification email')
       })
     },
   },

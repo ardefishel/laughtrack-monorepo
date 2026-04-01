@@ -1,6 +1,6 @@
 import { connectDatabase, disconnectDatabase } from "./db"
 import app from './index'
-import { serverLogger } from '@laughtrack/logger/node'
+import { serverLogger } from './lib/logger'
 
 // Server startup
 const parsedPort = Number(process.env.PORT)

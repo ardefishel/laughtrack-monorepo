@@ -1,6 +1,6 @@
 import { createMiddleware } from 'hono/factory'
 import { ulid } from 'ulid'
-import { defaultLogger } from '@laughtrack/logger/node'
+import { defaultLogger } from '../lib/logger'
 
 type LoggerEnv = {
   Variables: {

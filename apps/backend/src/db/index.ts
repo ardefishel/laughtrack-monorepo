@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/node-postgres'
 import { Pool } from 'pg'
-import { dbLogger } from '@laughtrack/logger/node'
+import { dbLogger } from '../lib/logger'
 import * as schema from './schema'
 
 const pool = new Pool({
@@ -20,7 +20,7 @@ export async function connectDatabase() {
     await pool.query('SELECT 1')
     dbLogger.info('Database connected successfully')
   } catch (error) {
-    dbLogger.error('Database connection failed:', error)
+    dbLogger.error({ err: error }, 'Database connection failed')
     process.exit(1)
   }
 }
@@ -30,6 +30,6 @@ export async function disconnectDatabase() {
     await pool.end()
     dbLogger.info('Database disconnected')
   } catch (error) {
-    dbLogger.error('Database disconnection failed:', error)
+    dbLogger.error({ err: error }, 'Database disconnection failed')
   }
 }
