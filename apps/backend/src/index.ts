@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { corsOrigins } from './lib/cors-origins';
-// import { errorMiddleware } from './middlewares/error'
-// import { loggerMiddleware } from './middlewares/logger'
+import { errorMiddleware } from './middlewares/error';
+import { loggerMiddleware } from './middlewares/logger';
 // import { webApp } from './routes/admin'
 // import { authRoutes } from './routes/auth-routes'
 // import { mobileApp } from './routes/mobile'
@@ -21,8 +21,8 @@ app.use('*', async (c, next) => {
 })
 
 // // Global middleware
-// app.use('*', loggerMiddleware())
-// app.use('*', errorMiddleware())
+app.use('*', loggerMiddleware())
+app.use('*', errorMiddleware())
 
 // // Auth routes need CORS for both mobile and web clients (shared)
 app.use(
