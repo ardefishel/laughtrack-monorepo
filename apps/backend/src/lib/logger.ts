@@ -1,9 +1,26 @@
 type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 
 const LOG_LEVELS: Record<LogLevel, number> = { debug: 0, info: 1, warn: 2, error: 3 }
+const VALID_LOG_LEVELS: LogLevel[] = ['debug', 'info', 'warn', 'error']
 
 const isProduction = process.env.NODE_ENV === 'production'
-const minLevel: LogLevel = isProduction ? 'warn' : 'debug'
+
+function parseLogLevel(value: string | undefined): LogLevel | null {
+  if (!value) return null
+
+  const normalizedValue = value.trim().toLowerCase()
+  return VALID_LOG_LEVELS.includes(normalizedValue as LogLevel) ? (normalizedValue as LogLevel) : null
+}
+
+function isTruthyEnv(value: string | undefined): boolean {
+  return value === '1' || value === 'true'
+}
+
+const configuredMinLevel = parseLogLevel(process.env.LOG_LEVEL)
+const verboseLogsEnabled =
+  isTruthyEnv(process.env.BACKEND_VERBOSE_LOGS?.toLowerCase()) ||
+  isTruthyEnv(process.env.VERBOSE_LOGS?.toLowerCase())
+const minLevel: LogLevel = configuredMinLevel ?? (verboseLogsEnabled ? 'debug' : isProduction ? 'info' : 'debug')
 
 function shouldLog(level: LogLevel): boolean {
   return LOG_LEVELS[level] >= LOG_LEVELS[minLevel]
@@ -82,6 +99,7 @@ function createNamespacedLogger(namespace: string): Logger {
 }
 
 export const defaultLogger = createNamespacedLogger('default')
+export const authLogger = createNamespacedLogger('auth')
 export const dbLogger = createNamespacedLogger('db')
 export const serverLogger = createNamespacedLogger('server')
 export const hooksLogger = createNamespacedLogger('hooks')
@@ -90,4 +108,3 @@ export const networkLogger = createNamespacedLogger('network')
 
 export { createNamespacedLogger }
 export type { Logger, LogLevel }
-

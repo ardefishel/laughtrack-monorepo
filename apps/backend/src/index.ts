@@ -4,13 +4,13 @@ import { corsOrigins } from './lib/cors-origins';
 import { errorMiddleware } from './middlewares/error';
 import { loggerMiddleware } from './middlewares/logger';
 // import { webApp } from './routes/admin';
-// import { authRoutes } from './routes/auth-routes';
-import { mobileApp } from './routes/mobile';
+import { authRoutes } from './routes/auth-routes';
+// import { mobileApp } from './routes/mobile';
 import { detect } from './routes/runtime-routes';
 
 console.log("Booting Hono handler", process.versions.bun);
 
-const app = new Hono()
+export const app = new Hono()
 
 // Security headers middleware
 app.use('*', async (c, next) => {
@@ -41,8 +41,8 @@ app.get('/health', (c) => {
 })
 
 // Mount route modules
-// app.route('/api/auth', authRoutes)
-app.route('/api/mobile', mobileApp)
+app.route('/api/auth', authRoutes)
+// app.route('/api/mobile', mobileApp)
 // app.route('/api/web', webApp)
 
 
