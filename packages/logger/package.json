@@ -5,18 +5,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    ".": {
-      "bun": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./react-native": {
-      "bun": "./src/react-native/index.ts",
-      "default": "./dist/react-native/index.js"
-    },
-    "./node": {
-      "bun": "./src/node/index.ts",
-      "default": "./dist/node/index.js"
-    },
+    ".": "./dist/index.js",
+    "./react-native": "./dist/react-native/index.js",
+    "./node": "./dist/node/index.js",
     "./package.json": "./package.json"
   },
   "files": [
