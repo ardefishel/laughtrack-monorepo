@@ -57,6 +57,9 @@ app-example
 /apps/*/ios
 /apps/*/android
 
+# Vercel
+.vercel
+
 # Bun
 bun.lockb
 
