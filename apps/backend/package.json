@@ -1,5 +1,6 @@
 {
   "name": "backend",
+  "type": "module",
   "version": "1.0.0",
   "scripts": {
     "dev": "bun run --watch src/server.ts",
@@ -21,6 +22,7 @@
     "docker:logs": "docker compose logs -f postgres"
   },
   "dependencies": {
+    "@better-auth/core": "1.5.6",
     "@better-auth/expo": "1.5.6",
     "better-auth": "1.5.6",
     "dotenv": "17.3.1",
