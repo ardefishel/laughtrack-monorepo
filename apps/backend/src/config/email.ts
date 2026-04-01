@@ -45,7 +45,12 @@ function normalizeOptional(value: string | undefined): string | null {
 }
 
 export function getEmailConfig(env: NodeJS.ProcessEnv = process.env): EmailConfig {
-  const transport = (env.EMAIL_TRANSPORT?.trim().toLowerCase() ?? (env.NODE_ENV === 'production' ? 'smtp' : 'stub')) as EmailTransportMode
+  const configuredTransport = env.EMAIL_TRANSPORT?.trim().toLowerCase()
+  const transport = (configuredTransport === '' || configuredTransport == null ? 'stub' : configuredTransport) as EmailTransportMode
+
+  if ((configuredTransport === '' || configuredTransport == null) && env.NODE_ENV === 'production') {
+    console.warn('[BOOT:email] EMAIL_TRANSPORT is not set; defaulting to stub transport')
+  }
 
   if (transport !== 'smtp' && transport !== 'stub') {
     throw new Error(`EMAIL_TRANSPORT must be either "smtp" or "stub". Received: ${env.EMAIL_TRANSPORT}`)

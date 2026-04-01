@@ -20,6 +20,12 @@ describe('getEmailConfig', () => {
     expect(config.transport).toBe('stub')
   })
 
+  it('defaults to stub transport in production when EMAIL_TRANSPORT is unset', () => {
+    const config = getEmailConfig({ NODE_ENV: 'production' })
+
+    expect(config.transport).toBe('stub')
+  })
+
   it('parses explicit SMTP configuration', () => {
     const config = getEmailConfig({
       EMAIL_TRANSPORT: 'smtp',
