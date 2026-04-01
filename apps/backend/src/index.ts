@@ -1,12 +1,14 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { corsOrigins } from './lib/cors-origins'
 import { errorMiddleware } from './middlewares/error'
 import { loggerMiddleware } from './middlewares/logger'
 import { webApp } from './routes/admin'
 import { authRoutes } from './routes/auth-routes'
 import { mobileApp } from './routes/mobile'
 import { detect } from './routes/runtime-routes'
-import { corsOrigins } from './lib/cors-origins'
+
+console.log("Booting Hono handler", process.versions.bun);
 
 const app = new Hono()
 
