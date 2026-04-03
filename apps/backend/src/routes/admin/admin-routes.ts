@@ -1,7 +1,7 @@
 import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'
-import { db } from '../../db'
+import { db } from '../../db/index'
 import { bits, notes, premises, setlists, users } from '../../db/schema'
 import { errorResponse, paginatedResponse, successResponse } from '../../lib/response'
 import { requireAdmin } from '../../middlewares/auth'

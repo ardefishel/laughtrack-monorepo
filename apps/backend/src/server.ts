@@ -1,5 +1,6 @@
-import { connectDatabase, disconnectDatabase } from "./db"
-import app from './index'
+import { serve } from '@hono/node-server'
+import { connectDatabase, disconnectDatabase } from './db/index'
+import { app } from './index'
 import { serverLogger } from './lib/logger'
 
 // Server startup
@@ -12,10 +13,10 @@ async function startServer() {
     serverLogger.info(`Server starting on port ${PORT}...`)
     serverLogger.info(`Environment: ${process.env.NODE_ENV ?? 'development'}`)
 
-    Bun.serve({
+    serve({
+        fetch: app.fetch,
         port: PORT,
         hostname: '0.0.0.0',
-        fetch: app.fetch,
     })
 
     serverLogger.info(`Server running at http://localhost:${PORT}`)

@@ -1,4 +1,4 @@
-import type { User } from '../auth'
+import type { User } from '../auth/index'
 
 export const EMAIL_NOT_VERIFIED_CODE = 'email_not_verified'
 

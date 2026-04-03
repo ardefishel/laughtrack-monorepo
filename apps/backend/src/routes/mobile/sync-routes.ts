@@ -1,7 +1,7 @@
 import { and, eq, gt } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'
-import { db } from '../../db'
+import { db } from '../../db/index'
 import { bits, notes, premises, setlists } from '../../db/schema'
 import { requireAuth } from '../../middlewares/auth'
 
