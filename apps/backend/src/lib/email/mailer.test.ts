@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'bun:test'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { getEmailConfig } from '../../config/email'
 import { createMailer, getStubEmails, resetStubEmails } from './mailer'
 

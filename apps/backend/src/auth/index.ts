@@ -1,16 +1,16 @@
-import { expo } from '@better-auth/expo'
-import { betterAuth } from 'better-auth'
-import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { admin } from 'better-auth/plugins'
-// import { createEmailVerificationUrl, getEmailConfig } from '../config/email'
-import { db } from '../db'
-import { accounts, sessions, users, verification } from '../db/schema'
-import { corsOrigins } from '../lib/cors-origins'
-// import { createMailer } from '../lib/email/mailer'
-// import { defaultLogger } from '../lib/logger'
+import { expo } from '@better-auth/expo';
+import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { admin } from 'better-auth/plugins';
+import { createEmailVerificationUrl, getEmailConfig } from '../config/email';
+import { db } from '../db/index';
+import { accounts, sessions, users, verification } from '../db/schema';
+import { corsOrigins } from '../lib/cors-origins';
+import { createMailer } from '../lib/email/mailer';
+import { defaultLogger } from '../lib/logger';
 
-// const emailConfig = getEmailConfig()
-// const mailer = createMailer(emailConfig)
+const emailConfig = getEmailConfig();
+const mailer = createMailer(emailConfig);
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -19,8 +19,8 @@ export const auth = betterAuth({
       user: users,
       session: sessions,
       account: accounts,
-      verification: verification,
-    },
+      verification: verification
+    }
   }),
   baseURL: process.env.AUTH_URL,
   trustedOrigins: ['laughtrack://', ...corsOrigins],
@@ -28,44 +28,49 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
-    requireEmailVerification: true,
+    requireEmailVerification: true
   },
-  // emailVerification: {
-  //   sendOnSignUp: true,
-  //   sendOnSignIn: true,
-  //   autoSignInAfterVerification: false,
-  //   expiresIn: 60 * 60 * 24,
-  //   sendVerificationEmail: async ({ user, token }) => {
-  //     const verificationUrl = createEmailVerificationUrl(emailConfig.publicWebUrl, token)
-  //     void mailer.sendVerificationEmail({
-  //       to: user.email,
-  //       verificationUrl,
-  //     }).catch((error) => {
-  //       defaultLogger.error({
-  //         email: user.email,
-  //         errorName: error instanceof Error ? error.name : 'UnknownError',
-  //       }, 'Failed to queue verification email')
-  //     })
-  //   },
-  // },
+  emailVerification: {
+    sendOnSignUp: true,
+    sendOnSignIn: true,
+    autoSignInAfterVerification: false,
+    expiresIn: 60 * 60 * 24,
+    sendVerificationEmail: async ({ user, token }) => {
+      const verificationUrl = createEmailVerificationUrl(emailConfig.publicWebUrl, token);
+      void mailer
+        .sendVerificationEmail({
+          to: user.email,
+          verificationUrl
+        })
+        .catch((error) => {
+          defaultLogger.error(
+            {
+              email: user.email,
+              errorName: error instanceof Error ? error.name : 'UnknownError'
+            },
+            'Failed to queue verification email'
+          );
+        });
+    }
+  },
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
-    },
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? ''
+    }
   },
   session: {
     expiresIn: 60 * 60 * 24 * 7,
     updateAge: 60 * 60 * 24,
     cookieCache: {
       enabled: true,
-      maxAge: 60 * 5,
-    },
+      maxAge: 60 * 5
+    }
   },
   advanced: {
-    cookiePrefix: 'backend',
-  },
-})
+    cookiePrefix: 'backend'
+  }
+});
 
-export type Session = typeof auth.$Infer.Session.session
-export type User = typeof auth.$Infer.Session.user
+export type Session = typeof auth.$Infer.Session.session;
+export type User = typeof auth.$Infer.Session.user;

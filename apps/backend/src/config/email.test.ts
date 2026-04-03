@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'bun:test'
+import { describe, expect, it } from 'vitest'
 import { createEmailVerificationUrl, getEmailConfig } from './email'
 
 describe('getEmailConfig', () => {
@@ -20,10 +20,10 @@ describe('getEmailConfig', () => {
     expect(config.transport).toBe('stub')
   })
 
-  it('defaults to stub transport in production when EMAIL_TRANSPORT is unset', () => {
-    const config = getEmailConfig({ NODE_ENV: 'production' })
-
-    expect(config.transport).toBe('stub')
+  it('defaults to smtp transport in production when EMAIL_TRANSPORT is unset', () => {
+    expect(() => getEmailConfig({ NODE_ENV: 'production' })).toThrow(
+      'SMTP_USER is required when EMAIL_TRANSPORT=smtp',
+    )
   })
 
   it('parses explicit SMTP configuration', () => {

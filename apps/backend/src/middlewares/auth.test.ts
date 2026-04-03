@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'bun:test'
+import { describe, expect, it } from 'vitest'
 import { errorResponse } from '../lib/response'
 import { EMAIL_NOT_VERIFIED_CODE, requiresVerifiedEmail } from './auth-helpers'
 
