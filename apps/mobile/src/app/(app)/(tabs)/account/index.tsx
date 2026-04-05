@@ -19,9 +19,10 @@ const TERMS_OF_SERVICE_URL = `${MARKETING_URL}/terms`
 
 export default function AccountScreen() {
     const router = useRouter()
-    const { user, isAuthenticated, signOut } = useAuth()
+    const { user, isAuthenticated, signOut, deleteAccount } = useAuth()
     const { t } = useI18n()
     const [isSyncing, setIsSyncing] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
     const avatarInitial = user?.name?.trim().charAt(0).toUpperCase() || 'G'
 
     const openExternalUrl = useCallback(async (url: string) => {
@@ -59,6 +60,45 @@ export default function AccountScreen() {
             { text: t('auth.common.signOut'), style: 'destructive', onPress: () => void signOut() }
         ])
     }, [signOut, t])
+
+    const handleDeleteAccount = useCallback(() => {
+        Alert.alert(t('account.deleteAccountConfirmTitle'), t('account.deleteAccountConfirmMessage'), [
+            { text: t('bitMeta.cancel'), style: 'cancel' },
+            {
+                text: t('account.deleteAccount'),
+                style: 'destructive',
+                onPress: () => {
+                    Alert.prompt(
+                        t('account.deleteAccountTypeConfirm'),
+                        t('account.deleteAccountConfirmMessage'),
+                        [
+                            { text: t('bitMeta.cancel'), style: 'cancel' },
+                            {
+                                text: t('account.deleteAccount'),
+                                style: 'destructive',
+                                onPress: async (input?: string) => {
+                                    if (input?.toUpperCase() !== 'DELETE') return
+                                    setIsDeleting(true)
+                                    try {
+                                        const result = await deleteAccount()
+                                        if (result.success) {
+                                            Alert.alert(t('account.deleteAccountSuccess'), t('account.deleteAccountSuccessMessage'))
+                                        } else {
+                                            Alert.alert(t('account.deleteAccountFailed'), result.error ?? t('auth.errors.unexpected'))
+                                        }
+                                    } finally {
+                                        setIsDeleting(false)
+                                    }
+                                },
+                            },
+                        ],
+                        'plain-text',
+                        '',
+                    )
+                },
+            },
+        ])
+    }, [deleteAccount, t])
 
     return (
         <SafeAreaView className="flex-1 bg-background">
@@ -154,6 +194,30 @@ export default function AccountScreen() {
                         <Icon name="log-in-outline" size={20} className="text-accent-foreground mr-2" />
                         <Button.Label>{t('auth.common.signIn')}</Button.Label>
                     </Button>
+                )}
+
+                {isAuthenticated && (
+                    <>
+                        <Text className="text-sm text-danger mb-2 ml-2 mt-8">{t('account.dangerZone')}</Text>
+                        <ListGroup className="mb-6 border border-danger/20">
+                            <ListGroup.Item
+                                onPress={handleDeleteAccount}
+                                disabled={isDeleting}
+                                accessibilityLabel={t('account.deleteAccount')}
+                            >
+                                <ListGroup.ItemPrefix>
+                                    <Icon name="trash-outline" size={22} className="text-danger" />
+                                </ListGroup.ItemPrefix>
+                                <ListGroup.ItemContent>
+                                    <ListGroup.ItemTitle className="text-danger">
+                                        {isDeleting ? t('account.deleting') : t('account.deleteAccount')}
+                                    </ListGroup.ItemTitle>
+                                    <ListGroup.ItemDescription>{t('account.deleteAccountDescription')}</ListGroup.ItemDescription>
+                                </ListGroup.ItemContent>
+                                <ListGroup.ItemSuffix />
+                            </ListGroup.Item>
+                        </ListGroup>
+                    </>
                 )}
             </ScrollView>
         </SafeAreaView>

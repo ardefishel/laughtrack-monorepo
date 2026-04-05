@@ -20,6 +20,7 @@ interface AuthContextType {
     signUp: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>
     signInWithGoogle: () => Promise<{ success: boolean; error?: string }>
     signOut: () => Promise<void>
+    deleteAccount: (password?: string) => Promise<{ success: boolean; error?: string }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -89,12 +90,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, [])
 
+    const deleteAccount = useCallback(async (password?: string) => {
+        authLogger.info('Delete account attempt')
+        try {
+            const result = await authClient.deleteUser({ password })
+            if (result.error) {
+                authLogger.warn('Delete account failed:', result.error.message)
+                return { success: false, error: result.error.message }
+            }
+            await database.write(async () => {
+                await database.unsafeResetDatabase()
+            })
+            authLogger.info('Local database cleared on account deletion')
+            await authClient.signOut()
+            authLogger.info('Delete account successful')
+            return { success: true }
+        } catch (error) {
+            authLogger.error('Delete account unexpected error:', error)
+            return { success: false, error: translate('auth.errors.unexpected') }
+        }
+    }, [])
+
     const signInWithGoogle = useCallback(async () => {
         return googleSignIn()
     }, [googleSignIn])
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, isPending, signIn, signUp, signInWithGoogle, signOut }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, isPending, signIn, signUp, signInWithGoogle, signOut, deleteAccount }}>
             {children}
         </AuthContext.Provider>
     )

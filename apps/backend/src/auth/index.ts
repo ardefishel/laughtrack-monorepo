@@ -25,6 +25,11 @@ export const auth = betterAuth({
   baseURL: process.env.AUTH_URL,
   trustedOrigins: ['laughtrack://', ...corsOrigins],
   plugins: [expo(), admin()],
+  user: {
+    deleteUser: {
+      enabled: true,
+    },
+  },
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
