@@ -10,5 +10,5 @@ export default defineConfig({
     port: 3001,
     host: '0.0.0.0'
   },
-  plugins: [tsConfigPaths(), tanstackStart(), nitro(), viteReact(), tailwindcss()]
+  plugins: [tsConfigPaths(), tanstackStart(), nitro({ preset: 'bun' }), viteReact(), tailwindcss()]
 });
